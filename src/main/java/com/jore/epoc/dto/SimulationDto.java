@@ -20,6 +20,7 @@ public class SimulationDto implements DataTransferObject {
     private List<CompanyDto> companies = new ArrayList<CompanyDto>();
     private boolean isStarted;
     private YearMonth startMonth;
+    private int nrOfSteps;
 
     public void addCompany(CompanyDto companyDto) {
         companies.add(companyDto);

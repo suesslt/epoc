@@ -89,7 +89,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             Mail mail = new Mail();
             mail.setSender(ADMIN_EPOC_CH);
             mail.addToRecipient(userInCompany.getUser().getEmail());
-            mail.addCcRecipient(userInCompany.getCompany().getSimulation().getUser().getEmail());
+            mail.addCcRecipient(userInCompany.getCompany().getSimulation().getOwner().getEmail());
             mail.setMessageBody("Please login and use password: " + userInCompany.getUser().getPassword());
             mail.setSubject("Your simulation '" + userInCompany.getCompany().getSimulation().getName() + "' is ready");
             result.add(mail);

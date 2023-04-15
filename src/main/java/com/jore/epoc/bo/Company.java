@@ -58,6 +58,10 @@ public class Company extends BusinessObject {
         storages.add(storage);
     }
 
+    public void distributeInMarket(List<Storage> storages2) {
+        // TODO Auto-generated method stub
+    }
+
     public CompanySimulationStep getCompanySimulationStep(SimulationStep simulationStep) {
         Optional<CompanySimulationStep> result = companySimulationSteps.stream().filter(step -> step.getSimulationStep().equals(simulationStep)).findFirst();
         if (result.isEmpty()) {
@@ -84,5 +88,9 @@ public class Company extends BusinessObject {
 
     public List<Storage> getStorages() {
         return Collections.unmodifiableList(storages);
+    }
+
+    public void manufactureProducts(List<Storage> storages) {
+        // TODO Auto-generated method stub
     }
 }

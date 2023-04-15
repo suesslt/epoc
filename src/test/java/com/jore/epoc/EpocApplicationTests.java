@@ -1,10 +1,11 @@
 package com.jore.epoc;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,12 @@ import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.service.SendMailService;
 
 import jakarta.persistence.EntityManager;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @SpringBootTest
 class EpocApplicationTests {
+    private static final String MAX = "max.mara@bluewin.ch";
+    private static final String RETO = "reto.straumann@bluewin.ch";
+    private static final String FELIX = "felix.haeppy@bluewin.ch";
     @Autowired
     private UserManagementService userManagementService;
     @Autowired
@@ -36,16 +38,10 @@ class EpocApplicationTests {
     private SendMailService sendMailService = new StubSendMailServiceImpl();;
 
     @Test
-    public void contextLoads() {
-        assertNotNull(userManagementService);
-        assertNotNull(entityManager);
-    }
-
-    @Test
     public void testUseCasesInOneRow() {
         userManagementService.createInitialUser("admin", "g00dPa&word");
         //
-        // Create user for simulation and delete admin
+        // Create user for simulation and delete ad min
         //
         userManagementService.login("admin", "g00dPa&word");
         userManagementService.createAdmin(LoginDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
@@ -59,40 +55,50 @@ class EpocApplicationTests {
         // Login as game user, buy simulations, create companies with users
         //
         userManagementService.login("user", "e*Wasdf_erwer23");
-        simulationService.buySimulations("user", 10);
-        SimulationDto simulation = simulationService.getNextAvailableSimulationForUser("user");
+        simulationService.buySimulations("user", 1);
+        SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner("user");
         simulation.setName("This is my first real simulation!");
         simulation.setStartMonth(YearMonth.of(2023, 1));
-        simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email("max.mara@bluewin.ch").build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email("reto.straumann@bluewin.ch").build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email("felix.haeppy@bluewin.ch").build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+        simulation.setNrOfSteps(1);
+        simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
         simulationService.updateSimulation(simulation);
         sendMailService.send(userManagementService.getEmailsForNewUsers());
         userManagementService.logout();
         //
         // Step 1 for Company A
         //
-        userManagementService.login("max.mara@bluewin.ch", ((StubSendMailServiceImpl) sendMailService).getPassword("max.mara@bluewin.ch"));
-        List<OpenUserSimulationDto> simulationsA = simulationService.getOpenSimulationsForUser("max.mara@bluewin.ch");
-        CompanySimulationStepDto companySimulationStepA = simulationService.getCurrentCompanySimulationStep(simulationsA.get(0).getCompanyId());
-        simulationService.buildFactory(companySimulationStepA.getId(), FactoryOrderDto.builder().productionLines(5).build());
-        simulationService.buildStorage(companySimulationStepA.getId(), StorageDto.builder().capacity(1000).build());
-        simulationService.finishMoveFor(companySimulationStepA.getId());
+        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser(MAX);
+        Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
+        simulationService.buildFactory(companySimulationStep1A.get().getId(), FactoryOrderDto.builder().productionLines(5).build());
+        simulationService.buildStorage(companySimulationStep1A.get().getId(), StorageDto.builder().capacity(1000).build());
+        simulationService.finishMoveFor(companySimulationStep1A.get().getId());
         userManagementService.logout();
         //
         // Step 1 for Company B
         //
-        userManagementService.login("reto.straumann@bluewin.ch", ((StubSendMailServiceImpl) sendMailService).getPassword("reto.straumann@bluewin.ch"));
-        List<OpenUserSimulationDto> simulationsB = simulationService.getOpenSimulationsForUser("reto.straumann@bluewin.ch");
-        CompanySimulationStepDto companySimulationStepB = simulationService.getCurrentCompanySimulationStep(simulationsB.get(0).getCompanyId());
-        simulationService.finishMoveFor(companySimulationStepB.getId());
+        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
+        List<OpenUserSimulationDto> simulations1B = simulationService.getOpenSimulationsForUser(RETO);
+        Optional<CompanySimulationStepDto> companySimulationStep1B = simulationService.getCurrentCompanySimulationStep(simulations1B.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep1B.get().getId());
         userManagementService.logout();
+        //
+        // Step 1 for Company C
+        //
+        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
+        List<OpenUserSimulationDto> simulations1C = simulationService.getOpenSimulationsForUser(FELIX);
+        Optional<CompanySimulationStepDto> companySimulationStep1C = simulationService.getCurrentCompanySimulationStep(simulations1C.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep1C.get().getId());
+        userManagementService.logout();
+        //
+        // Step 2 for Company A
+        //
+        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX);
+        Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
+        assertTrue(companySimulationStep2A.isEmpty());
         DatabaseViewer.logDatabase(entityManager);
-//        userManagementService.login("reto.straumann@bluewin.ch", ((StubSendMailServiceImpl) sendMailService).getPassword("reto.straumann@bluewin.ch"));
-//        simulationManagementService.finishMoveFor(simulationStepB);
-//        userManagementService.logout();
-//        userManagementService.login("felix.haeppy@bluewin.ch", ((StubSendMailServiceImpl) sendMailService).getPassword("felix.haeppy@bluewin.ch"));
-//        simulationManagementService.finishMoveFor(simulationStepC);
-//        userManagementService.logout();
     }
 }

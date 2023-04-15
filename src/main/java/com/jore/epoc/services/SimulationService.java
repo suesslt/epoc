@@ -1,6 +1,7 @@
 package com.jore.epoc.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.FactoryOrderDto;
@@ -19,9 +20,9 @@ public interface SimulationService {
 
     void finishMoveFor(Integer companySimulationId);
 
-    CompanySimulationStepDto getCurrentCompanySimulationStep(Integer companyId);
+    Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId);
 
-    SimulationDto getNextAvailableSimulationForUser(String user);
+    SimulationDto getNextAvailableSimulationForOwner(String user);
 
     List<OpenUserSimulationDto> getOpenSimulationsForUser(String string);
 

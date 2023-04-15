@@ -12,9 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Entity
 @Getter
 @Setter
@@ -32,10 +30,10 @@ public class SimulationStep extends BusinessObject {
     }
 
     public boolean areAllCompanyStepsFinished() {
-        log.warn("*** " + companySimulationSteps.size());
-        for (CompanySimulationStep companySimulationStep : companySimulationSteps) {
-            log.warn("*** " + companySimulationStep);
-        }
         return companySimulationSteps.stream().filter(step -> (step.isOpen() == true)).findFirst().isEmpty();
+    }
+
+    public CompanySimulationStep getCompanySimulationStepFor(Company company) {
+        return companySimulationSteps.stream().filter(step -> step.getCompany().equals(company)).findFirst().get();
     }
 }

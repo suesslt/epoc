@@ -4,6 +4,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.jore.jpa.BusinessObject;
@@ -14,18 +15,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Entity
 @Getter
 @Setter
 public class Simulation extends BusinessObject {
     private String name;
     private YearMonth startMonth;
-    private boolean isStarted;
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private Login user;
+    private Integer nrOfSteps;
+    private boolean isStarted = false;
+    private boolean isFinished = false;
+    @ManyToOne(optional = false)
+    private Login owner;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
     private List<Company> companies = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
@@ -36,34 +37,70 @@ public class Simulation extends BusinessObject {
         companies.add(company);
     }
 
-    public SimulationStep getCurrentSimulationStep() {
-        Optional<SimulationStep> result = simulationSteps.stream().filter(step -> step.isOpen()).findFirst();
-        if (result.isEmpty()) {
-            result = Optional.of(createNextSimulationStep());
+    public void addSimulationStep(SimulationStep simulationStep) {
+        simulationStep.setSimulation(this);
+        simulationSteps.add(simulationStep);
+    }
+
+    public void finishCompanyStep(CompanySimulationStep companySimulationStep) {
+        companySimulationStep.setOpen(false);
+        if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {
+            runSimulationStep();
         }
-        return result.get();
+    }
+
+    // Can return empty Optional if simulation has finished
+    public Optional<SimulationStep> getActiveSimulationStep() {
+        Objects.requireNonNull(startMonth);
+        Objects.requireNonNull(nrOfSteps);
+        Optional<SimulationStep> result = Optional.empty();
+        Optional<SimulationStep> simulationStep = simulationSteps.stream().sorted(new Comparator<SimulationStep>() {
+            @Override
+            public int compare(SimulationStep o1, SimulationStep o2) {
+                return o2.getSimulationMonth().compareTo(o1.getSimulationMonth());
+            }
+        }).findFirst();
+        if (simulationStep.isPresent()) {
+            if (simulationStep.get().isOpen()) {
+                result = simulationStep;
+            } else {
+                if (simulationStep.get().getSimulationMonth().isBefore(startMonth.plusMonths(nrOfSteps - 1))) {
+                    result = Optional.of(createSimulationStep(simulationStep.get().getSimulationMonth().plusMonths(1)));
+                } else {
+                    isFinished = true;
+                }
+            }
+        } else {
+            isStarted = true;
+            result = Optional.of(createSimulationStep(startMonth));
+        }
+        return result;
     }
 
     public void runSimulationStep() {
-        log.info("*** this is where the logic sits!!!");
+        Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
+        activeSimulationStep.get().setOpen(false);
+        for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
+            Company company = companySimulationStep.getCompany();
+            for (SimulationEvent simulationEvent : companySimulationStep.getSimulationEvents()) {
+                simulationEvent.apply(company);
+            }
+            company.manufactureProducts(company.getStorages());
+            company.distributeInMarket(company.getStorages());
+        }
     }
 
-    private SimulationStep createNextSimulationStep() {
+    private SimulationStep createSimulationStep(YearMonth month) {
         SimulationStep result = new SimulationStep();
-        Optional<YearMonth> max = simulationSteps.stream().map(step -> step.getSimulationMonth()).max(new Comparator<YearMonth>() {
-            @Override
-            public int compare(YearMonth o1, YearMonth o2) {
-                return o1.compareTo(o2);
-            }
-        });
-        if (max.isPresent()) {
-            result.setSimulationMonth(max.get().plusMonths(1));
-        } else {
-            result.setSimulationMonth(startMonth.plusMonths(1));
+        result.setSimulationMonth(month);
+        result.setOpen(true);
+        addSimulationStep(result);
+        for (Company company : companies) {
+            CompanySimulationStep companySimulationStep = new CompanySimulationStep();
+            companySimulationStep.setOpen(true);
+            company.addCompanySimulationStep(companySimulationStep);
+            result.addCompanySimulationStep(companySimulationStep);
         }
-        result.setSimulation(this);
-        simulationSteps.add(result);
-        setStarted(true);
         return result;
     }
 }
