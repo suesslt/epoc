@@ -5,9 +5,8 @@ import com.jore.jpa.DataTransferObject;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
 @Builder
-public class StorageDto implements DataTransferObject {
-    private Integer id;
-    private int capacity;
+@Data
+public class RawMaterialDto implements DataTransferObject {
+    private Integer amount;
 }

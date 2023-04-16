@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.jore.epoc.bo.events.SimulationEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -85,8 +86,9 @@ public class Simulation extends BusinessObject {
             for (SimulationEvent simulationEvent : companySimulationStep.getSimulationEvents()) {
                 simulationEvent.apply(company);
             }
-            company.manufactureProducts(company.getStorages());
-            company.distributeInMarket(company.getStorages());
+            company.manufactureProducts(activeSimulationStep.get().getSimulationMonth());
+            company.chargeStorageCost(activeSimulationStep.get().getSimulationMonth());
+            company.chargeInterest(activeSimulationStep.get().getSimulationMonth());
         }
     }
 

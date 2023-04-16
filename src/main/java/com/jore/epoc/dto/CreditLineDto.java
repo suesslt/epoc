@@ -1,18 +1,16 @@
 package com.jore.epoc.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.jpa.DataTransferObject;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class CreditLineDto implements DataTransferObject {
     private Integer id;
-    private List<CreditLineEventDto> events = new ArrayList<>();
-
-    public void addCreditLineEvent(CreditLineEventDto event) {
-        events.add(event);
-    }
+    private CreditEventDirection direction;
+    private Money amount;
 }

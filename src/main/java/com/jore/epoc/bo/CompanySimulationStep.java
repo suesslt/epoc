@@ -3,6 +3,7 @@ package com.jore.epoc.bo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jore.epoc.bo.events.SimulationEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;

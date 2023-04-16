@@ -7,11 +7,9 @@ import java.util.List;
 import com.jore.jpa.DataTransferObject;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class SimulationDto implements DataTransferObject {
     private Integer id;
@@ -20,7 +18,8 @@ public class SimulationDto implements DataTransferObject {
     private List<CompanyDto> companies = new ArrayList<CompanyDto>();
     private boolean isStarted;
     private YearMonth startMonth;
-    private int nrOfSteps;
+    private Integer nrOfSteps;
+    private boolean isFinished;
 
     public void addCompany(CompanyDto companyDto) {
         companies.add(companyDto);

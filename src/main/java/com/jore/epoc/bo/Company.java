@@ -1,19 +1,27 @@
 package com.jore.epoc.bo;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.accounting.BookingEvent;
+import com.jore.epoc.bo.accounting.InterestRateEvent;
+import com.jore.epoc.bo.accounting.StorageCostEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 @Getter
 @Setter
@@ -25,8 +33,10 @@ public class Company extends BusinessObject {
     private List<UserInCompanyRole> users = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Factory> factories = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
-    private List<CreditLine> creditLines = new ArrayList<>();
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
+//    private List<CreditLine> creditLines = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
+    private CreditLine creditLine;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Storage> storages = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
@@ -58,8 +68,29 @@ public class Company extends BusinessObject {
         storages.add(storage);
     }
 
-    public void distributeInMarket(List<Storage> storages2) {
-        // TODO Auto-generated method stub
+    public void book(BookingEvent bookingEvent) {
+        log.info("Booking of: " + bookingEvent);
+    }
+
+    public void chargeInterest(YearMonth simulationMonth) {
+        if (creditLine != null) {
+            InterestRateEvent bookingEvent = new InterestRateEvent();
+            bookingEvent.setBookingText("Inerest cost for month " + simulationMonth);
+            bookingEvent.setBookingDate(simulationMonth.atDay(1));
+            bookingEvent.setAmount(creditLine.getMonthlyInterest());
+            book(bookingEvent);
+        }
+    }
+
+    public void chargeStorageCost(YearMonth simulationMonth) {
+        Optional<Money> storageCost = storages.stream().map(storage -> storage.getCost()).reduce((m1, m2) -> m1.add(m2));
+        if (storageCost.isPresent()) {
+            StorageCostEvent bookingEvent = new StorageCostEvent();
+            bookingEvent.setBookingText("Storage cost for month " + simulationMonth);
+            bookingEvent.setBookingDate(simulationMonth.atDay(1));
+            bookingEvent.setAmount(storageCost.get());
+            book(bookingEvent);
+        }
     }
 
     public CompanySimulationStep getCompanySimulationStep(SimulationStep simulationStep) {
@@ -74,10 +105,6 @@ public class Company extends BusinessObject {
         return result.get();
     }
 
-    public List<CreditLine> getCreditLines() {
-        return Collections.unmodifiableList(creditLines);
-    }
-
     public List<DistributionInMarket> getDistributionInMarkets() {
         return Collections.unmodifiableList(distributionInMarkets);
     }
@@ -90,7 +117,11 @@ public class Company extends BusinessObject {
         return Collections.unmodifiableList(storages);
     }
 
-    public void manufactureProducts(List<Storage> storages) {
-        // TODO Auto-generated method stub
+    public void manufactureProducts(YearMonth productionMonth) {
+        int amountProduced = 0;
+        for (Factory factory : factories) {
+            amountProduced += factory.produce(productionMonth);
+        }
+        Storage.distributeAccrossStorages(storages, amountProduced, productionMonth);
     }
 }

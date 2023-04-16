@@ -2,11 +2,9 @@ package com.jore.epoc.dto;
 
 import com.jore.jpa.DataTransferObject;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class OpenUserSimulationDto implements DataTransferObject {
     private Integer simulationId;
     private Integer companyId;

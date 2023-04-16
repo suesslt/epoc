@@ -11,11 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
+import com.jore.epoc.dto.CreditLineDto;
 import com.jore.epoc.dto.FactoryOrderDto;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
+import com.jore.epoc.dto.RawMaterialDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.StorageDto;
 import com.jore.epoc.services.SimulationService;
@@ -56,14 +60,14 @@ class EpocApplicationTests {
         //
         userManagementService.login("user", "e*Wasdf_erwer23");
         simulationService.buySimulations("user", 1);
-        SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner("user");
-        simulation.setName("This is my first real simulation!");
-        simulation.setStartMonth(YearMonth.of(2023, 1));
-        simulation.setNrOfSteps(1);
-        simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
-        simulationService.updateSimulation(simulation);
+        Optional<SimulationDto> simulation = simulationService.getNextAvailableSimulationForOwner("user");
+        simulation.get().setName("This is my first real simulation!");
+        simulation.get().setStartMonth(YearMonth.of(2023, 1));
+        simulation.get().setNrOfSteps(1);
+        simulation.get().addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
+        simulation.get().addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
+        simulation.get().addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+        simulationService.updateSimulation(simulation.get());
         sendMailService.send(userManagementService.getEmailsForNewUsers());
         userManagementService.logout();
         //
@@ -72,6 +76,8 @@ class EpocApplicationTests {
         userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
         List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
+        simulationService.adjustCreditLine(companySimulationStep1A.get().getId(), CreditLineDto.builder().direction(CreditEventDirection.INCREASE).amount(Money.of("CHF", 10000000)).build());
+        simulationService.buyRawMaterials(companySimulationStep1A.get().getId(), RawMaterialDto.builder().amount(10000).build());
         simulationService.buildFactory(companySimulationStep1A.get().getId(), FactoryOrderDto.builder().productionLines(5).build());
         simulationService.buildStorage(companySimulationStep1A.get().getId(), StorageDto.builder().capacity(1000).build());
         simulationService.finishMoveFor(companySimulationStep1A.get().getId());
@@ -96,7 +102,7 @@ class EpocApplicationTests {
         // Step 2 for Company A
         //
         userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
-        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX);
+        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX); // TODO should be empty - or not?
         Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
         assertTrue(companySimulationStep2A.isEmpty());
         DatabaseViewer.logDatabase(entityManager);
