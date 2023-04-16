@@ -31,10 +31,9 @@ public class CreditLine extends BusinessObject {
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money creditAmount;
 
-    // TODO Test case
     public void adjustAmount(CreditEventDirection direction, Money adjustAmount) {
         Assert.isTrue("Direction must be increase or decrease", direction.equals(CreditEventDirection.INCREASE) || direction.equals(CreditEventDirection.DECREASE));
-        creditAmount = direction.equals(CreditEventDirection.INCREASE) ? Money.add(creditAmount, adjustAmount) : Money.subtract(creditAmount, adjustAmount);
+        creditAmount = direction.equals(CreditEventDirection.INCREASE) ? Money.add(creditAmount, adjustAmount) : Money.max(Money.of("CHF", 0), Money.subtract(creditAmount, adjustAmount));
     }
 
     public Money getMonthlyInterest() {

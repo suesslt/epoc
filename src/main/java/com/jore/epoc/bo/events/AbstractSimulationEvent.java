@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 // TODO Check if subclasses can be stored in one table
-public abstract class SimulationEvent extends BusinessObject {
+public abstract class AbstractSimulationEvent extends BusinessObject {
     protected static final int FIRST_OF_MONTH = 1;
     @ManyToOne(optional = false)
     private CompanySimulationStep companySimulationStep;

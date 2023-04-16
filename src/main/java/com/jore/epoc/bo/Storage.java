@@ -14,52 +14,93 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Storage extends BusinessObject {
     // TODO Write test cases
-    public static void distributeAccrossStorages(List<Storage> storages, int amountProduced, YearMonth storageMonth) {
-        int remainder = amountProduced;
+    public static void distributeProductAccrossStorages(List<Storage> storages, int productsToStore, YearMonth storageMonth) {
+        int remainder = productsToStore;
         Iterator<Storage> iter = storages.iterator();
         while (remainder > 0 && iter.hasNext()) {
             Storage storage = iter.next();
             int capacity = storage.getAvailableCapacity(storageMonth);
-            remainder -= storage.store(Math.min(remainder, capacity));
+            remainder -= storage.storeProducts(Math.min(remainder, capacity), storageMonth);
         }
-        // TODO Throw error if remainder bigger 0
+        // TODO Create notification if remainder bigger 0
+    }
+
+    public static void distributeRawMaterialAccrossStorages(List<Storage> storages, int rawMaterialToStore, YearMonth storageMonth) {
+        int remainder = rawMaterialToStore;
+        Iterator<Storage> iter = storages.iterator();
+        while (remainder > 0 && iter.hasNext()) {
+            Storage storage = iter.next();
+            int capacity = storage.getAvailableCapacity(storageMonth);
+            remainder -= storage.storeRawMaterials(Math.min(remainder, capacity), storageMonth);
+        }
+        // TODO Create notification if remainder bigger 0
     }
 
     @ManyToOne(optional = false)
     private Company company;
     private YearMonth storageStartMonth;
     private int capacity;
-    private int stored = 0;
+    @Builder.Default
+    private int storedProducts = 0;
+    @Builder.Default
+    private int storedRawMaterials = 0;
     @AttributeOverride(name = "amount", column = @Column(name = "storage_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "storage_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money storageCostPerUnitAndMonth;
 
     public int getAvailableCapacity(YearMonth storageMonth) {
-        return !storageStartMonth.isBefore(storageMonth) ? capacity - stored : 0;
+        return isBuiltAndReady(storageMonth) ? capacity - getTotalStored() : 0;
     }
 
     public Money getCost() {
         Objects.requireNonNull(storageCostPerUnitAndMonth);
-        return storageCostPerUnitAndMonth.multiply(getStored());
+        return storageCostPerUnitAndMonth.multiply(getTotalStored());
     }
 
-    public int remove(int amountToRemove) {
-        int removed = Math.min(stored, amountToRemove);
-        stored -= removed;
+    public int getTotalStored() {
+        return storedProducts + storedRawMaterials;
+    }
+
+    public boolean isBuiltAndReady(YearMonth storageMonth) {
+        return !storageMonth.isBefore(storageStartMonth);
+    }
+
+    public int removeProducts(int productsToRemove) {
+        int removed = Math.min(storedProducts, productsToRemove);
+        storedProducts -= removed;
         return removed;
     }
 
-    public int store(int amountToStore) {
-        stored += amountToStore;
-        return amountToStore;
+    public int removeRawMaterials(int rawMaterialToRemove) {
+        int removed = Math.min(storedProducts, rawMaterialToRemove);
+        storedProducts -= removed;
+        return removed;
+    }
+
+    public int storeProducts(int productsToStore, YearMonth storeMonth) {
+        int result = Math.min(productsToStore, getAvailableCapacity(storeMonth));
+        storedProducts += result;
+        return result;
+    }
+
+    public int storeRawMaterials(int rawMaterialToStore, YearMonth storeMonth) {
+        int result = Math.min(rawMaterialToStore, getAvailableCapacity(storeMonth));
+        storedRawMaterials += result;
+        return result;
     }
 }

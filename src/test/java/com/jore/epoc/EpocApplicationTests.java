@@ -25,6 +25,7 @@ import com.jore.epoc.dto.StorageDto;
 import com.jore.epoc.services.SimulationService;
 import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.service.SendMailService;
+import com.jore.util.DatabaseViewer;
 
 import jakarta.persistence.EntityManager;
 
@@ -77,9 +78,9 @@ class EpocApplicationTests {
         List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
         simulationService.adjustCreditLine(companySimulationStep1A.get().getId(), CreditLineDto.builder().direction(CreditEventDirection.INCREASE).amount(Money.of("CHF", 10000000)).build());
+        simulationService.buildStorage(companySimulationStep1A.get().getId(), StorageDto.builder().capacity(1000).build());
         simulationService.buyRawMaterials(companySimulationStep1A.get().getId(), RawMaterialDto.builder().amount(10000).build());
         simulationService.buildFactory(companySimulationStep1A.get().getId(), FactoryOrderDto.builder().productionLines(5).build());
-        simulationService.buildStorage(companySimulationStep1A.get().getId(), StorageDto.builder().capacity(1000).build());
         simulationService.finishMoveFor(companySimulationStep1A.get().getId());
         userManagementService.logout();
         //

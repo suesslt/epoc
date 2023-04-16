@@ -18,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class BuildFactoryEvent extends SimulationEvent {
+public class BuildFactoryEvent extends AbstractSimulationEvent {
     private Integer productionLines;
     private YearMonth productionStartMonth;
     private Integer monthlyCapacityPerProductionLine;

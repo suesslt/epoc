@@ -3,13 +3,14 @@ package com.jore.epoc.bo;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.BookingEvent;
-import com.jore.epoc.bo.accounting.InterestRateEvent;
-import com.jore.epoc.bo.accounting.StorageCostEvent;
+import com.jore.epoc.bo.accounting.InterestRateBookingEvent;
+import com.jore.epoc.bo.accounting.StorageCostBookingEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -26,17 +27,15 @@ import lombok.extern.log4j.Log4j2;
 @Getter
 @Setter
 public class Company extends BusinessObject {
+    private String name;
     @ManyToOne(optional = false)
     private Simulation simulation;
-    private String name;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
+    private CreditLine creditLine;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<UserInCompanyRole> users = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Factory> factories = new ArrayList<>();
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
-//    private List<CreditLine> creditLines = new ArrayList<>();
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
-    private CreditLine creditLine;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Storage> storages = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
@@ -69,13 +68,14 @@ public class Company extends BusinessObject {
     }
 
     public void book(BookingEvent bookingEvent) {
+        // TODO to be implemented using accounting
         log.info("Booking of: " + bookingEvent);
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
         if (creditLine != null) {
-            InterestRateEvent bookingEvent = new InterestRateEvent();
-            bookingEvent.setBookingText("Inerest cost for month " + simulationMonth);
+            InterestRateBookingEvent bookingEvent = new InterestRateBookingEvent();
+            bookingEvent.setBookingText("Interest cost for month " + simulationMonth + " at rate " + creditLine.getInterestRate());
             bookingEvent.setBookingDate(simulationMonth.atDay(1));
             bookingEvent.setAmount(creditLine.getMonthlyInterest());
             book(bookingEvent);
@@ -85,7 +85,7 @@ public class Company extends BusinessObject {
     public void chargeStorageCost(YearMonth simulationMonth) {
         Optional<Money> storageCost = storages.stream().map(storage -> storage.getCost()).reduce((m1, m2) -> m1.add(m2));
         if (storageCost.isPresent()) {
-            StorageCostEvent bookingEvent = new StorageCostEvent();
+            StorageCostBookingEvent bookingEvent = new StorageCostBookingEvent();
             bookingEvent.setBookingText("Storage cost for month " + simulationMonth);
             bookingEvent.setBookingDate(simulationMonth.atDay(1));
             bookingEvent.setAmount(storageCost.get());
@@ -93,7 +93,15 @@ public class Company extends BusinessObject {
         }
     }
 
-    public CompanySimulationStep getCompanySimulationStep(SimulationStep simulationStep) {
+    public List<DistributionInMarket> getDistributionInMarkets() {
+        return Collections.unmodifiableList(distributionInMarkets);
+    }
+
+    public List<Factory> getFactories() {
+        return Collections.unmodifiableList(factories);
+    }
+
+    public CompanySimulationStep getOrCreateCompanySimulationStep(SimulationStep simulationStep) {
         Optional<CompanySimulationStep> result = companySimulationSteps.stream().filter(step -> step.getSimulationStep().equals(simulationStep)).findFirst();
         if (result.isEmpty()) {
             CompanySimulationStep companySimulationStep = new CompanySimulationStep();
@@ -105,23 +113,20 @@ public class Company extends BusinessObject {
         return result.get();
     }
 
-    public List<DistributionInMarket> getDistributionInMarkets() {
-        return Collections.unmodifiableList(distributionInMarkets);
-    }
-
-    public List<Factory> getFactories() {
-        return Collections.unmodifiableList(factories);
-    }
-
     public List<Storage> getStorages() {
         return Collections.unmodifiableList(storages);
     }
 
-    public void manufactureProducts(YearMonth productionMonth) {
-        int amountProduced = 0;
-        for (Factory factory : factories) {
-            amountProduced += factory.produce(productionMonth);
+    public int manufactureProducts(YearMonth productionMonth) {
+        int totalAmountProduced = 0;
+        int maximumToProduce = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
+        Iterator<Factory> iter = factories.iterator();
+        while (iter.hasNext() && maximumToProduce > 0) {
+            int amountProduced = iter.next().produce(maximumToProduce, productionMonth);
+            maximumToProduce -= amountProduced;
+            totalAmountProduced += amountProduced;
         }
-        Storage.distributeAccrossStorages(storages, amountProduced, productionMonth);
+        Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
+        return totalAmountProduced;
     }
 }

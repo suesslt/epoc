@@ -18,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class BuildStorageEvent extends SimulationEvent {
+public class BuildStorageEvent extends AbstractSimulationEvent {
     private Integer capacity;
     private YearMonth storageStartMonth;
     @AttributeOverride(name = "amount", column = @Column(name = "storage_cost_amount"))

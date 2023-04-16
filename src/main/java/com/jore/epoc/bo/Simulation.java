@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.jore.epoc.bo.events.SimulationEvent;
+import com.jore.epoc.bo.events.AbstractSimulationEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -46,7 +46,7 @@ public class Simulation extends BusinessObject {
     public void finishCompanyStep(CompanySimulationStep companySimulationStep) {
         companySimulationStep.setOpen(false);
         if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {
-            runSimulationStep();
+            simulate();
         }
     }
 
@@ -78,20 +78,6 @@ public class Simulation extends BusinessObject {
         return result;
     }
 
-    public void runSimulationStep() {
-        Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
-        activeSimulationStep.get().setOpen(false);
-        for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
-            Company company = companySimulationStep.getCompany();
-            for (SimulationEvent simulationEvent : companySimulationStep.getSimulationEvents()) {
-                simulationEvent.apply(company);
-            }
-            company.manufactureProducts(activeSimulationStep.get().getSimulationMonth());
-            company.chargeStorageCost(activeSimulationStep.get().getSimulationMonth());
-            company.chargeInterest(activeSimulationStep.get().getSimulationMonth());
-        }
-    }
-
     private SimulationStep createSimulationStep(YearMonth month) {
         SimulationStep result = new SimulationStep();
         result.setSimulationMonth(month);
@@ -104,5 +90,19 @@ public class Simulation extends BusinessObject {
             result.addCompanySimulationStep(companySimulationStep);
         }
         return result;
+    }
+
+    private void simulate() {
+        Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
+        activeSimulationStep.get().setOpen(false);
+        for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
+            Company company = companySimulationStep.getCompany();
+            for (AbstractSimulationEvent simulationEvent : companySimulationStep.getSimulationEvents()) {
+                simulationEvent.apply(company);
+            }
+            company.manufactureProducts(activeSimulationStep.get().getSimulationMonth());
+            company.chargeStorageCost(activeSimulationStep.get().getSimulationMonth());
+            company.chargeInterest(activeSimulationStep.get().getSimulationMonth());
+        }
     }
 }

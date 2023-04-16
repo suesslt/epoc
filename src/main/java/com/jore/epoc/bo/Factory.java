@@ -1,13 +1,12 @@
 package com.jore.epoc.bo;
 
 import java.time.YearMonth;
-import java.util.Objects;
 
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.accounting.ProductionCostEvent;
+import com.jore.epoc.bo.accounting.ProductionCostBookingEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.AttributeOverride;
@@ -35,17 +34,24 @@ public class Factory extends BusinessObject {
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money unitLabourCost;
 
-    public int produce(YearMonth productionMonth) {
+    public int produce(int maximumToProduce, YearMonth productionMonth) {
         Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
-        Objects.nonNull(productionStartMonth);
-        Objects.nonNull(unitProductionCost);
-        Objects.nonNull(unitLabourCost);
-        int result = !productionStartMonth.isBefore(productionMonth) ? productionLines * monthlyCapacityPerProductionLine : 0;
-        ProductionCostEvent bookingEvent = new ProductionCostEvent();
-        bookingEvent.setBookingText("Production of " + result + " in month " + productionMonth);
-        bookingEvent.setBookingDate(productionMonth.atDay(1));
-        bookingEvent.setAmount(unitProductionCost.multiply(result).add(unitLabourCost.multiply(result)));
-        company.book(bookingEvent);
+        Assert.notNull("Production start month must not be null", productionStartMonth);
+        Assert.notNull("Unit production costs must not be null", unitProductionCost);
+        Assert.notNull("Unit labour costs must not be null", unitLabourCost);
+        int result = isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine) : 0;
+        result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
+        if (result > 0) {
+            ProductionCostBookingEvent bookingEvent = new ProductionCostBookingEvent();
+            bookingEvent.setBookingText("Production of " + result + " in month " + productionMonth);
+            bookingEvent.setBookingDate(productionMonth.atDay(1));
+            bookingEvent.setAmount(unitProductionCost.multiply(result).add(unitLabourCost.multiply(result)));
+            company.book(bookingEvent);
+        }
         return result;
+    }
+
+    private boolean isProductionReady(YearMonth productionMonth) {
+        return !productionMonth.isBefore(productionStartMonth);
     }
 }

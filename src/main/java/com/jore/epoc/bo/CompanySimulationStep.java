@@ -3,7 +3,7 @@ package com.jore.epoc.bo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jore.epoc.bo.events.SimulationEvent;
+import com.jore.epoc.bo.events.AbstractSimulationEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -23,9 +23,9 @@ public class CompanySimulationStep extends BusinessObject {
     private Company company;
     private boolean isOpen;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companySimulationStep", orphanRemoval = true)
-    private List<SimulationEvent> simulationEvents = new ArrayList<>();
+    private List<AbstractSimulationEvent> simulationEvents = new ArrayList<>();
 
-    public void addEvent(SimulationEvent simulationEvent) {
+    public void addEvent(AbstractSimulationEvent simulationEvent) {
         simulationEvent.setCompanySimulationStep(this);
         simulationEvents.add(simulationEvent);
     }

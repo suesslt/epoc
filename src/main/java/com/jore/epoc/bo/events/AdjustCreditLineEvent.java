@@ -18,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class AdjustCreditLineEvent extends SimulationEvent {
+public class AdjustCreditLineEvent extends AbstractSimulationEvent {
     private CreditEventDirection direction;
     @AttributeOverride(name = "amount", column = @Column(name = "adjust_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "adjust_currency"))
