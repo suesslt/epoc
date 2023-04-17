@@ -101,18 +101,6 @@ public class Company extends BusinessObject {
         return Collections.unmodifiableList(factories);
     }
 
-    public CompanySimulationStep getOrCreateCompanySimulationStep(SimulationStep simulationStep) {
-        Optional<CompanySimulationStep> result = companySimulationSteps.stream().filter(step -> step.getSimulationStep().equals(simulationStep)).findFirst();
-        if (result.isEmpty()) {
-            CompanySimulationStep companySimulationStep = new CompanySimulationStep();
-            addCompanySimulationStep(companySimulationStep);
-            simulationStep.addCompanySimulationStep(companySimulationStep);
-            companySimulationStep.setOpen(true);
-            result = Optional.of(companySimulationStep);
-        }
-        return result.get();
-    }
-
     public List<Storage> getStorages() {
         return Collections.unmodifiableList(storages);
     }
@@ -120,13 +108,17 @@ public class Company extends BusinessObject {
     public int manufactureProducts(YearMonth productionMonth) {
         int totalAmountProduced = 0;
         int maximumToProduce = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
-        Iterator<Factory> iter = factories.iterator();
-        while (iter.hasNext() && maximumToProduce > 0) {
-            int amountProduced = iter.next().produce(maximumToProduce, productionMonth);
-            maximumToProduce -= amountProduced;
-            totalAmountProduced += amountProduced;
+        // TODO get max of storage or market capacity
+        log.info(String.format("Maximum to produce is %d for company '%s' (%d)", maximumToProduce, getName(), getId()));
+        if (maximumToProduce > 0) {
+            Iterator<Factory> iter = factories.iterator();
+            while (iter.hasNext() && maximumToProduce > 0) {
+                int amountProduced = iter.next().produce(maximumToProduce, productionMonth);
+                maximumToProduce -= amountProduced;
+                totalAmountProduced += amountProduced;
+            }
+            Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         }
-        Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         return totalAmountProduced;
     }
 }

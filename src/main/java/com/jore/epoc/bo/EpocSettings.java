@@ -44,7 +44,7 @@ public class EpocSettings {
         settings.put(STORAGE_FIXED_COSTS, Money.of("CHF", 1000000));
         settings.put(STORAGE_VARIABLE_COSTS, Money.of("CHF", 1000));
         settings.put(MONTHLY_CAPACITY_PER_PRODUCTION_LINE, Integer.valueOf(100));
-        settings.put(FACTORY_CREATION_MONTHS, Integer.valueOf(3));
+        settings.put(FACTORY_CREATION_MONTHS, Integer.valueOf(1));
         settings.put(STORAGE_CREATION_MONTHS, Integer.valueOf(1));
         settings.put(PASSWORD_LENGTH, Integer.valueOf(12));
         settings.put(START_MONTH, YearMonth.of(2000, 1));

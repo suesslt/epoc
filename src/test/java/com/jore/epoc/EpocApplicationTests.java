@@ -64,7 +64,7 @@ class EpocApplicationTests {
         Optional<SimulationDto> simulation = simulationService.getNextAvailableSimulationForOwner("user");
         simulation.get().setName("This is my first real simulation!");
         simulation.get().setStartMonth(YearMonth.of(2023, 1));
-        simulation.get().setNrOfSteps(1);
+        simulation.get().setNrOfSteps(2);
         simulation.get().addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
         simulation.get().addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
         simulation.get().addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
@@ -79,7 +79,6 @@ class EpocApplicationTests {
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
         simulationService.adjustCreditLine(companySimulationStep1A.get().getId(), CreditLineDto.builder().direction(CreditEventDirection.INCREASE).amount(Money.of("CHF", 10000000)).build());
         simulationService.buildStorage(companySimulationStep1A.get().getId(), StorageDto.builder().capacity(1000).build());
-        simulationService.buyRawMaterials(companySimulationStep1A.get().getId(), RawMaterialDto.builder().amount(10000).build());
         simulationService.buildFactory(companySimulationStep1A.get().getId(), FactoryOrderDto.builder().productionLines(5).build());
         simulationService.finishMoveFor(companySimulationStep1A.get().getId());
         userManagementService.logout();
@@ -103,9 +102,34 @@ class EpocApplicationTests {
         // Step 2 for Company A
         //
         userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
-        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX); // TODO should be empty - or not?
+        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
-        assertTrue(companySimulationStep2A.isEmpty());
+        simulationService.buyRawMaterials(companySimulationStep1A.get().getId(), RawMaterialDto.builder().amount(10000).build());
+        simulationService.finishMoveFor(companySimulationStep2A.get().getId());
+        userManagementService.logout();
+        //
+        // Step 2 for Company B
+        //
+        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
+        List<OpenUserSimulationDto> simulations2B = simulationService.getOpenSimulationsForUser(RETO);
+        Optional<CompanySimulationStepDto> companySimulationStep2B = simulationService.getCurrentCompanySimulationStep(simulations2B.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep2B.get().getId());
+        userManagementService.logout();
+        //
+        // Step 2 for Company C
+        //
+        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
+        List<OpenUserSimulationDto> simulations2C = simulationService.getOpenSimulationsForUser(FELIX);
+        Optional<CompanySimulationStepDto> companySimulationStep2C = simulationService.getCurrentCompanySimulationStep(simulations2C.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep2C.get().getId());
+        userManagementService.logout();
+        //
+        // Step 3 for Company A
+        //
+        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        List<OpenUserSimulationDto> simulations3A = simulationService.getOpenSimulationsForUser(MAX); // TODO should be empty - or not?
+        Optional<CompanySimulationStepDto> companySimulationStep3A = simulationService.getCurrentCompanySimulationStep(simulations3A.get(0).getCompanyId());
+        assertTrue(companySimulationStep3A.isEmpty());
         DatabaseViewer.logDatabase(entityManager);
     }
 }

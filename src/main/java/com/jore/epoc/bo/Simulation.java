@@ -16,7 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 @Getter
 @Setter
@@ -44,9 +46,10 @@ public class Simulation extends BusinessObject {
     }
 
     public void finishCompanyStep(CompanySimulationStep companySimulationStep) {
+        log.info(String.format("Finished company step for company '%s' (%d) in simulation '%s' (%d).", companySimulationStep.getCompany().getName(), companySimulationStep.getCompany().getId(), getName(), getId()));
         companySimulationStep.setOpen(false);
         if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {
-            simulate();
+            simulate(companySimulationStep.getSimulationStep().getSimulationMonth());
         }
     }
 
@@ -68,10 +71,12 @@ public class Simulation extends BusinessObject {
                 if (simulationStep.get().getSimulationMonth().isBefore(startMonth.plusMonths(nrOfSteps - 1))) {
                     result = Optional.of(createSimulationStep(simulationStep.get().getSimulationMonth().plusMonths(1)));
                 } else {
+                    log.info(String.format("Simulation '%s' (%d) has finished.", getName(), getId()));
                     isFinished = true;
                 }
             }
         } else {
+            log.info(String.format("Start simulation '%s' (%d).", getName(), getId()));
             isStarted = true;
             result = Optional.of(createSimulationStep(startMonth));
         }
@@ -79,6 +84,7 @@ public class Simulation extends BusinessObject {
     }
 
     private SimulationStep createSimulationStep(YearMonth month) {
+        log.info(String.format("Simulation step created for simulation '%s' (%d) and month '%s'", getName(), getId(), month));
         SimulationStep result = new SimulationStep();
         result.setSimulationMonth(month);
         result.setOpen(true);
@@ -92,7 +98,8 @@ public class Simulation extends BusinessObject {
         return result;
     }
 
-    private void simulate() {
+    private void simulate(YearMonth simulationMonth) {
+        log.info(String.format("All company steps finished for simulation '%s' (%d) and month '%s'. Starting to simulate...", getName(), getId(), simulationMonth));
         Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
         activeSimulationStep.get().setOpen(false);
         for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
