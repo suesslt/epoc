@@ -19,6 +19,7 @@ import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.EpocSettings;
 import com.jore.epoc.bo.Factory;
 import com.jore.epoc.bo.Login;
+import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.Storage;
@@ -27,6 +28,7 @@ import com.jore.epoc.bo.events.AdjustCreditLineEvent;
 import com.jore.epoc.bo.events.BuildFactoryEvent;
 import com.jore.epoc.bo.events.BuildStorageEvent;
 import com.jore.epoc.bo.events.BuyRawMaterialEvent;
+import com.jore.epoc.bo.events.DistributeInMarketEvent;
 import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CreditLineDto;
@@ -34,6 +36,7 @@ import com.jore.epoc.dto.DistributionInMarketDto;
 import com.jore.epoc.dto.FactoryDto;
 import com.jore.epoc.dto.FactoryOrderDto;
 import com.jore.epoc.dto.LoginDto;
+import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.RawMaterialDto;
 import com.jore.epoc.dto.SimulationDto;
@@ -42,6 +45,7 @@ import com.jore.epoc.mapper.SimulationMapper;
 import com.jore.epoc.repositories.CompanyRepository;
 import com.jore.epoc.repositories.CompanySimulationStepRepository;
 import com.jore.epoc.repositories.LoginRepository;
+import com.jore.epoc.repositories.MarketRepository;
 import com.jore.epoc.repositories.SimulationRepository;
 import com.jore.epoc.repositories.SimulationStepRepository;
 import com.jore.epoc.services.SimulationService;
@@ -62,6 +66,8 @@ public class SimulationServiceImpl implements SimulationService {
     private CompanySimulationStepRepository companySimulationStepRepository;
     @Autowired
     private SimulationStepRepository simulationStepRepository;
+    @Autowired
+    private MarketRepository marketRepository;
 
     @Override
     @Transactional
@@ -136,6 +142,15 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
+    public void distributeInMarket(Integer companySimulationStepId, MarketDto marketDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        DistributeInMarketEvent distributeInMarketEvent = new DistributeInMarketEvent();
+        distributeInMarketEvent.setMarket(marketRepository.findById(marketDto.getId()).get());
+        companySimulationStep.addEvent(distributeInMarketEvent);
+    }
+
+    @Override
+    @Transactional
     public void finishMoveFor(Integer companySimulationStepId) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
@@ -175,6 +190,11 @@ public class SimulationServiceImpl implements SimulationService {
                 DistributionInMarketDto distributionInMarketDto = new DistributionInMarketDto();
                 distributionInMarketDto.setId(distributionInMarket.getId());
                 companySimulationStepDto.addDistributionInMarket(distributionInMarketDto);
+            }
+            for (Market market : marketRepository.findAll()) {
+                MarketDto marketDto = new MarketDto();
+                marketDto.setId(market.getId());
+                companySimulationStepDto.addMarket(marketDto);
             }
             result = Optional.of(companySimulationStepDto);
         }

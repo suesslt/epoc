@@ -1,0 +1,198 @@
+package com.jore.epoc.bo;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+
+import org.hibernate.annotations.CompositeType;
+import org.hibernate.annotations.Type;
+
+import com.jore.Assert;
+import com.jore.datatypes.money.Money;
+import com.jore.datatypes.percent.Percent;
+import com.jore.jpa.BusinessObject;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+public class Market extends BusinessObject {
+    private String name;
+    @AttributeOverride(name = "amount", column = @Column(name = "gdp_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "gdp_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money gdpPpp;
+    @AttributeOverride(name = "amount", column = @Column(name = "gdp_ppp_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "gdp_ppp_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money gdp;
+    @Type(com.jore.datatypes.hibernate.PercentUserType.class)
+    private Percent gdpGrowth;
+    private int laborForce;
+    @Type(com.jore.datatypes.hibernate.PercentUserType.class)
+    private Percent unemployment;
+    private BigDecimal lifeExpectancy;
+    @AttributeOverride(name = "amount", column = @Column(name = "productivity_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "productivity_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money productivity;
+    private int ageTo14Male;
+    private int ageTo14Female;
+    private int ageTo24Male;
+    private int ageTo24Female;
+    private int ageTo54Male;
+    private int ageTo54Female;
+    private int ageTo64Male;
+    private int ageTo64Female;
+    private int age65olderMale;
+    private int age65olderFemale;
+    @Transient
+    private boolean ageTableUpdated = false;
+    @Transient
+    private int[] ageTableMale;
+    @Transient
+    private int[] ageTableFemale;
+
+    public int getFemalePopulation() {
+        updateAgetable();
+        int result = 0;
+        for (int i = 0; i < ageTableFemale.length; i++) {
+            result = result + ageTableFemale[i];
+        }
+        return result;
+    }
+
+    public int getMalePopulation() {
+        updateAgetable();
+        int result = 0;
+        for (int i = 0; i < ageTableMale.length; i++) {
+            result = result + ageTableMale[i];
+        }
+        return result;
+    }
+
+    public int getMarketSizeForConsumption() {
+        int result = getLaborForce();
+        // TODO implement logic based on average income
+        return result;
+    }
+
+    public int getPopulationForAge(int age) {
+        updateAgetable();
+        return age < ageTableMale.length ? ageTableMale[age] + ageTableFemale[age] : 0;
+    }
+
+    public int getTotalPopulation() {
+        updateAgetable();
+        return getMalePopulation() + getFemalePopulation();
+    }
+
+    public void setAge65olderFemale(int age65olderFemale) {
+        ageTableUpdated = false;
+        this.age65olderFemale = age65olderFemale;
+    }
+
+    public void setAge65olderMale(int age65olderMale) {
+        ageTableUpdated = false;
+        this.age65olderMale = age65olderMale;
+    }
+
+    public void setAgeTo14Female(int ageTo14Female) {
+        ageTableUpdated = false;
+        this.ageTo14Female = ageTo14Female;
+    }
+
+    public void setAgeTo14Male(int ageTo14Male) {
+        ageTableUpdated = false;
+        this.ageTo14Male = ageTo14Male;
+    }
+
+    public void setAgeTo24Female(int ageTo24Female) {
+        ageTableUpdated = false;
+        this.ageTo24Female = ageTo24Female;
+    }
+
+    public void setAgeTo24Male(int ageTo24Male) {
+        ageTableUpdated = false;
+        this.ageTo24Male = ageTo24Male;
+    }
+
+    public void setAgeTo54Female(int ageTo54Female) {
+        ageTableUpdated = false;
+        this.ageTo54Female = ageTo54Female;
+    }
+
+    public void setAgeTo54Male(int ageTo54Male) {
+        ageTableUpdated = false;
+        this.ageTo54Male = ageTo54Male;
+    }
+
+    public void setAgeTo64Female(int ageTo64Female) {
+        ageTableUpdated = false;
+        this.ageTo64Female = ageTo64Female;
+    }
+
+    public void setAgeTo64Male(int ageTo64Male) {
+        ageTableUpdated = false;
+        this.ageTo64Male = ageTo64Male;
+    }
+
+    public void setLifeExpectancy(BigDecimal lifeExpectancy) {
+        ageTableUpdated = false;
+        this.lifeExpectancy = lifeExpectancy;
+    }
+
+    @Override
+    public String toString() {
+        return "Market [id=" + getId() + ", ageTo14Male=" + ageTo14Male + ", ageTo14Female=" + ageTo14Female + ", ageTo24Male=" + ageTo24Male + ", ageTo24Female=" + ageTo24Female + ", ageTo54Male=" + ageTo54Male + ", ageTo54Female=" + ageTo54Female + ", ageTo64Male=" + ageTo64Male
+                + ", ageTo64Female=" + ageTo64Female + ", age65olderMale=" + age65olderMale + ", age65olderFemale=" + age65olderFemale + ", ageTableUpdated=" + ageTableUpdated + ", ageTableMale=" + Arrays.toString(ageTableMale) + ", ageTableFemale=" + Arrays.toString(ageTableFemale)
+                + ", lifeExpectancy=" + lifeExpectancy + ", laborForce=" + laborForce + ", productivity=" + productivity + ", unemploymentRate=" + unemployment + ", name=" + name + "]";
+    }
+
+    private int calculateForAgeOver65(int number, int divider, int maximumAge, int i) {
+        return Math.round(number / divider * (maximumAge - 65 - (i - 65)));
+    }
+
+    private int calculateForYear(int number, int years) {
+        return Math.round(number / years);
+    }
+
+    private void updateAgetable() {
+        Assert.isTrue("Life Expectancy must be greater than 65", lifeExpectancy.intValue() > 65);
+        if (!ageTableUpdated) {
+            int maximumAge = lifeExpectancy.intValue() + (lifeExpectancy.intValue() - 65);
+            ageTableMale = new int[maximumAge];
+            ageTableFemale = new int[maximumAge];
+            for (int i = 0; i < 15; i++) {
+                ageTableMale[i] = calculateForYear(ageTo14Male, 15);
+                ageTableFemale[i] = calculateForYear(ageTo14Female, 15);
+            }
+            for (int i = 15; i < 25; i++) {
+                ageTableMale[i] = calculateForYear(ageTo24Male, 10);
+                ageTableFemale[i] = calculateForYear(ageTo24Female, 10);
+            }
+            for (int i = 25; i < 55; i++) {
+                ageTableMale[i] = calculateForYear(ageTo54Male, 30);
+                ageTableFemale[i] = calculateForYear(ageTo54Female, 30);
+            }
+            for (int i = 55; i < 65; i++) {
+                ageTableMale[i] = calculateForYear(ageTo64Male, 10);
+                ageTableFemale[i] = calculateForYear(ageTo64Female, 10);
+            }
+            int divider = 0;
+            for (int i = 0; i < (maximumAge - 65); i++) {
+                divider += (i + 1);
+            }
+            for (int i = 65; i < maximumAge; i++) {
+                ageTableMale[i] = calculateForAgeOver65(age65olderMale, divider, maximumAge, i);
+                ageTableFemale[i] = calculateForAgeOver65(age65olderFemale, divider, maximumAge, i);
+            }
+            ageTableUpdated = true;
+        }
+    }
+}

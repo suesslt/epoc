@@ -23,6 +23,7 @@ import com.jore.epoc.dto.RawMaterialDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.StorageDto;
 import com.jore.epoc.services.SimulationService;
+import com.jore.epoc.services.StaticDataService;
 import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.service.SendMailService;
 import com.jore.util.DatabaseViewer;
@@ -31,6 +32,7 @@ import jakarta.persistence.EntityManager;
 
 @SpringBootTest
 class EpocApplicationTests {
+    private static final int NR_OF_SIM_STEPS = 3;
     private static final String MAX = "max.mara@bluewin.ch";
     private static final String RETO = "reto.straumann@bluewin.ch";
     private static final String FELIX = "felix.haeppy@bluewin.ch";
@@ -40,7 +42,9 @@ class EpocApplicationTests {
     private SimulationService simulationService;
     @Autowired
     private EntityManager entityManager;
-    private SendMailService sendMailService = new StubSendMailServiceImpl();;
+    @Autowired
+    private StaticDataService staticDataService;;
+    private SendMailService sendMailService = new StubSendMailServiceImpl();
 
     @Test
     public void testUseCasesInOneRow() {
@@ -53,7 +57,8 @@ class EpocApplicationTests {
         userManagementService.logout();
         userManagementService.login("epocadmin", "badpw");
         userManagementService.deleteLogin("admin");
-        userManagementService.logout();
+        staticDataService.loadMarkets("markets.xls");
+        userManagementService.logout(); // TODO Uh, this is not good...
         userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();
         //
@@ -64,7 +69,7 @@ class EpocApplicationTests {
         Optional<SimulationDto> simulation = simulationService.getNextAvailableSimulationForOwner("user");
         simulation.get().setName("This is my first real simulation!");
         simulation.get().setStartMonth(YearMonth.of(2023, 1));
-        simulation.get().setNrOfSteps(2);
+        simulation.get().setNrOfSteps(NR_OF_SIM_STEPS);
         simulation.get().addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
         simulation.get().addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
         simulation.get().addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
@@ -104,7 +109,7 @@ class EpocApplicationTests {
         userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
         List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
-        simulationService.buyRawMaterials(companySimulationStep1A.get().getId(), RawMaterialDto.builder().amount(10000).build());
+        simulationService.buyRawMaterials(companySimulationStep2A.get().getId(), RawMaterialDto.builder().amount(10000).build());
         simulationService.finishMoveFor(companySimulationStep2A.get().getId());
         userManagementService.logout();
         //
@@ -127,9 +132,34 @@ class EpocApplicationTests {
         // Step 3 for Company A
         //
         userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
-        List<OpenUserSimulationDto> simulations3A = simulationService.getOpenSimulationsForUser(MAX); // TODO should be empty - or not?
+        List<OpenUserSimulationDto> simulations3A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep3A = simulationService.getCurrentCompanySimulationStep(simulations3A.get(0).getCompanyId());
-        assertTrue(companySimulationStep3A.isEmpty());
+        simulationService.distributeInMarket(companySimulationStep3A.get().getId(), companySimulationStep3A.get().getMarkets().get(0));
+        simulationService.finishMoveFor(companySimulationStep3A.get().getId());
+        userManagementService.logout();
+        //
+        // Step 3 for Company B
+        //
+        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
+        List<OpenUserSimulationDto> simulations3B = simulationService.getOpenSimulationsForUser(RETO);
+        Optional<CompanySimulationStepDto> companySimulationStep3B = simulationService.getCurrentCompanySimulationStep(simulations3B.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep3B.get().getId());
+        userManagementService.logout();
+        //
+        // Step 3 for Company C
+        //
+        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
+        List<OpenUserSimulationDto> simulations3C = simulationService.getOpenSimulationsForUser(FELIX);
+        Optional<CompanySimulationStepDto> companySimulationStep3C = simulationService.getCurrentCompanySimulationStep(simulations3C.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep3C.get().getId());
+        userManagementService.logout();
+        //
+        // Step 4 for Company A
+        //
+        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        List<OpenUserSimulationDto> simulations4A = simulationService.getOpenSimulationsForUser(MAX); // TODO should be empty - or not?
+        Optional<CompanySimulationStepDto> companySimulationStep4A = simulationService.getCurrentCompanySimulationStep(simulations4A.get(0).getCompanyId());
+        assertTrue(companySimulationStep4A.isEmpty());
         DatabaseViewer.logDatabase(entityManager);
     }
 }

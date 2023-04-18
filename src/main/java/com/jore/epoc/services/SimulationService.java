@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CreditLineDto;
 import com.jore.epoc.dto.FactoryOrderDto;
+import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.RawMaterialDto;
 import com.jore.epoc.dto.SimulationDto;
@@ -23,6 +24,8 @@ public interface SimulationService {
     void buySimulations(String user, int nrOfSimulations);
 
     Integer countAvailableSimulations(String user);
+
+    void distributeInMarket(Integer companySimulationStepId, MarketDto marketDto);
 
     void finishMoveFor(Integer companySimulationStepId);
 
