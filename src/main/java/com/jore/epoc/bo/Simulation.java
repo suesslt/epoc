@@ -34,10 +34,17 @@ public class Simulation extends BusinessObject {
     private List<Company> companies = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
     private List<SimulationStep> simulationSteps = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
+    private List<MarketSimulation> marketSimulations = new ArrayList<>();
 
     public void addCompany(Company company) {
         company.setSimulation(this);
         companies.add(company);
+    }
+
+    public void addMarketSimulation(MarketSimulation marketSimulation) {
+        marketSimulation.setSimulation(this);
+        marketSimulations.add(marketSimulation);
     }
 
     public void addSimulationStep(SimulationStep simulationStep) {
@@ -100,16 +107,19 @@ public class Simulation extends BusinessObject {
 
     private void simulate(YearMonth simulationMonth) {
         log.info(String.format("All company steps finished for simulation '%s' (%d) and month '%s'. Starting to simulate...", getName(), getId(), simulationMonth));
-        Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
-        activeSimulationStep.get().setOpen(false);
-        for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
+        SimulationStep simulationStep = getActiveSimulationStep().get();
+        simulationStep.setOpen(false);
+        for (CompanySimulationStep companySimulationStep : simulationStep.getCompanySimulationSteps()) {
             Company company = companySimulationStep.getCompany();
             for (AbstractSimulationEvent simulationEvent : companySimulationStep.getSimulationEvents()) {
                 simulationEvent.apply(company);
             }
-            company.manufactureProducts(activeSimulationStep.get().getSimulationMonth());
-            company.chargeStorageCost(activeSimulationStep.get().getSimulationMonth());
-            company.chargeInterest(activeSimulationStep.get().getSimulationMonth());
+            company.manufactureProducts(simulationStep.getSimulationMonth());
+            company.chargeStorageCost(simulationStep.getSimulationMonth());
+            company.chargeInterest(simulationStep.getSimulationMonth());
+        }
+        for (MarketSimulation marketSimulation : simulationStep.getSimulation().getMarketSimulations()) {
+            marketSimulation.simulateMarket(simulationMonth);
         }
     }
 }

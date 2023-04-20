@@ -13,4 +13,6 @@ import lombok.Setter;
 public class DistributionInMarket extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
+    @ManyToOne
+    private MarketSimulation marketSimulation;
 }

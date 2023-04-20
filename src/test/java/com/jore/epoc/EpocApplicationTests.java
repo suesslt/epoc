@@ -57,7 +57,8 @@ class EpocApplicationTests {
         userManagementService.logout();
         userManagementService.login("epocadmin", "badpw");
         userManagementService.deleteLogin("admin");
-        staticDataService.loadMarkets("markets.xls");
+        staticDataService.loadMarkets("markets.xlsx");
+        staticDataService.loadSettings("EpocSettings.xlsx");
         userManagementService.logout(); // TODO Uh, this is not good...
         userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();
@@ -160,6 +161,9 @@ class EpocApplicationTests {
         List<OpenUserSimulationDto> simulations4A = simulationService.getOpenSimulationsForUser(MAX); // TODO should be empty - or not?
         Optional<CompanySimulationStepDto> companySimulationStep4A = simulationService.getCurrentCompanySimulationStep(simulations4A.get(0).getCompanyId());
         assertTrue(companySimulationStep4A.isEmpty());
+        //
+        // Display Database
+        //
         DatabaseViewer.logDatabase(entityManager);
     }
 }

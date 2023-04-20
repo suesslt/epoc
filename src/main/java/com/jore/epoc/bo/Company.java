@@ -48,6 +48,11 @@ public class Company extends BusinessObject {
         companySimulationSteps.add(companySimulationStep);
     }
 
+    public void addDistributionInMarket(DistributionInMarket distributionInMarket) {
+        distributionInMarket.setCompany(this);
+        distributionInMarkets.add(distributionInMarket);
+    }
+
     public void addFactory(Factory factory) {
         factory.setCompany(this);
         factories.add(factory);

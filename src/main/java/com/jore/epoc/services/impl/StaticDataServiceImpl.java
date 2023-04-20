@@ -1,6 +1,7 @@
 package com.jore.epoc.services.impl;
 
 import java.io.InputStream;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,11 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.jore.datatypes.formatter.MoneyDecimalDigits;
+import com.jore.datatypes.formatter.MoneyFormatter;
+import com.jore.datatypes.percent.Percent;
+import com.jore.epoc.bo.EpocSetting;
 import com.jore.epoc.bo.Market;
+import com.jore.epoc.dto.EpocSettingDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.mapper.MarketMapper;
+import com.jore.epoc.mapper.SettingMapper;
 import com.jore.epoc.repositories.MarketRepository;
+import com.jore.epoc.repositories.SettingRepository;
 import com.jore.epoc.services.StaticDataService;
 import com.jore.excel.ExcelReader;
 import com.jore.excel.ExcelWorkbook;
@@ -20,24 +29,68 @@ import com.jore.view.FieldModel;
 
 import lombok.extern.log4j.Log4j2;
 
+// TODO Write test cases
 @Log4j2
 @Component
 public class StaticDataServiceImpl implements StaticDataService {
     @Autowired
     MarketRepository marketRepository;
+    @Autowired
+    SettingRepository settingRepository;
 
     @Override
-    public void loadMarkets(String xlsFileName) {
-        readExcel(xlsFileName);
+    @Transactional
+    public Object getSetting(String key) {
+        Object result = null;
+        Optional<EpocSetting> setting = settingRepository.findBySettingKey(key);
+        if (setting.isPresent()) {
+            switch (setting.get().getSettingFormat()) {
+            case "Money":
+                result = new MoneyFormatter(MoneyDecimalDigits.DEFAULT_FRACTION_DIGITS).parse(setting.get().getValueText());
+                break;
+            case "Integer":
+                result = Integer.parseInt(setting.get().getValueText());
+                break;
+            case "Percent":
+                result = new Percent(setting.get().getValueText());
+                break;
+            case "YearMonth":
+                result = YearMonth.parse(setting.get().getValueText());
+                break;
+            default:
+                log.warn("Invalid setting format: " + setting.get().getSettingFormat());
+                break;
+            }
+        }
+        return result;
     }
 
-    private void readExcel(String fileName) {
+    @Override
+    @Transactional
+    public void loadMarkets(String xlsFileName) {
         try {
-            Resource resource = new ClassPathResource(fileName);
+            Resource resource = new ClassPathResource(xlsFileName);
             InputStream inputStream = resource.getInputStream();
             ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
             List<MarketDto> markets = new ExcelReader<MarketDto>(workbook, new FieldModel<>(MarketDto.class)).read();
             markets.forEach(market -> updateMarketByName(market));
+            workbook.close();
+            log.info(workbook);
+        } catch (Exception e) {
+            log.error(e);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void loadSettings(String xlsFileName) {
+        try {
+            Resource resource = new ClassPathResource(xlsFileName);
+            InputStream inputStream = resource.getInputStream();
+            ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
+            List<EpocSettingDto> settings = new ExcelReader<EpocSettingDto>(workbook, new FieldModel<>(EpocSettingDto.class)).read();
+            settings.forEach(settingDto -> updateSettingByKey(settingDto));
             workbook.close();
             log.info(workbook);
         } catch (Exception e) {
@@ -56,5 +109,17 @@ public class StaticDataServiceImpl implements StaticDataService {
         marketRepository.save(market.get());
         log.info(market);
         return marketDto;
+    }
+
+    private EpocSettingDto updateSettingByKey(EpocSettingDto settingDto) {
+        Optional<EpocSetting> setting = settingRepository.findBySettingKey(settingDto.getSettingKey());
+        if (setting.isPresent()) {
+            SettingMapper.INSTANCE.updateSettingFromSettingDto(setting.get(), settingDto);
+        } else {
+            setting = Optional.of(SettingMapper.INSTANCE.settingDtoToSetting(settingDto));
+        }
+        settingRepository.save(setting.get());
+        log.info(settingDto);
+        return settingDto;
     }
 }
