@@ -3,29 +3,29 @@ package com.jore.epoc.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.jore.epoc.dto.AdjustCreditLineDto;
+import com.jore.epoc.dto.BuildFactoryDto;
+import com.jore.epoc.dto.BuildStorageDto;
+import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
-import com.jore.epoc.dto.CreditLineDto;
-import com.jore.epoc.dto.FactoryOrderDto;
-import com.jore.epoc.dto.MarketDto;
+import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
-import com.jore.epoc.dto.RawMaterialDto;
 import com.jore.epoc.dto.SimulationDto;
-import com.jore.epoc.dto.StorageDto;
 
 public interface SimulationService {
-    void adjustCreditLine(Integer companySimulationStepId, CreditLineDto creditLineDto);
+    void adjustCreditLine(Integer companySimulationStepId, AdjustCreditLineDto adjustCreditLineDto);
 
-    void buildFactory(Integer companySimulationStepId, FactoryOrderDto factoryOrderDto);
+    void buildFactory(Integer companySimulationStepId, BuildFactoryDto buildFactoryDto);
 
-    void buildStorage(Integer companySimulationStepId, StorageDto storageDto);
+    void buildStorage(Integer companySimulationStepId, BuildStorageDto buildStorageDto);
 
-    void buyRawMaterials(Integer companySimulationStepId, RawMaterialDto rawMaterialDto);
+    void buyRawMaterials(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto);
 
     void buySimulations(String user, int nrOfSimulations);
 
     Integer countAvailableSimulations(String user);
 
-    void distributeInMarket(Integer companySimulationStepId, MarketDto marketDto);
+    void enterMarket(Integer companySimulationStepId, EnterMarketDto enterMarketDto);
 
     void finishMoveFor(Integer companySimulationStepId);
 
