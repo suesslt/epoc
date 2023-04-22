@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.accounting.Accounting;
 import com.jore.epoc.bo.accounting.BookingEvent;
 import com.jore.epoc.bo.accounting.InterestRateBookingEvent;
+import com.jore.epoc.bo.accounting.MilchbuechliAccounting;
 import com.jore.epoc.bo.accounting.ProductsSoldBookingEvent;
 import com.jore.epoc.bo.accounting.StorageCostBookingEvent;
 import com.jore.jpa.BusinessObject;
@@ -19,6 +21,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +31,9 @@ import lombok.extern.log4j.Log4j2;
 @Getter
 @Setter
 public class Company extends BusinessObject {
+    public record MonthlySale(YearMonth simulationMonth, String name, Integer productsSold) {
+    }
+
     private String name;
     @ManyToOne(optional = false)
     private Simulation simulation;
@@ -43,6 +49,8 @@ public class Company extends BusinessObject {
     private List<DistributionInMarket> distributionInMarkets = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<CompanySimulationStep> companySimulationSteps = new ArrayList<>();
+    @Transient
+    private Accounting accounting = new MilchbuechliAccounting();
 
     public void addCompanySimulationStep(CompanySimulationStep companySimulationStep) {
         companySimulationStep.setCompany(this);
@@ -74,8 +82,7 @@ public class Company extends BusinessObject {
     }
 
     public void book(BookingEvent bookingEvent) {
-        // TODO to be implemented using accounting
-        log.debug("Booking of: " + bookingEvent);
+        bookingEvent.book(accounting);
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
@@ -105,6 +112,18 @@ public class Company extends BusinessObject {
 
     public List<Factory> getFactories() {
         return Collections.unmodifiableList(factories);
+    }
+
+    public Money getPnL() {
+        return accounting.getPnL();
+    }
+
+    public List<MonthlySale> getSoldProductsPerMonth() {
+        List<MonthlySale> result = new ArrayList<>();
+        for (CompanySimulationStep companySimulationStep : companySimulationSteps) {
+            result.addAll(companySimulationStep.getSoldProductsPerMonth());
+        }
+        return result;
     }
 
     public List<Storage> getStorages() {

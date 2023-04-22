@@ -3,6 +3,7 @@ package com.jore.epoc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.Company.MonthlySale;
 import com.jore.epoc.bo.CompanySimulationStep;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.DistributionStep;
@@ -20,6 +22,9 @@ import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.Storage;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 class MarketSimulationTests {
     private static final int LABOR_FORCE = 1000000;
     private static final String CHF = "CHF";
@@ -55,7 +60,11 @@ class MarketSimulationTests {
             }
             activeSimulationStep = simulation.getActiveSimulationStep();
         }
-        assertEquals(26664, marketSimulation.getSoldProducts()); // 3 * 8888
+        assertEquals(999996, marketSimulation.getSoldProducts());
+        Company company = simulation.getCompanies().get(0);
+        List<MonthlySale> soldProductsPerMonth = company.getSoldProductsPerMonth();
+        log.info(soldProductsPerMonth);
+        log.info(company.getPnL());
     }
 
     private void addCompaniesToSimulation(MarketSimulation marketSimulation, Simulation simulation) {
@@ -90,7 +99,7 @@ class MarketSimulationTests {
         result.setName(name);
         Storage storage = new Storage();
         storage.setCapacity(1000000);
-        storage.setStoredProducts(8888);
+        storage.setStoredProducts(1000000);
         storage.setStorageCostPerUnitAndMonth(Money.of("CHF", 1));
         result.addStorage(storage);
         Factory factory = new Factory();
