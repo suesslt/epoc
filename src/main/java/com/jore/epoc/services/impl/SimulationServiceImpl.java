@@ -158,6 +158,7 @@ public class SimulationServiceImpl implements SimulationService {
         if (marketSimulation.isEmpty()) {
             MarketSimulation thisMarketSimulation = new MarketSimulation();
             thisMarketSimulation.setMarket(market);
+            thisMarketSimulation.setStartMonth(companySimulationStep.getSimulationStep().getSimulationMonth());
             simulation.addMarketSimulation(thisMarketSimulation);
             marketSimulation = Optional.of(thisMarketSimulation);
         }

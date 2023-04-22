@@ -1,6 +1,7 @@
 package com.jore.epoc.bo;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.Arrays;
 
 import org.hibernate.annotations.CompositeType;
@@ -10,6 +11,7 @@ import com.jore.Assert;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.jpa.BusinessObject;
+import com.jore.util.Util;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -57,6 +59,14 @@ public class Market extends BusinessObject {
     private int[] ageTableMale;
     @Transient
     private int[] ageTableFemale;
+
+    public int calculateMarketPotential(YearMonth startMonth, YearMonth simulationMonth) {
+        ProductLifecycle productLifecycle = new ProductLifecycle();
+        productLifecycle.setProductLifecycleDuration(100); // TODO no magic number
+        double percentageSold = productLifecycle.getPercentageSoldForMonths(Util.monthDiff(simulationMonth, startMonth));
+        int marketSizeForConsumption = getMarketSizeForConsumption();
+        return (int) (marketSizeForConsumption * percentageSold);
+    }
 
     public int getFemalePopulation() {
         updateAgetable();

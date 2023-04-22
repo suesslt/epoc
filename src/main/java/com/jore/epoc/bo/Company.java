@@ -10,6 +10,7 @@ import java.util.Optional;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.BookingEvent;
 import com.jore.epoc.bo.accounting.InterestRateBookingEvent;
+import com.jore.epoc.bo.accounting.ProductsSoldBookingEvent;
 import com.jore.epoc.bo.accounting.StorageCostBookingEvent;
 import com.jore.jpa.BusinessObject;
 
@@ -74,7 +75,7 @@ public class Company extends BusinessObject {
 
     public void book(BookingEvent bookingEvent) {
         // TODO to be implemented using accounting
-        log.info("Booking of: " + bookingEvent);
+        log.debug("Booking of: " + bookingEvent);
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
@@ -114,7 +115,7 @@ public class Company extends BusinessObject {
         int totalAmountProduced = 0;
         int maximumToProduce = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
         // TODO get max of storage or market capacity
-        log.info(String.format("Maximum to produce is %d for company '%s' (%d)", maximumToProduce, getName(), getId()));
+        log.debug(String.format("Maximum to produce is %d for company '%s' (%d)", maximumToProduce, getName(), getId()));
         if (maximumToProduce > 0) {
             Iterator<Factory> iter = factories.iterator();
             while (iter.hasNext() && maximumToProduce > 0) {
@@ -125,5 +126,20 @@ public class Company extends BusinessObject {
             Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         }
         return totalAmountProduced;
+    }
+
+    public void sellMaximumOf(DistributionInMarket distributionInMarket, YearMonth simulationMonth, int productMarketPotential, Money sellPrice) {
+        int storedAmount = storages.stream().mapToInt(storage -> storage.getStoredProducts()).sum();
+        int intentedProductSale = distributionInMarket.getIntentedProductSale(simulationMonth);
+        int maximumToSell = Math.min(Math.min(storedAmount, intentedProductSale), productMarketPotential);
+        distributionInMarket.setSoldProducts(simulationMonth, maximumToSell);
+        if (maximumToSell > 0) {
+            ProductsSoldBookingEvent bookingEvent = new ProductsSoldBookingEvent();
+            bookingEvent.setBookingText("Products sold for month " + simulationMonth);
+            bookingEvent.setBookingDate(simulationMonth.atDay(1));
+            bookingEvent.setAmount(sellPrice.multiply(maximumToSell));
+            book(bookingEvent);
+        }
+        log.debug(String.format("Sell a maximum of %d products for month %s in %s. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", maximumToSell, simulationMonth, getName(), storedAmount, intentedProductSale, productMarketPotential));
     }
 }

@@ -24,6 +24,13 @@ public class CompanySimulationStep extends BusinessObject {
     private boolean isOpen;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companySimulationStep", orphanRemoval = true)
     private List<AbstractSimulationEvent> simulationEvents = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "companySimulationStep", orphanRemoval = true)
+    private List<DistributionStep> distributionSteps = new ArrayList<>();
+
+    public void addDistributionStep(DistributionStep distributionStep) {
+        distributionStep.setCompanySimulationStep(this);
+        distributionSteps.add(distributionStep);
+    }
 
     public void addEvent(AbstractSimulationEvent simulationEvent) {
         simulationEvent.setCompanySimulationStep(this);
