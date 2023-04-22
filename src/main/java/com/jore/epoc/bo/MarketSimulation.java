@@ -4,21 +4,28 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CompositeType;
+import org.hibernate.annotations.Type;
+
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.jpa.BusinessObject;
 import com.jore.util.Util;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
 @Entity
 @Getter
 @Setter
+@Log4j2
 /**
  * marketSize = Nr of potential sales in market
  * productsSold = Nr of Products already sold
@@ -51,9 +58,17 @@ public class MarketSimulation extends BusinessObject {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "marketSimulation", orphanRemoval = true)
     private List<DistributionInMarket> distributionInMarkets = new ArrayList<>();
     private YearMonth startMonth;
+    @AttributeOverride(name = "amount", column = @Column(name = "higher_price_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "higher_price_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money higherPrice;
+    @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent higherPercent;
+    @AttributeOverride(name = "amount", column = @Column(name = "lower_price_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "lower_price_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money lowerPrice;
+    @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent lowerPercent;
     private int productLifecycleDuration;
 
@@ -76,6 +91,7 @@ public class MarketSimulation extends BusinessObject {
         int productsSold = calculateProductsSold();
         int availableMarketSize = marketSize - productsSold;
         for (DistributionInMarket distributionInMarket : distributionInMarkets) {
+            addDistributionStep(distributionInMarket, simulationMonth);
             int marketPotentialForProduct = calculateMarketPotentialForProductPrice(marketSize, distributionInMarket.getOfferedPrice(simulationMonth));
             distributionInMarket.setMarketPotentialForProduct(simulationMonth, marketPotentialForProduct);
         }
@@ -87,5 +103,18 @@ public class MarketSimulation extends BusinessObject {
             int maximumToSell = (int) (availableMarketPotentialForProduct * percentageSold);
             distributionInMarket.getCompany().sellMaximumOf(distributionInMarket, simulationMonth, maximumToSell, distributionInMarket.getOfferedPrice(simulationMonth));
         }
+    }
+
+    private void addDistributionStep(DistributionInMarket distributionInMarket, YearMonth simulationMonth) {
+        DistributionStep distributionStep = new DistributionStep();
+        distributionStep.setOfferedPrice(distributionInMarket.getOfferedPrice());
+        distributionStep.setIntentedProductSale(distributionInMarket.getIntentedProductSale());
+        CompanySimulationStep companySimulationStep = getStepForMonth(distributionInMarket, simulationMonth);
+        companySimulationStep.addDistributionStep(distributionStep);
+        distributionInMarket.addDistributionStep(distributionStep);
+    }
+
+    private CompanySimulationStep getStepForMonth(DistributionInMarket distributionInMarket, YearMonth simulationMonth) {
+        return distributionInMarket.getCompany().getCompanySimulationSteps().stream().filter(step -> step.getSimulationStep().getSimulationMonth().equals(simulationMonth)).findFirst().get();
     }
 }

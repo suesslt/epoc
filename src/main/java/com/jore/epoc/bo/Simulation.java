@@ -101,13 +101,14 @@ public class Simulation extends BusinessObject {
             companySimulationStep.setOpen(true);
             company.addCompanySimulationStep(companySimulationStep);
             result.addCompanySimulationStep(companySimulationStep);
-            for (DistributionInMarket distributionInMarket : company.getDistributionInMarkets()) {
-                DistributionStep distributionStep = new DistributionStep();
-                distributionStep.setOfferedPrice(distributionInMarket.getOfferedPrice());
-                distributionStep.setIntentedProductSale(distributionInMarket.getIntentedProductSale());
-                companySimulationStep.addDistributionStep(distributionStep);
-                distributionInMarket.addDistributionStep(distributionStep);
-            }
+            //            for (DistributionInMarket distributionInMarket : company.getDistributionInMarkets()) {
+            //                DistributionStep distributionStep = new DistributionStep();
+            //                distributionStep.setOfferedPrice(distributionInMarket.getOfferedPrice());
+            //                distributionStep.setIntentedProductSale(distributionInMarket.getIntentedProductSale());
+            //                companySimulationStep.addDistributionStep(distributionStep);
+            //                distributionInMarket.addDistributionStep(distributionStep);
+            //                log.info("*** distribution step created: " + distributionStep);
+            //            }
         }
         return result;
     }

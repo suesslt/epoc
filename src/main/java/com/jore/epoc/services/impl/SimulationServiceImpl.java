@@ -159,10 +159,17 @@ public class SimulationServiceImpl implements SimulationService {
             MarketSimulation thisMarketSimulation = new MarketSimulation();
             thisMarketSimulation.setMarket(market);
             thisMarketSimulation.setStartMonth(companySimulationStep.getSimulationStep().getSimulationMonth());
+            thisMarketSimulation.setHigherPercent((Percent) staticDataService.getSetting(EpocSetting.DEMAND_HIGHER_PERCENT));
+            thisMarketSimulation.setHigherPrice((Money) staticDataService.getSetting(EpocSetting.DEMAND_HIGHER_PRICE));
+            thisMarketSimulation.setLowerPercent((Percent) staticDataService.getSetting(EpocSetting.DEMAND_LOWER_PERCENT));
+            thisMarketSimulation.setLowerPrice((Money) staticDataService.getSetting(EpocSetting.DEMAND_LOWER_PRICE));
+            thisMarketSimulation.setProductLifecycleDuration((Integer) staticDataService.getSetting(EpocSetting.PRODUCT_LIFECYCLE_DURATION));
             simulation.addMarketSimulation(thisMarketSimulation);
             marketSimulation = Optional.of(thisMarketSimulation);
         }
         distributeInMarketEvent.setMarketSimulation(marketSimulation.get());
+        distributeInMarketEvent.setIntentedProductSale(1000);
+        distributeInMarketEvent.setOfferedPrice(Money.of("CHF", 20));
         companySimulationStep.addEvent(distributeInMarketEvent);
     }
 
