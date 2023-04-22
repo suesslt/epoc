@@ -62,8 +62,6 @@ public class Simulation extends BusinessObject {
 
     // Can return empty Optional if simulation has finished
     public Optional<SimulationStep> getActiveSimulationStep() {
-        Objects.requireNonNull(startMonth);
-        Objects.requireNonNull(nrOfSteps);
         Optional<SimulationStep> result = Optional.empty();
         Optional<SimulationStep> simulationStep = simulationSteps.stream().sorted(new Comparator<SimulationStep>() {
             @Override
@@ -75,7 +73,7 @@ public class Simulation extends BusinessObject {
             if (simulationStep.get().isOpen()) {
                 result = simulationStep;
             } else {
-                if (simulationStep.get().getSimulationMonth().isBefore(startMonth.plusMonths(nrOfSteps - 1))) {
+                if (simulationStep.get().getSimulationMonth().isBefore(Objects.requireNonNull(startMonth).plusMonths(Objects.requireNonNull(nrOfSteps) - 1))) {
                     result = Optional.of(createSimulationStep(simulationStep.get().getSimulationMonth().plusMonths(1)));
                 } else {
                     log.info(String.format("Simulation '%s' (%d) has finished.", getName(), getId()));
@@ -85,13 +83,13 @@ public class Simulation extends BusinessObject {
         } else {
             log.info(String.format("Start simulation '%s' (%d).", getName(), getId()));
             isStarted = true;
-            result = Optional.of(createSimulationStep(startMonth));
+            result = Optional.of(createSimulationStep(Objects.requireNonNull(startMonth)));
         }
         return result;
     }
 
     private SimulationStep createSimulationStep(YearMonth month) {
-        log.info(String.format("Simulation step created for simulation '%s' (%d) and month '%s'", getName(), getId(), month));
+        log.debug(String.format("Simulation step created for simulation '%s' (%d) and month '%s'", getName(), getId(), month));
         SimulationStep result = new SimulationStep();
         result.setSimulationMonth(month);
         result.setOpen(true);
@@ -101,14 +99,6 @@ public class Simulation extends BusinessObject {
             companySimulationStep.setOpen(true);
             company.addCompanySimulationStep(companySimulationStep);
             result.addCompanySimulationStep(companySimulationStep);
-            //            for (DistributionInMarket distributionInMarket : company.getDistributionInMarkets()) {
-            //                DistributionStep distributionStep = new DistributionStep();
-            //                distributionStep.setOfferedPrice(distributionInMarket.getOfferedPrice());
-            //                distributionStep.setIntentedProductSale(distributionInMarket.getIntentedProductSale());
-            //                companySimulationStep.addDistributionStep(distributionStep);
-            //                distributionInMarket.addDistributionStep(distributionStep);
-            //                log.info("*** distribution step created: " + distributionStep);
-            //            }
         }
         return result;
     }

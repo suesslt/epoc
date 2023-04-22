@@ -3,6 +3,7 @@ package com.jore.epoc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.YearMonth;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.CompanySimulationStep;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.DistributionStep;
+import com.jore.epoc.bo.Factory;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Simulation;
@@ -25,7 +27,7 @@ class MarketSimulationTests {
     @Test
     public void test() {
         MarketSimulation marketSimulation = createMarketSimulation();
-        Simulation simulation = createSimulation();
+        Simulation simulation = createSimulation(12);
         simulation.addMarketSimulation(marketSimulation);
         addCompaniesToSimulation(marketSimulation, simulation);
         addStepToSimulation(simulation, YearMonth.of(2020, 1), Money.of(CHF, 50), 10000, 1);
@@ -38,6 +40,22 @@ class MarketSimulationTests {
         assertEquals(93, marketSimulation.calculateProductsSold());
         marketSimulation.simulateMarket(YearMonth.of(2020, 6));
         assertEquals(8775, marketSimulation.calculateProductsSold());
+    }
+
+    @Test
+    public void testFullDistribution() {
+        Simulation simulation = createSimulation(100);
+        MarketSimulation marketSimulation = createMarketSimulation();
+        simulation.addMarketSimulation(marketSimulation);
+        addCompaniesToSimulation(marketSimulation, simulation);
+        Optional<SimulationStep> activeSimulationStep = simulation.getActiveSimulationStep();
+        while (activeSimulationStep.isPresent()) {
+            for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
+                simulation.finishCompanyStep(companySimulationStep);
+            }
+            activeSimulationStep = simulation.getActiveSimulationStep();
+        }
+        assertEquals(26664, marketSimulation.getSoldProducts()); // 3 * 8888
     }
 
     private void addCompaniesToSimulation(MarketSimulation marketSimulation, Simulation simulation) {
@@ -71,9 +89,20 @@ class MarketSimulationTests {
         Company result = new Company();
         result.setName(name);
         Storage storage = new Storage();
+        storage.setCapacity(1000000);
         storage.setStoredProducts(8888);
+        storage.setStorageCostPerUnitAndMonth(Money.of("CHF", 1));
         result.addStorage(storage);
+        Factory factory = new Factory();
+        factory.setMonthlyCapacityPerProductionLine(1000);
+        factory.setProductionLines(10);
+        factory.setProductionStartMonth(YearMonth.of(2020, 1));
+        factory.setUnitLabourCost(Money.of("CHF", 1));
+        factory.setUnitProductionCost(Money.of("CHF", 1));
+        result.addFactory(factory);
         DistributionInMarket distributionInMarket = new DistributionInMarket();
+        distributionInMarket.setIntentedProductSale(100000);
+        distributionInMarket.setOfferedPrice(Money.of("CHF", 80));
         result.addDistributionInMarket(distributionInMarket);
         marketSimulation.addDistributionInMarket(distributionInMarket);
         return result;
@@ -98,12 +127,12 @@ class MarketSimulationTests {
         return marketSimulation;
     }
 
-    private Simulation createSimulation() {
+    private Simulation createSimulation(int nrOfSteps) {
         Simulation result = new Simulation();
         result.setName("Test Simulation");
         result.setStarted(true);
         result.setFinished(false);
-        result.setNrOfSteps(12);
+        result.setNrOfSteps(nrOfSteps);
         result.setStartMonth(YearMonth.of(2020, 1));
         return result;
     }

@@ -139,6 +139,7 @@ public class Company extends BusinessObject {
             bookingEvent.setBookingDate(simulationMonth.atDay(1));
             bookingEvent.setAmount(sellPrice.multiply(maximumToSell));
             book(bookingEvent);
+            Storage.takeProductsFromStorages(getStorages(), maximumToSell);
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in %s. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", maximumToSell, simulationMonth, getName(), storedAmount, intentedProductSale, productMarketPotential));
     }

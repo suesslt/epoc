@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.CompositeType;
+import org.jfree.util.Log;
 
 import com.jore.datatypes.money.Money;
 import com.jore.jpa.BusinessObject;
@@ -29,25 +30,42 @@ import lombok.Setter;
 public class Storage extends BusinessObject {
     // TODO Write test cases
     public static void distributeProductAccrossStorages(List<Storage> storages, int productsToStore, YearMonth storageMonth) {
-        int remainder = productsToStore;
+        int toStore = productsToStore;
         Iterator<Storage> iter = storages.iterator();
-        while (remainder > 0 && iter.hasNext()) {
+        while (toStore > 0 && iter.hasNext()) {
             Storage storage = iter.next();
             int capacity = storage.getAvailableCapacity(storageMonth);
-            remainder -= storage.storeProducts(Math.min(remainder, capacity), storageMonth);
+            toStore -= storage.storeProducts(Math.min(toStore, capacity), storageMonth);
         }
-        // TODO Create notification if remainder bigger 0
+        if (toStore > 0) {
+            Log.warn("*** Remainder > 0");
+        }
     }
 
     public static void distributeRawMaterialAccrossStorages(List<Storage> storages, int rawMaterialToStore, YearMonth storageMonth) {
-        int remainder = rawMaterialToStore;
+        int toStore = rawMaterialToStore;
         Iterator<Storage> iter = storages.iterator();
-        while (remainder > 0 && iter.hasNext()) {
+        while (toStore > 0 && iter.hasNext()) {
             Storage storage = iter.next();
             int capacity = storage.getAvailableCapacity(storageMonth);
-            remainder -= storage.storeRawMaterials(Math.min(remainder, capacity), storageMonth);
+            toStore -= storage.storeRawMaterials(Math.min(toStore, capacity), storageMonth);
         }
-        // TODO Create notification if remainder bigger 0
+        if (toStore > 0) {
+            Log.warn("*** Remainder > 0");
+        }
+    }
+
+    public static void takeProductsFromStorages(List<Storage> storages, int productsSold) {
+        int toRemove = productsSold;
+        Iterator<Storage> iter = storages.iterator();
+        while (toRemove > 0 && iter.hasNext()) {
+            Storage storage = iter.next();
+            int productsRemoved = storage.removeProducts(productsSold);
+            toRemove -= productsRemoved;
+        }
+        if (toRemove > 0) {
+            Log.warn("*** Remainder > 0");
+        }
     }
 
     @ManyToOne(optional = false)

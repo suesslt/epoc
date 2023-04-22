@@ -14,7 +14,7 @@ public class DemandCurve {
     }
 
     public static DemandCurve create(String currency, double higherPrice, String higherPricePercent, double lowerPrice, String lowerPricePercent) {
-        return new DemandCurve(Money.of(currency, higherPrice), new Percent(higherPricePercent), Money.of(currency, lowerPrice), new Percent(lowerPricePercent));
+        return new DemandCurve(Money.of(currency, higherPrice), Percent.of(higherPricePercent), Money.of(currency, lowerPrice), Percent.of(lowerPricePercent));
     }
 
     private final Percent lowerPricePercent;
@@ -36,6 +36,6 @@ public class DemandCurve {
         final Percent percentDifference = higherPricePercent.subtract(lowerPricePercent);
         final BigDecimal aValue = percentDifference.getFactorAmount().divide(priceDifference.getAmount());
         final BigDecimal bValue = lowerPricePercent.getFactorAmount().subtract(aValue.multiply(lowerPrice.getAmount()));
-        return new Percent(bValue.min(Objects.requireNonNull(price, "Price must not be null").getAmount().multiply(aValue).add(bValue).max(BigDecimal.ZERO)));
+        return Percent.of(bValue.min(Objects.requireNonNull(price, "Price must not be null").getAmount().multiply(aValue).add(bValue).max(BigDecimal.ZERO)));
     }
 }

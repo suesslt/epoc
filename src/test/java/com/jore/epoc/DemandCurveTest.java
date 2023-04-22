@@ -13,31 +13,31 @@ public class DemandCurveTest {
 
     @Test
     public void testGetDemandForPriceOf1000() {
-        assertEquals(new Percent("20%"), demandCurve.getDemandForPrice(Money.of("USD", 1000)));
+        assertEquals(Percent.of("20%"), demandCurve.getDemandForPrice(Money.of("USD", 1000)));
     }
 
     @Test
     public void testGetDemandForPriceOf200() {
-        assertEquals(new Percent("80%"), demandCurve.getDemandForPrice(Money.of("USD", 200)));
+        assertEquals(Percent.of("80%"), demandCurve.getDemandForPrice(Money.of("USD", 200)));
     }
 
     @Test
     public void testGetDemandForPriceOf2000() {
-        assertEquals(new Percent("0%"), demandCurve.getDemandForPrice(Money.of("USD", 2000)));
+        assertEquals(Percent.of("0%"), demandCurve.getDemandForPrice(Money.of("USD", 2000)));
     }
 
     @Test
     public void testGetDemandForPriceOf600() {
-        assertEquals(new Percent("50%"), demandCurve.getDemandForPrice(Money.of("USD", 600)));
+        assertEquals(Percent.of("50%"), demandCurve.getDemandForPrice(Money.of("USD", 600)));
     }
 
     @Test
     public void testGetDemandForPriceOfNegative1000() {
-        assertEquals(new Percent("95%"), demandCurve.getDemandForPrice(Money.of("USD", -1000)));
+        assertEquals(Percent.of("95%"), demandCurve.getDemandForPrice(Money.of("USD", -1000)));
     }
 
     @Test
     public void testGetDemandForPriceOfZero() {
-        assertEquals(new Percent("95%"), demandCurve.getDemandForPrice(Money.of("USD", 0)));
+        assertEquals(Percent.of("95%"), demandCurve.getDemandForPrice(Money.of("USD", 0)));
     }
 }

@@ -20,12 +20,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 
 @Entity
 @Getter
 @Setter
-@Log4j2
+//@Log4j2
 /**
  * marketSize = Nr of potential sales in market
  * productsSold = Nr of Products already sold
@@ -86,6 +85,10 @@ public class MarketSimulation extends BusinessObject {
         return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
     }
 
+    public Integer getSoldProducts() {
+        return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
+    }
+
     public void simulateMarket(YearMonth simulationMonth) {
         int marketSize = market.getMarketSizeForConsumption();
         int productsSold = calculateProductsSold();
@@ -109,12 +112,11 @@ public class MarketSimulation extends BusinessObject {
         DistributionStep distributionStep = new DistributionStep();
         distributionStep.setOfferedPrice(distributionInMarket.getOfferedPrice());
         distributionStep.setIntentedProductSale(distributionInMarket.getIntentedProductSale());
-        CompanySimulationStep companySimulationStep = getStepForMonth(distributionInMarket, simulationMonth);
-        companySimulationStep.addDistributionStep(distributionStep);
+        getCompanySimulationStepForMonth(distributionInMarket, simulationMonth).addDistributionStep(distributionStep);
         distributionInMarket.addDistributionStep(distributionStep);
     }
 
-    private CompanySimulationStep getStepForMonth(DistributionInMarket distributionInMarket, YearMonth simulationMonth) {
+    private CompanySimulationStep getCompanySimulationStepForMonth(DistributionInMarket distributionInMarket, YearMonth simulationMonth) {
         return distributionInMarket.getCompany().getCompanySimulationSteps().stream().filter(step -> step.getSimulationStep().getSimulationMonth().equals(simulationMonth)).findFirst().get();
     }
 }
