@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.jore.epoc.bo.events.AbstractSimulationEvent;
+import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -57,10 +57,14 @@ public class Simulation extends BusinessObject {
         companySimulationStep.setOpen(false);
         if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {
             simulate(companySimulationStep.getSimulationStep().getSimulationMonth());
+            companySimulationStep.getSimulationStep().setOpen(false);
+            setSimulationToFinishedIfThisWasTheLastStep(companySimulationStep.getSimulationStep());
         }
     }
 
-    // Can return empty Optional if simulation has finished
+    /**
+     * Will return empty Optional if simulation has finished
+     */
     public Optional<SimulationStep> getActiveSimulationStep() {
         Optional<SimulationStep> result = Optional.empty();
         Optional<SimulationStep> simulationStep = simulationSteps.stream().sorted(new Comparator<SimulationStep>() {
@@ -88,6 +92,10 @@ public class Simulation extends BusinessObject {
         return result;
     }
 
+    public Integer getSoldProducts() {
+        return marketSimulations.stream().mapToInt(marketSimulation -> marketSimulation.getSoldProducts()).sum();
+    }
+
     private SimulationStep createSimulationStep(YearMonth month) {
         log.debug(String.format("Simulation step created for simulation '%s' (%d) and month '%s'", getName(), getId(), month));
         SimulationStep result = new SimulationStep();
@@ -103,14 +111,20 @@ public class Simulation extends BusinessObject {
         return result;
     }
 
+    private void setSimulationToFinishedIfThisWasTheLastStep(SimulationStep simulationStep) {
+        if (!simulationStep.getSimulationMonth().isBefore(Objects.requireNonNull(startMonth).plusMonths(Objects.requireNonNull(nrOfSteps) - 1))) {
+            isFinished = true;
+        }
+    }
+
     private void simulate(YearMonth simulationMonth) {
         log.info(String.format("All company steps finished for simulation '%s' (%d) and month '%s'. Starting to simulate...", getName(), getId(), simulationMonth));
         SimulationStep simulationStep = getActiveSimulationStep().get();
-        simulationStep.setOpen(false);
         for (CompanySimulationStep companySimulationStep : simulationStep.getCompanySimulationSteps()) {
             Company company = companySimulationStep.getCompany();
-            for (AbstractSimulationEvent simulationEvent : companySimulationStep.getSimulationEvents()) {
-                simulationEvent.apply(company);
+            for (AbstractSimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationMonth)) {
+                simulationOrder.apply(company);
+                simulationOrder.setExecuted(true);
             }
             company.manufactureProducts(simulationStep.getSimulationMonth());
             company.chargeStorageCost(simulationStep.getSimulationMonth());

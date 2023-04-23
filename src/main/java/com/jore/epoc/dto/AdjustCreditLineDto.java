@@ -1,5 +1,7 @@
 package com.jore.epoc.dto;
 
+import java.time.YearMonth;
+
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.jpa.DataTransferObject;
@@ -12,4 +14,5 @@ import lombok.Data;
 public class AdjustCreditLineDto implements DataTransferObject {
     private CreditEventDirection direction;
     private Money amount;
+    private YearMonth executionMonth;
 }

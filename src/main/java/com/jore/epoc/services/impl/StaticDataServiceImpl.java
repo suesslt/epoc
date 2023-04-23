@@ -27,6 +27,7 @@ import com.jore.excel.ExcelReader;
 import com.jore.excel.ExcelWorkbook;
 import com.jore.view.FieldModel;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.log4j.Log4j2;
 
 // TODO Write test cases
@@ -37,6 +38,8 @@ public class StaticDataServiceImpl implements StaticDataService {
     MarketRepository marketRepository;
     @Autowired
     SettingRepository settingRepository;
+    @Autowired
+    EntityManager entityManager;
 
     @Override
     @Transactional

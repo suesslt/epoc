@@ -81,17 +81,13 @@ public class MarketSimulation extends BusinessObject {
         return demandCurve.getDemandForPrice(offeredPrice).applyTo(marketSize);
     }
 
-    public int calculateProductsSold() {
-        return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
-    }
-
     public Integer getSoldProducts() {
-        return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
+        return distributionInMarkets.stream().mapToInt(distributionInMarket -> distributionInMarket.getSoldProducts()).sum();
     }
 
     public void simulateMarket(YearMonth simulationMonth) {
         int marketSize = market.getMarketSizeForConsumption();
-        int productsSold = calculateProductsSold();
+        int productsSold = getSoldProducts();
         int availableMarketSize = marketSize - productsSold;
         for (DistributionInMarket distributionInMarket : distributionInMarkets) {
             addDistributionStep(distributionInMarket, simulationMonth);
@@ -101,7 +97,7 @@ public class MarketSimulation extends BusinessObject {
         int totalMarketPotential = distributionInMarkets.stream().mapToInt(distribution -> distribution.getMarketPotentialForProduct(simulationMonth)).sum();
         for (DistributionInMarket distributionInMarket : distributionInMarkets) {
             int marketPotentialForProduct = distributionInMarket.getMarketPotentialForProduct(simulationMonth);
-            int availableMarketPotentialForProduct = (int) ((double) marketPotentialForProduct / (double) totalMarketPotential * availableMarketSize);
+            int availableMarketPotentialForProduct = (int) Math.round((double) marketPotentialForProduct / (double) totalMarketPotential * availableMarketSize);
             double percentageSold = new ProductLifecycle(productLifecycleDuration).getPercentageSoldForMonths(Util.monthDiff(simulationMonth, startMonth));
             int maximumToSell = (int) (availableMarketPotentialForProduct * percentageSold);
             distributionInMarket.getCompany().sellMaximumOf(distributionInMarket, simulationMonth, maximumToSell, distributionInMarket.getOfferedPrice(simulationMonth));

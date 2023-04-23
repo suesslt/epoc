@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jore.epoc.bo.Company.MonthlySale;
-import com.jore.epoc.bo.events.AbstractSimulationEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -25,18 +24,11 @@ public class CompanySimulationStep extends BusinessObject {
     private Company company;
     private boolean isOpen;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "companySimulationStep", orphanRemoval = true)
-    private List<AbstractSimulationEvent> simulationEvents = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "companySimulationStep", orphanRemoval = true)
     private List<DistributionStep> distributionSteps = new ArrayList<>();
 
     public void addDistributionStep(DistributionStep distributionStep) {
         distributionStep.setCompanySimulationStep(this);
         distributionSteps.add(distributionStep);
-    }
-
-    public void addEvent(AbstractSimulationEvent simulationEvent) {
-        simulationEvent.setCompanySimulationStep(this);
-        simulationEvents.add(simulationEvent);
     }
 
     public List<MonthlySale> getSoldProductsPerMonth() {

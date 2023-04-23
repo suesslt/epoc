@@ -1,5 +1,7 @@
 package com.jore.epoc.dto;
 
+import java.time.YearMonth;
+
 import com.jore.datatypes.money.Money;
 import com.jore.jpa.DataTransferObject;
 
@@ -12,4 +14,5 @@ public class EnterMarketDto implements DataTransferObject {
     private Integer marketId;
     private Integer intentedProductSales;
     private Money offeredPrice;
+    private YearMonth executionMonth;
 }

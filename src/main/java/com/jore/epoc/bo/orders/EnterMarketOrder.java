@@ -1,4 +1,4 @@
-package com.jore.epoc.bo.events;
+package com.jore.epoc.bo.orders;
 
 import org.hibernate.annotations.CompositeType;
 
@@ -17,7 +17,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class DistributeInMarketEvent extends AbstractSimulationEvent {
+public class EnterMarketOrder extends AbstractSimulationOrder {
     @ManyToOne(optional = true)
     private MarketSimulation marketSimulation;
     private int intentedProductSale;

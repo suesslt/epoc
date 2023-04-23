@@ -1,4 +1,4 @@
-package com.jore.epoc.bo.events;
+package com.jore.epoc.bo.orders;
 
 import org.hibernate.annotations.CompositeType;
 import org.hibernate.annotations.Type;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class AdjustCreditLineEvent extends AbstractSimulationEvent {
+public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     private CreditEventDirection direction;
     @AttributeOverride(name = "amount", column = @Column(name = "adjust_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "adjust_currency"))

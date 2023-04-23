@@ -6,6 +6,7 @@ import java.util.List;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Login extends BusinessObject {
+    @Column(unique = true)
     private String login;
     private String password;
     private String name;

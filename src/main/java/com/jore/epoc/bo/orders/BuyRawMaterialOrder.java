@@ -1,4 +1,4 @@
-package com.jore.epoc.bo.events;
+package com.jore.epoc.bo.orders;
 
 import org.hibernate.annotations.CompositeType;
 
@@ -17,7 +17,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class BuyRawMaterialEvent extends AbstractSimulationEvent {
+public class BuyRawMaterialOrder extends AbstractSimulationOrder {
     private Integer amount;
     @AttributeOverride(name = "amount", column = @Column(name = "unit_price_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "unit_price_currency"))
@@ -29,14 +29,14 @@ public class BuyRawMaterialEvent extends AbstractSimulationEvent {
     public void apply(Company company) {
         Assert.notNull("Amount must not be null", amount);
         Assert.notNull("Unit price must not be null", unitPrice);
-        int storageCapacity = company.getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getEventMonth())).sum();
+        int storageCapacity = company.getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getExecutionMonth())).sum();
         if (storageCapacity > 0) {
             BuyRawMaterialBookingEvent buyRawMaterialBookingEvent = new BuyRawMaterialBookingEvent();
             buyRawMaterialBookingEvent.setBookingText("Buy " + storageCapacity + " units of raw material");
-            buyRawMaterialBookingEvent.setBookingDate(getEventMonth().atDay(FIRST_OF_MONTH));
+            buyRawMaterialBookingEvent.setBookingDate(getExecutionMonth().atDay(FIRST_OF_MONTH));
             buyRawMaterialBookingEvent.setAmount(unitPrice.multiply(storageCapacity));
             company.book(buyRawMaterialBookingEvent);
-            Storage.distributeRawMaterialAccrossStorages(company.getStorages(), storageCapacity, getEventMonth());
+            Storage.distributeRawMaterialAccrossStorages(company.getStorages(), storageCapacity, getExecutionMonth());
         }
     }
 }

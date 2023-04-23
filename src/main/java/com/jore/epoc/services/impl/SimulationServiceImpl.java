@@ -25,17 +25,18 @@ import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.UserInCompanyRole;
-import com.jore.epoc.bo.events.AdjustCreditLineEvent;
-import com.jore.epoc.bo.events.BuildFactoryEvent;
-import com.jore.epoc.bo.events.BuildStorageEvent;
-import com.jore.epoc.bo.events.BuyRawMaterialEvent;
-import com.jore.epoc.bo.events.DistributeInMarketEvent;
+import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
+import com.jore.epoc.bo.orders.BuildFactoryOrder;
+import com.jore.epoc.bo.orders.BuildStorageOrder;
+import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
+import com.jore.epoc.bo.orders.EnterMarketOrder;
 import com.jore.epoc.dto.AdjustCreditLineDto;
 import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
 import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
+import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.CreditLineDto;
 import com.jore.epoc.dto.DistributionInMarketDto;
 import com.jore.epoc.dto.EnterMarketDto;
@@ -44,6 +45,7 @@ import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.SimulationDto;
+import com.jore.epoc.dto.SimulationStatisticsDto;
 import com.jore.epoc.dto.StorageDto;
 import com.jore.epoc.mapper.SimulationMapper;
 import com.jore.epoc.repositories.CompanyRepository;
@@ -83,49 +85,53 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void adjustCreditLine(Integer companySimulationStepId, AdjustCreditLineDto adjustCreditLineDto) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
-        AdjustCreditLineEvent adjustCreditLineEvent = new AdjustCreditLineEvent();
-        adjustCreditLineEvent.setDirection(adjustCreditLineDto.getDirection());
-        adjustCreditLineEvent.setAdjustAmount(adjustCreditLineDto.getAmount());
-        adjustCreditLineEvent.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
-        companySimulationStep.addEvent(adjustCreditLineEvent);
+        AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
+        adjustCreditLineOrder.setExecutionMonth(adjustCreditLineDto.getExecutionMonth());
+        adjustCreditLineOrder.setDirection(adjustCreditLineDto.getDirection());
+        adjustCreditLineOrder.setAdjustAmount(adjustCreditLineDto.getAmount());
+        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
+        companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
 
     @Override
     @Transactional
-    public void buildFactory(Integer companySimulationStepId, BuildFactoryDto factoryOrderDto) {
+    public void buildFactory(Integer companySimulationStepId, BuildFactoryDto buildFactoryDto) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
-        BuildFactoryEvent buildFactoryEvent = new BuildFactoryEvent();
-        buildFactoryEvent.setProductionLines(factoryOrderDto.getProductionLines());
-        buildFactoryEvent.setProductionStartMonth(companySimulationStep.getSimulationStep().getSimulationMonth().plusMonths((Integer) staticDataService.getSetting(EpocSetting.FACTORY_CREATION_MONTHS)));
-        buildFactoryEvent.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COSTS));
-        buildFactoryEvent.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
-        buildFactoryEvent.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
-        buildFactoryEvent.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
-        buildFactoryEvent.setUnitLabourCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
-        companySimulationStep.addEvent(buildFactoryEvent);
+        BuildFactoryOrder buildFactoryOrder = new BuildFactoryOrder();
+        buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
+        buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
+        buildFactoryOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.FACTORY_CREATION_MONTHS));
+        buildFactoryOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COSTS));
+        buildFactoryOrder.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
+        buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
+        buildFactoryOrder.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
+        buildFactoryOrder.setUnitLabourCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
+        companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
     }
 
     @Override
     @Transactional
     public void buildStorage(Integer companySimulationStepId, BuildStorageDto buildStorageDto) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
-        BuildStorageEvent buildStorageEvent = new BuildStorageEvent();
-        buildStorageEvent.setCapacity(buildStorageDto.getCapacity());
-        buildStorageEvent.setStorageStartMonth(companySimulationStep.getSimulationStep().getSimulationMonth().plusMonths((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CREATION_MONTHS)));
-        buildStorageEvent.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
-        buildStorageEvent.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
-        buildStorageEvent.setStorageCostPerUnitAndMonth((Money) staticDataService.getSetting(EpocSetting.STORAGE_COST_PER_UNIT_AND_MONTH));
-        companySimulationStep.addEvent(buildStorageEvent);
+        BuildStorageOrder buildStorageOrder = new BuildStorageOrder();
+        buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
+        buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
+        buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CREATION_MONTHS));
+        buildStorageOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
+        buildStorageOrder.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
+        buildStorageOrder.setStorageCostPerUnitAndMonth((Money) staticDataService.getSetting(EpocSetting.STORAGE_COST_PER_UNIT_AND_MONTH));
+        companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
     }
 
     @Override
     @Transactional
-    public void buyRawMaterials(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto) {
+    public void buyRawMaterial(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
-        BuyRawMaterialEvent buyRawMaterialEvent = new BuyRawMaterialEvent();
-        buyRawMaterialEvent.setAmount(buyRawMaterialDto.getAmount());
-        buyRawMaterialEvent.setUnitPrice((Money) staticDataService.getSetting(EpocSetting.RAW_MATERIAL_UNIT_PRICE));
-        companySimulationStep.addEvent(buyRawMaterialEvent);
+        BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
+        buyRawMaterialOrder.setExecutionMonth(buyRawMaterialDto.getExecutionMonth());
+        buyRawMaterialOrder.setAmount(buyRawMaterialDto.getAmount());
+        buyRawMaterialOrder.setUnitPrice((Money) staticDataService.getSetting(EpocSetting.RAW_MATERIAL_UNIT_PRICE));
+        companySimulationStep.getCompany().addSimulationOrder(buyRawMaterialOrder);
     }
 
     @Override
@@ -133,7 +139,7 @@ public class SimulationServiceImpl implements SimulationService {
     public void buySimulations(String userLogin, int nrOfSimulations) {
         Optional<Login> user = loginRepository.findByLogin(userLogin);
         if (!user.isPresent()) {
-            throw new IllegalStateException("User not found");
+            throw new IllegalStateException("User not found: " + userLogin);
         }
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
@@ -154,7 +160,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void enterMarket(Integer companySimulationStepId, EnterMarketDto enterMarketDto) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
-        DistributeInMarketEvent distributeInMarketEvent = new DistributeInMarketEvent();
+        EnterMarketOrder enterMarketOrder = new EnterMarketOrder();
         Market market = marketRepository.findById(enterMarketDto.getMarketId()).get();
         Simulation simulation = companySimulationStep.getCompany().getSimulation();
         Optional<MarketSimulation> marketSimulation = marketSimulationRepository.findByMarketAndSimulation(market, simulation);
@@ -170,12 +176,13 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.addMarketSimulation(thisMarketSimulation);
             marketSimulation = Optional.of(thisMarketSimulation);
         }
-        distributeInMarketEvent.setMarketSimulation(marketSimulation.get());
-        distributeInMarketEvent.setIntentedProductSale(enterMarketDto.getIntentedProductSales());
-        distributeInMarketEvent.setOfferedPrice(enterMarketDto.getOfferedPrice());
-        distributeInMarketEvent.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_FIXED_COSTS));
-        distributeInMarketEvent.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_VARIABLE_COSTS));
-        companySimulationStep.addEvent(distributeInMarketEvent);
+        enterMarketOrder.setExecutionMonth(enterMarketDto.getExecutionMonth());
+        enterMarketOrder.setMarketSimulation(marketSimulation.get());
+        enterMarketOrder.setIntentedProductSale(enterMarketDto.getIntentedProductSales());
+        enterMarketOrder.setOfferedPrice(enterMarketDto.getOfferedPrice());
+        enterMarketOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_FIXED_COSTS));
+        enterMarketOrder.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_VARIABLE_COSTS));
+        companySimulationStep.getCompany().addSimulationOrder(enterMarketOrder);
     }
 
     @Override
@@ -183,6 +190,31 @@ public class SimulationServiceImpl implements SimulationService {
     public void finishMoveFor(Integer companySimulationStepId) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
+    }
+
+    @Override
+    @Transactional
+    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String user) {
+        List<CompletedUserSimulationDto> result = new ArrayList<>();
+        Login login = loginRepository.findByLogin(user).get();
+        for (UserInCompanyRole userInCompany : login.getCompanies()) {
+            Company company = userInCompany.getCompany();
+            Simulation simulation = company.getSimulation();
+            if (simulation.isFinished()) {
+                CompletedUserSimulationDto completedUserSimulationDto = new CompletedUserSimulationDto();
+                completedUserSimulationDto.setSimulationId(simulation.getId());
+                completedUserSimulationDto.setSimulationName(simulation.getName());
+                completedUserSimulationDto.setCompanyName(company.getName());
+                completedUserSimulationDto.setCompanyId(company.getId());
+                result.add(completedUserSimulationDto);
+            }
+        }
+        return result.stream().sorted(new Comparator<CompletedUserSimulationDto>() {
+            @Override
+            public int compare(CompletedUserSimulationDto o1, CompletedUserSimulationDto o2) {
+                return o1.getSimulationName().compareTo(o2.getSimulationName());
+            }
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -199,6 +231,7 @@ public class SimulationServiceImpl implements SimulationService {
             CompanySimulationStepDto companySimulationStepDto = new CompanySimulationStepDto();
             companySimulationStepDto.setCompanyName(company.getName());
             companySimulationStepDto.setId(companySimulationStep.getId());
+            companySimulationStepDto.setSimulationMonth(simulationStep.getSimulationMonth());
             for (Factory factory : company.getFactories()) {
                 FactoryDto factoryDto = new FactoryDto();
                 factoryDto.setId(factory.getId());
@@ -268,6 +301,15 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
+    public SimulationStatisticsDto getSimulationStatistics(Integer simulationId) {
+        SimulationStatisticsDto result = new SimulationStatisticsDto();
+        Simulation simulation = simulationRepository.findById(simulationId).get();
+        result.setTotalSoldProducts(simulation.getSoldProducts());
+        return result;
+    }
+
+    @Override
+    @Transactional
     public void updateSimulation(SimulationDto simulationDto) {
         Simulation simulation = simulationRepository.findById(simulationDto.getId()).get();
         if (!simulation.isStarted()) {
@@ -281,15 +323,18 @@ public class SimulationServiceImpl implements SimulationService {
                 simulation.addCompany(company);
                 companyRepository.save(company);
                 for (LoginDto loginDto : companyDto.getUsers()) {
-                    Login login = new Login();
-                    login.setAdmin(false);
-                    login.setEmail(loginDto.getEmail());
-                    login.setName(loginDto.getName());
-                    login.setLogin(loginDto.getEmail());
-                    login.setPassword(Util.createPassword((Integer) staticDataService.getSetting(EpocSetting.PASSWORD_LENGTH)));
-                    UserInCompanyRole userInCompany = company.addLogin(login);
+                    Optional<Login> login = loginRepository.findByLogin(loginDto.getEmail());
+                    if (login.isEmpty()) {
+                        login = Optional.of(new Login());
+                        login.get().setAdmin(false);
+                        login.get().setEmail(loginDto.getEmail());
+                        login.get().setName(loginDto.getName());
+                        login.get().setLogin(loginDto.getEmail());
+                        login.get().setPassword(Util.createPassword((Integer) staticDataService.getSetting(EpocSetting.PASSWORD_LENGTH)));
+                    }
+                    UserInCompanyRole userInCompany = company.addLogin(login.get());
                     userInCompany.setInvitationRequired(true);
-                    loginRepository.save(login);
+                    loginRepository.save(login.get());
                 }
             }
         } else {

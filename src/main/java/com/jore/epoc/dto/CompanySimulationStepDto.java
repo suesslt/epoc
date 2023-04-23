@@ -1,5 +1,6 @@
 package com.jore.epoc.dto;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class CompanySimulationStepDto implements DataTransferObject {
     private List<StorageDto> storages = new ArrayList<>();
     private List<DistributionInMarketDto> distributionInMarkets = new ArrayList<>();
     private List<MarketDto> markets = new ArrayList<>();
+    private YearMonth simulationMonth;
 
     public void addDistributionInMarket(DistributionInMarketDto distributionInMarketDto) {
         distributionInMarkets.add(distributionInMarketDto);

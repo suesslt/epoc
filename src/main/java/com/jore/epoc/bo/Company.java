@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.jore.Assert;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.Accounting;
 import com.jore.epoc.bo.accounting.BookingEvent;
@@ -14,6 +16,7 @@ import com.jore.epoc.bo.accounting.InterestRateBookingEvent;
 import com.jore.epoc.bo.accounting.MilchbuechliAccounting;
 import com.jore.epoc.bo.accounting.ProductsSoldBookingEvent;
 import com.jore.epoc.bo.accounting.StorageCostBookingEvent;
+import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -49,6 +52,8 @@ public class Company extends BusinessObject {
     private List<DistributionInMarket> distributionInMarkets = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<CompanySimulationStep> companySimulationSteps = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
+    private List<AbstractSimulationOrder> simulationOrders = new ArrayList<>();
     @Transient
     private Accounting accounting = new MilchbuechliAccounting();
 
@@ -74,6 +79,13 @@ public class Company extends BusinessObject {
         login.addCompanyRole(userInCompanyRole);
         users.add(userInCompanyRole);
         return userInCompanyRole;
+    }
+
+    // TODO Try if use of interface possible
+    public void addSimulationOrder(AbstractSimulationOrder simulationOrder) {
+        Assert.notNull("Execution month in simulation order must not be null", simulationOrder.getExecutionMonth());
+        simulationOrder.setCompany(this);
+        simulationOrders.add(simulationOrder);
     }
 
     public void addStorage(Storage storage) {
@@ -114,8 +126,20 @@ public class Company extends BusinessObject {
         return Collections.unmodifiableList(factories);
     }
 
+    public List<AbstractSimulationOrder> getOrdersForExecutionIn(YearMonth simulationMonth) {
+        return simulationOrders.stream().filter(order -> order.getExecutionMonth().equals(simulationMonth) && !order.isExecuted()).collect(Collectors.toList());
+    }
+
     public Money getPnL() {
         return accounting.getPnL();
+    }
+
+    public List<AbstractSimulationOrder> getSimulationOrders() {
+        return Collections.unmodifiableList(simulationOrders);
+    }
+
+    public Integer getSoldProducts() {
+        return getDistributionInMarkets().stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
     }
 
     public List<MonthlySale> getSoldProductsPerMonth() {
@@ -141,7 +165,9 @@ public class Company extends BusinessObject {
                 int amountProduced = iter.next().produce(maximumToProduce, productionMonth);
                 maximumToProduce -= amountProduced;
                 totalAmountProduced += amountProduced;
+                // TODO remove raw products
             }
+            Storage.removeRawMaterialFromStorages(storages, totalAmountProduced);
             Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         }
         return totalAmountProduced;
@@ -158,7 +184,7 @@ public class Company extends BusinessObject {
             bookingEvent.setBookingDate(simulationMonth.atDay(1));
             bookingEvent.setAmount(sellPrice.multiply(maximumToSell));
             book(bookingEvent);
-            Storage.takeProductsFromStorages(getStorages(), maximumToSell);
+            Storage.removeProductsFromStorages(getStorages(), maximumToSell);
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in %s. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", maximumToSell, simulationMonth, getName(), storedAmount, intentedProductSale, productMarketPotential));
     }

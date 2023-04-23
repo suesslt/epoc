@@ -55,13 +55,22 @@ public class Storage extends BusinessObject {
         }
     }
 
-    public static void takeProductsFromStorages(List<Storage> storages, int productsSold) {
-        int toRemove = productsSold;
+    public static void removeProductsFromStorages(List<Storage> storages, int productsToRemove) {
+        int toRemove = productsToRemove;
         Iterator<Storage> iter = storages.iterator();
         while (toRemove > 0 && iter.hasNext()) {
-            Storage storage = iter.next();
-            int productsRemoved = storage.removeProducts(productsSold);
-            toRemove -= productsRemoved;
+            toRemove -= iter.next().removeProducts(productsToRemove);
+        }
+        if (toRemove > 0) {
+            Log.warn("*** Remainder > 0");
+        }
+    }
+
+    public static void removeRawMaterialFromStorages(List<Storage> storages, int rawMaterialToRemove) {
+        int toRemove = rawMaterialToRemove;
+        Iterator<Storage> iter = storages.iterator();
+        while (toRemove > 0 && iter.hasNext()) {
+            toRemove -= iter.next().removeRawMaterials(toRemove);
         }
         if (toRemove > 0) {
             Log.warn("*** Remainder > 0");
@@ -99,15 +108,15 @@ public class Storage extends BusinessObject {
     }
 
     public int removeProducts(int productsToRemove) {
-        int removed = Math.min(storedProducts, productsToRemove);
-        storedProducts -= removed;
-        return removed;
+        int result = Math.min(storedProducts, productsToRemove);
+        storedProducts -= result;
+        return result;
     }
 
     public int removeRawMaterials(int rawMaterialToRemove) {
-        int removed = Math.min(storedProducts, rawMaterialToRemove);
-        storedProducts -= removed;
-        return removed;
+        int result = Math.min(storedRawMaterials, rawMaterialToRemove);
+        storedRawMaterials -= result;
+        return result;
     }
 
     public int storeProducts(int productsToStore, YearMonth storeMonth) {

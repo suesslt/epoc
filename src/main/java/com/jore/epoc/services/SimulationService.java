@@ -8,9 +8,11 @@ import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
 import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
+import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.SimulationDto;
+import com.jore.epoc.dto.SimulationStatisticsDto;
 
 public interface SimulationService {
     void adjustCreditLine(Integer companySimulationStepId, AdjustCreditLineDto adjustCreditLineDto);
@@ -19,7 +21,7 @@ public interface SimulationService {
 
     void buildStorage(Integer companySimulationStepId, BuildStorageDto buildStorageDto);
 
-    void buyRawMaterials(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto);
+    void buyRawMaterial(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto);
 
     void buySimulations(String user, int nrOfSimulations);
 
@@ -29,11 +31,15 @@ public interface SimulationService {
 
     void finishMoveFor(Integer companySimulationStepId);
 
+    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String user);
+
     Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId);
 
     Optional<SimulationDto> getNextAvailableSimulationForOwner(String user);
 
     List<OpenUserSimulationDto> getOpenSimulationsForUser(String user);
+
+    SimulationStatisticsDto getSimulationStatistics(Integer simulationId);
 
     void updateSimulation(SimulationDto simulationDto);
 }
