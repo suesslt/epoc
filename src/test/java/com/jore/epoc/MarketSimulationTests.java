@@ -107,8 +107,8 @@ class MarketSimulationTests {
         BuildFactoryOrder order = new BuildFactoryOrder();
         order.setId(id++);
         order.setExecutionMonth(executionMonth);
-        order.setFixedCosts(FACTORY_FIXED_COSTS);
-        order.setVariableCosts(FACTORY_COST_PER_PRODUCTION_LINE);
+        order.setConstructionCosts(FACTORY_FIXED_COSTS);
+        order.setConstructionCostsPerLine(FACTORY_COST_PER_PRODUCTION_LINE);
         order.setMonthlyCapacityPerProductionLine(MONTHLY_CAPACITY_PER_PRODUCTION_LINE);
         order.setProductionLines(productionLines);
         order.setUnitLabourCost(FACTORY_UNIT_LABOR_COST);
@@ -121,8 +121,8 @@ class MarketSimulationTests {
         BuildStorageOrder order = new BuildStorageOrder();
         order.setId(id++);
         order.setExecutionMonth(executionMonth);
-        order.setFixedCosts(FACTORY_FIXED_COSTS);
-        order.setVariableCosts(FACTORY_COST_PER_PRODUCTION_LINE);
+        order.setConstructionCosts(FACTORY_FIXED_COSTS);
+        order.setConstructionCostsPerUnit(FACTORY_COST_PER_PRODUCTION_LINE);
         order.setCapacity(capacity);
         order.setStorageCostPerUnitAndMonth(STORAGE_COST_PER_UNIT_AND_MONTH);
         order.setTimeToBuild(STORAGE_TIME_TO_BUILD);

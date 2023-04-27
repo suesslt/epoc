@@ -101,8 +101,8 @@ public class SimulationServiceImpl implements SimulationService {
         buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
         buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
         buildFactoryOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.FACTORY_CREATION_MONTHS));
-        buildFactoryOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COSTS));
-        buildFactoryOrder.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
+        buildFactoryOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COSTS));
+        buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
         buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
         buildFactoryOrder.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
         buildFactoryOrder.setUnitLabourCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
@@ -117,8 +117,8 @@ public class SimulationServiceImpl implements SimulationService {
         buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
         buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
         buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CREATION_MONTHS));
-        buildStorageOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
-        buildStorageOrder.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
+        buildStorageOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
+        buildStorageOrder.setConstructionCostsPerUnit((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
         buildStorageOrder.setStorageCostPerUnitAndMonth((Money) staticDataService.getSetting(EpocSetting.STORAGE_COST_PER_UNIT_AND_MONTH));
         companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
     }

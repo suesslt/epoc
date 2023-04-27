@@ -3,7 +3,6 @@ package com.jore.epoc.bo.orders;
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.Message;
 import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.Storage;
@@ -26,25 +25,34 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "currency", column = @Column(name = "storage_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money storageCostPerUnitAndMonth;
+    @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money constructionCosts;
+    @AttributeOverride(name = "amount", column = @Column(name = "variable_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "variable_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money constructionCostsPerUnit;
 
     @Override
-    public void apply(Company company) {
-        Money storageCosts = getFixedCosts().add(getVariableCosts().multiply(capacity));
-        if (company.checkFunds(storageCosts)) {
+    public void apply() {
+        Money storageCosts = constructionCosts.add(constructionCostsPerUnit.multiply(capacity));
+        if (getCompany().checkFunds(storageCosts)) {
             Storage storage = new Storage();
             storage.setCapacity(capacity);
             storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
             storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
-            company.addStorage(storage);
+            getCompany().addStorage(storage);
         } else {
             this.setExecutionMonth(getExecutionMonth().plusMonths(1));
             Message message = new Message();
             message.setRelevantMonth(getExecutionMonth());
             message.setLevel(MessageLevel.WARNING);
             message.setMessage("Could not create storage due to insufficent funds. Trying next month again.");
-            company.addMessage(message);
+            getCompany().addMessage(message);
             log.info(message);
         }
+        setExecuted(true);
     }
 
     @Override

@@ -4,7 +4,6 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.Storage;
 
 import jakarta.persistence.AttributeOverride;
@@ -25,13 +24,14 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
 
     // TODO it might be necessaire to sort simulation events in case a new storage is immediately built
     @Override
-    public void apply(Company company) {
+    public void apply() {
         Assert.notNull("Amount must not be null", amount);
         Assert.notNull("Unit price must not be null", unitPrice);
-        int storageCapacity = company.getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getExecutionMonth())).sum();
+        int storageCapacity = getCompany().getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getExecutionMonth())).sum();
         if (storageCapacity > 0) {
-            Storage.distributeRawMaterialAccrossStorages(company.getStorages(), storageCapacity, getExecutionMonth());
+            Storage.distributeRawMaterialAccrossStorages(getCompany().getStorages(), storageCapacity, getExecutionMonth());
         }
+        setExecuted(true);
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.jore.epoc.bo.orders;
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.MarketSimulation;
 
@@ -25,15 +24,23 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "currency", column = @Column(name = "offered_price_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money offeredPrice;
+    @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money fixedCosts;
+    @AttributeOverride(name = "amount", column = @Column(name = "variable_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "variable_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money variableCosts;
 
     @Override
-    public void apply(Company company) {
+    public void apply() {
         DistributionInMarket distributionInMarket = new DistributionInMarket();
-        distributionInMarket.setCompany(company);
         distributionInMarket.setOfferedPrice(offeredPrice);
         distributionInMarket.setIntentedProductSale(intentedProductSale);
         marketSimulation.addDistributionInMarket(distributionInMarket);
-        company.addDistributionInMarket(distributionInMarket);
+        getCompany().addDistributionInMarket(distributionInMarket);
+        setExecuted(true);
     }
 
     @Override

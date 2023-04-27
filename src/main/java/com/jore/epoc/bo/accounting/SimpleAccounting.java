@@ -8,7 +8,7 @@ import com.jore.datatypes.money.Money;
 
 import lombok.Data;
 
-public class MilchbuechliAccounting implements Accounting {
+public class SimpleAccounting implements Accounting {
     @Data
     public class AccountStub {
         private String number;
@@ -30,7 +30,7 @@ public class MilchbuechliAccounting implements Accounting {
     private Map<String, AccountStub> accounts = new HashMap<>();
     private Currency baseCurrency = Currency.getInstance("CHF");
 
-    public MilchbuechliAccounting() {
+    public SimpleAccounting() {
         setBaseCurrency(baseCurrency);
     }
 
@@ -68,10 +68,15 @@ public class MilchbuechliAccounting implements Accounting {
         return null;
     }
 
+    public void setBalanceForAccount(String accountNumber, Money balance) {
+        accounts.get(accountNumber).setBalance(balance);
+    }
+
     @Override
     public void setBaseCurrency(Currency baseCurrency) {
         this.baseCurrency = baseCurrency;
         accounts.put(BANK, new AccountStub(Money.of(baseCurrency, 0)));
         accounts.put(LONG_TERM_DEBT, new AccountStub(Money.of(baseCurrency, 0)));
+        accounts.put(IMMOBILIEN, new AccountStub(Money.of(baseCurrency, 0)));
     }
 }

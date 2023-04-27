@@ -32,8 +32,8 @@ class CompanyTests {
         assertEquals(5, simulationOrders.get(4).getSortOrder());
     }
 
-    private AdjustCreditLineOrder createAdjustCreditLineOrder() {
-        AdjustCreditLineOrder result = new AdjustCreditLineOrder();
+    private AbstractSimulationOrder createAdjustCreditLineOrder() {
+        AbstractSimulationOrder result = new AdjustCreditLineOrder();
         result.setExecutionMonth(YearMonth.of(2020, 1));
         return result;
     }

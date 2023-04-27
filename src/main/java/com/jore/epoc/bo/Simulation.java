@@ -128,8 +128,7 @@ public class Simulation extends BusinessObject {
         for (CompanySimulationStep companySimulationStep : simulationStep.getCompanySimulationSteps()) {
             Company company = companySimulationStep.getCompany();
             for (SimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationMonth)) {
-                simulationOrder.apply(company);
-                simulationOrder.setExecuted(true);
+                simulationOrder.apply();
             }
             company.manufactureProducts(simulationStep.getSimulationMonth());
             company.chargeStorageCost(simulationStep.getSimulationMonth());

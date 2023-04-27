@@ -6,6 +6,7 @@ import com.jore.datatypes.money.Money;
 public interface Accounting {
     public static final String LONG_TERM_DEBT = "2450";
     public static final String BANK = "1020";
+    public static final String IMMOBILIEN = "1600";
 
     void book(BookingRecord bookingRecord);
 

@@ -14,7 +14,7 @@ import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.Accounting;
 import com.jore.epoc.bo.accounting.BookingRecord;
-import com.jore.epoc.bo.accounting.MilchbuechliAccounting;
+import com.jore.epoc.bo.accounting.SimpleAccounting;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.jpa.BusinessObject;
 
@@ -53,7 +53,7 @@ public class Company extends BusinessObject {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
     @Transient
-    private Accounting accounting = new MilchbuechliAccounting();
+    private Accounting accounting = new SimpleAccounting();
 
     public void addCompanySimulationStep(CompanySimulationStep companySimulationStep) {
         companySimulationStep.setCompany(this);

@@ -1,15 +1,16 @@
 package com.jore.epoc.bo.orders;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
-
-import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.Message;
+import com.jore.epoc.bo.MessageLevel;
+import com.jore.epoc.bo.accounting.BookingRecord;
+import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.jpa.BusinessObject;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -25,17 +26,21 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     private boolean isExecuted = false;
     @ManyToOne(optional = false)
     private Company company;
-    @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
-    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money fixedCosts;
-    @AttributeOverride(name = "amount", column = @Column(name = "variable_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "variable_cost_currency"))
-    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money variableCosts;
 
     @Override
-    public abstract void apply(Company company);
+    public abstract void apply();
 
     public abstract int getSortOrder();
+
+    protected void addMessage(String messageText, MessageLevel level) {
+        Message message = new Message();
+        message.setRelevantMonth(getExecutionMonth());
+        message.setLevel(level);
+        message.setMessage(messageText);
+        company.addMessage(message);
+    }
+
+    protected void book(LocalDate bookingDate, String bookingText, String debitAccount, String creditAccount, Money bookingAmount) {
+        company.book(new BookingRecord(bookingDate, bookingText, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount)));
+    }
 }
