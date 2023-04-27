@@ -28,7 +28,7 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     private Percent interestRate;
 
     @Override
-    public void apply() {
+    public void execute() {
         if (direction.equals(CreditEventDirection.INCREASE)) {
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Increase credit line by " + adjustAmount, Accounting.BANK, Accounting.LONG_TERM_DEBT, adjustAmount);
         } else {

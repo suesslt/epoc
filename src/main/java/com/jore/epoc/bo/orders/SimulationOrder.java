@@ -5,7 +5,7 @@ import java.time.YearMonth;
 import com.jore.epoc.bo.Company;
 
 public interface SimulationOrder {
-    void apply();
+    void execute();
 
     Company getCompany();
 

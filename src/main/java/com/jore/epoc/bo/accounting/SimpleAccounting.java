@@ -78,5 +78,6 @@ public class SimpleAccounting implements Accounting {
         accounts.put(BANK, new AccountStub(Money.of(baseCurrency, 0)));
         accounts.put(LONG_TERM_DEBT, new AccountStub(Money.of(baseCurrency, 0)));
         accounts.put(IMMOBILIEN, new AccountStub(Money.of(baseCurrency, 0)));
+        accounts.put(ROHWAREN, new AccountStub(Money.of(baseCurrency, 0)));
     }
 }

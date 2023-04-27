@@ -34,7 +34,7 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
     private Money variableCosts;
 
     @Override
-    public void apply() {
+    public void execute() {
         DistributionInMarket distributionInMarket = new DistributionInMarket();
         distributionInMarket.setOfferedPrice(offeredPrice);
         distributionInMarket.setIntentedProductSale(intentedProductSale);

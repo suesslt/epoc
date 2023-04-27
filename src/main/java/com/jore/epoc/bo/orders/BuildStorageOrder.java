@@ -6,6 +6,9 @@ import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Message;
 import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.Storage;
+import com.jore.epoc.bo.accounting.Accounting;
+import com.jore.epoc.bo.accounting.BookingRecord;
+import com.jore.epoc.bo.accounting.DebitCreditAmount;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -35,7 +38,7 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
     private Money constructionCostsPerUnit;
 
     @Override
-    public void apply() {
+    public void execute() {
         Money storageCosts = constructionCosts.add(constructionCostsPerUnit.multiply(capacity));
         if (getCompany().checkFunds(storageCosts)) {
             Storage storage = new Storage();
@@ -43,6 +46,9 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
             storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
             storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
             getCompany().addStorage(storage);
+            BookingRecord bookingRecord = new BookingRecord(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", new DebitCreditAmount(Accounting.IMMOBILIEN, Accounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity))));
+            getCompany().book(bookingRecord);
+            setExecuted(true);
         } else {
             this.setExecutionMonth(getExecutionMonth().plusMonths(1));
             Message message = new Message();
@@ -52,7 +58,6 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
             getCompany().addMessage(message);
             log.info(message);
         }
-        setExecuted(true);
     }
 
     @Override

@@ -28,7 +28,7 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     private Company company;
 
     @Override
-    public abstract void apply();
+    public abstract void execute();
 
     public abstract int getSortOrder();
 

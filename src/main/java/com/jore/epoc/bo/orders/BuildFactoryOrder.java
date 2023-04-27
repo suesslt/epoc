@@ -43,7 +43,7 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
     private Money constructionCostsPerLine;
 
     @Override
-    public void apply() {
+    public void execute() {
         Money factoryCosts = constructionCosts.add(constructionCostsPerLine.multiply(productionLines));
         if (getCompany().checkFunds(factoryCosts)) {
             Factory factory = new Factory();

@@ -104,7 +104,7 @@ public class Storage extends BusinessObject {
     }
 
     public boolean isBuiltAndReady(YearMonth storageMonth) {
-        return !storageMonth.isBefore(storageStartMonth);
+        return !Objects.requireNonNull(storageMonth, "Storage Month must not be null.").isBefore(Objects.requireNonNull(storageStartMonth, "Storage start month must not be null."));
     }
 
     public int removeProducts(int productsToRemove) {
