@@ -3,19 +3,18 @@ package com.jore.epoc.bo;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.jore.Assert;
+import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.Accounting;
-import com.jore.epoc.bo.accounting.BookingEvent;
-import com.jore.epoc.bo.accounting.InterestRateBookingEvent;
+import com.jore.epoc.bo.accounting.BookingRecord;
 import com.jore.epoc.bo.accounting.MilchbuechliAccounting;
-import com.jore.epoc.bo.accounting.ProductsSoldBookingEvent;
-import com.jore.epoc.bo.accounting.StorageCostBookingEvent;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.jpa.BusinessObject;
 
@@ -23,7 +22,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,8 +38,6 @@ public class Company extends BusinessObject {
     private String name;
     @ManyToOne(optional = false)
     private Simulation simulation;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
-    private CreditLine creditLine;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<UserInCompanyRole> users = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
@@ -54,6 +50,8 @@ public class Company extends BusinessObject {
     private List<CompanySimulationStep> companySimulationSteps = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<AbstractSimulationOrder> simulationOrders = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
+    private List<Message> messages = new ArrayList<>();
     @Transient
     private Accounting accounting = new MilchbuechliAccounting();
 
@@ -81,7 +79,11 @@ public class Company extends BusinessObject {
         return userInCompanyRole;
     }
 
-    // TODO Try if use of interface possible
+    public void addMessage(Message message) {
+        message.setCompany(this);
+        messages.add(message);
+    }
+
     public void addSimulationOrder(AbstractSimulationOrder simulationOrder) {
         Assert.notNull("Execution month in simulation order must not be null", simulationOrder.getExecutionMonth());
         simulationOrder.setCompany(this);
@@ -93,29 +95,21 @@ public class Company extends BusinessObject {
         storages.add(storage);
     }
 
-    public void book(BookingEvent bookingEvent) {
-        bookingEvent.book(accounting);
+    public void book(BookingRecord bookingRecord) {
+        accounting.book(bookingRecord);
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
-        if (creditLine != null) {
-            InterestRateBookingEvent bookingEvent = new InterestRateBookingEvent();
-            bookingEvent.setBookingText("Interest cost for month " + simulationMonth + " at rate " + creditLine.getInterestRate());
-            bookingEvent.setBookingDate(simulationMonth.atDay(1));
-            bookingEvent.setAmount(creditLine.getMonthlyInterest());
-            book(bookingEvent);
-        }
     }
 
     public void chargeStorageCost(YearMonth simulationMonth) {
         Optional<Money> storageCost = storages.stream().map(storage -> storage.getCost()).reduce((m1, m2) -> m1.add(m2));
         if (storageCost.isPresent()) {
-            StorageCostBookingEvent bookingEvent = new StorageCostBookingEvent();
-            bookingEvent.setBookingText("Storage cost for month " + simulationMonth);
-            bookingEvent.setBookingDate(simulationMonth.atDay(1));
-            bookingEvent.setAmount(storageCost.get());
-            book(bookingEvent);
         }
+    }
+
+    public boolean checkFunds(Money costsToBeCharged) {
+        return accounting.checkFunds(costsToBeCharged);
     }
 
     public List<DistributionInMarket> getDistributionInMarkets() {
@@ -127,7 +121,12 @@ public class Company extends BusinessObject {
     }
 
     public List<AbstractSimulationOrder> getOrdersForExecutionIn(YearMonth simulationMonth) {
-        return simulationOrders.stream().filter(order -> order.getExecutionMonth().equals(simulationMonth) && !order.isExecuted()).collect(Collectors.toList());
+        return simulationOrders.stream().filter(order -> order.getExecutionMonth().equals(simulationMonth) && !order.isExecuted()).sorted(new Comparator<AbstractSimulationOrder>() {
+            @Override
+            public int compare(AbstractSimulationOrder o1, AbstractSimulationOrder o2) {
+                return o1.getSortOrder() - o2.getSortOrder();
+            }
+        }).collect(Collectors.toList());
     }
 
     public Money getPnL() {
@@ -165,7 +164,6 @@ public class Company extends BusinessObject {
                 int amountProduced = iter.next().produce(maximumToProduce, productionMonth);
                 maximumToProduce -= amountProduced;
                 totalAmountProduced += amountProduced;
-                // TODO remove raw products
             }
             Storage.removeRawMaterialFromStorages(storages, totalAmountProduced);
             Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
@@ -179,13 +177,12 @@ public class Company extends BusinessObject {
         int maximumToSell = Math.min(Math.min(storedAmount, intentedProductSale), productMarketPotential);
         distributionInMarket.setSoldProducts(simulationMonth, maximumToSell);
         if (maximumToSell > 0) {
-            ProductsSoldBookingEvent bookingEvent = new ProductsSoldBookingEvent();
-            bookingEvent.setBookingText("Products sold for month " + simulationMonth);
-            bookingEvent.setBookingDate(simulationMonth.atDay(1));
-            bookingEvent.setAmount(sellPrice.multiply(maximumToSell));
-            book(bookingEvent);
             Storage.removeProductsFromStorages(getStorages(), maximumToSell);
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in %s. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", maximumToSell, simulationMonth, getName(), storedAmount, intentedProductSale, productMarketPotential));
+    }
+
+    public void setBaseCurrency(Currency baseCurrency) {
+        accounting.setBaseCurrency(baseCurrency);
     }
 }

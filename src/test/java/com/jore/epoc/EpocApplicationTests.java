@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.CreditEventDirection;
-import com.jore.epoc.bo.CreditLine;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.DistributionStep;
 import com.jore.epoc.bo.Factory;
@@ -238,7 +237,6 @@ class EpocApplicationTests {
         assertTrue(databaseViewer.classHasNumberOfRecords(Company.class, 6));
         assertTrue(databaseViewer.classHasNumberOfRecords(SimulationStep.class, 13));
         assertTrue(databaseViewer.classHasNumberOfRecords(DistributionStep.class, 1));
-        assertTrue(databaseViewer.classHasNumberOfRecords(CreditLine.class, 1));
         assertTrue(databaseViewer.classHasNumberOfRecords(Factory.class, 1));
         assertTrue(databaseViewer.classHasNumberOfRecords(Storage.class, 1));
         assertTrue(databaseViewer.classHasNumberOfRecords(DistributionInMarket.class, 1));

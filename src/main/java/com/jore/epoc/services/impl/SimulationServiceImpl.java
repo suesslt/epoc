@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
@@ -37,7 +38,6 @@ import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
-import com.jore.epoc.dto.CreditLineDto;
 import com.jore.epoc.dto.DistributionInMarketDto;
 import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.FactoryDto;
@@ -146,6 +146,7 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.setOwner(user.get());
             simulation.setStarted(false);
             simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.START_MONTH));
+            simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
             simulationRepository.save(simulation);
         }
     }
@@ -237,12 +238,6 @@ public class SimulationServiceImpl implements SimulationService {
                 factoryDto.setId(factory.getId());
                 companySimulationStepDto.addFactory(factoryDto);
             }
-            if (company.getCreditLine() != null) {
-                CreditLineDto creditLineDto = CreditLineDto.builder().build();
-                creditLineDto.setId(company.getCreditLine().getId());
-                creditLineDto.setAmount(company.getCreditLine().getCreditAmount());
-                companySimulationStepDto.setCreditLine(creditLineDto);
-            }
             for (Storage storage : company.getStorages()) {
                 StorageDto storageDto = StorageDto.builder().build();
                 storageDto.setId(storage.getId());
@@ -320,6 +315,7 @@ public class SimulationServiceImpl implements SimulationService {
                 Company company = new Company();
                 company.setId(companyDto.getId());
                 company.setName(companyDto.getName());
+                company.setBaseCurrency((Currency) staticDataService.getSetting(EpocSetting.BASE_CURRENCY));
                 simulation.addCompany(company);
                 companyRepository.save(company);
                 for (LoginDto loginDto : companyDto.getUsers()) {

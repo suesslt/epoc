@@ -41,9 +41,4 @@ public class CompanySimulationStep extends BusinessObject {
         }
         return result;
     }
-
-    @Override
-    public String toString() {
-        return "CompanySimulationStep [simulationStep.isOpen=" + simulationStep.isOpen() + ", company=" + company.getName() + ", isOpen=" + isOpen + "]";
-    }
 }

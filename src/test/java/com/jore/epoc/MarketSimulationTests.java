@@ -22,23 +22,20 @@ import com.jore.epoc.bo.orders.BuildStorageOrder;
 import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 class MarketSimulationTests {
     private static final Money STORAGE_COST_PER_UNIT_AND_MONTH = Money.of("CHF", 1);
     private static final int MONTHLY_CAPACITY_PER_PRODUCTION_LINE = 1000;
     private static final Money FACTORY_COST_PER_PRODUCTION_LINE = Money.of("CHF", 10);
-    private static final Money FACTORY_FIXED_COSTS = Money.of("CHF", 1000000);
+    private static final Money FACTORY_FIXED_COSTS = Money.of("CHF", 1000);
     private static final int FACTORY_TIME_TO_BUILD = 0;
     private static final Percent CREDIT_LINE_INTEREST_RATE = Percent.of("5%");
     private static final int MARKET_SIZE = 100000;
     private static final String CHF = "CHF";
-    private static final Money FACTORY_UNIT_LABOR_COST = Money.of("CHF", 10);
-    private static final Money FACTORY_UNIT_PRODUCTION_COST = Money.of("CHF", 10);
+    private static final Money FACTORY_UNIT_LABOR_COST = Money.of("CHF", 1);
+    private static final Money FACTORY_UNIT_PRODUCTION_COST = Money.of("CHF", 1);
     private static final int STORAGE_TIME_TO_BUILD = 0;
-    private static final Money RAW_MATERIAL_UNIT_PRICE = Money.of("CHF", 20);
-    private int id = 0;
+    private static final Money RAW_MATERIAL_UNIT_PRICE = Money.of("CHF", 1);
+    private int id = 1;
 
     @Test
     public void testSoldProductsFullDistributionForOneCompany() {
@@ -48,7 +45,7 @@ class MarketSimulationTests {
         simulation.addMarketSimulation(marketSimulation);
         Company companyA = createCompany("Company A");
         simulation.addCompany(companyA);
-        addAdjustCreditLineOrderToCompany(companyA, YearMonth.of(2020, 1), Money.of(CHF, 10000000));
+        addAdjustCreditLineOrderToCompany(companyA, YearMonth.of(2020, 1), Money.of(CHF, 1000000000));
         addBuildStorageOrderToCompany(companyA, YearMonth.of(2020, 1), 1000000, 0);
         addBuyRawMaterialOrderToCompany(companyA, YearMonth.of(2020, 1), 1000000);
         addBuildFactoryOrderToCompany(companyA, YearMonth.of(2020, 1), 10);
@@ -75,12 +72,12 @@ class MarketSimulationTests {
         Company companyB = createCompany("Company B");
         simulation.addCompany(companyB);
         addAdjustCreditLineOrderToCompany(companyA, YearMonth.of(2020, 1), Money.of(CHF, 10000000));
-        addBuildStorageOrderToCompany(companyA, YearMonth.of(2020, 1), 1000000, 0);
+        addBuildStorageOrderToCompany(companyA, YearMonth.of(2020, 1), 100000, 0);
         addBuyRawMaterialOrderToCompany(companyA, YearMonth.of(2020, 1), 1000000);
         addBuildFactoryOrderToCompany(companyA, YearMonth.of(2020, 1), 10);
         addEnterMarketOrderToCompany(companyA, YearMonth.of(2020, 1), marketSimulation, 1000, Money.of(CHF, 50));
         addAdjustCreditLineOrderToCompany(companyB, YearMonth.of(2020, 1), Money.of(CHF, 10000000));
-        addBuildStorageOrderToCompany(companyB, YearMonth.of(2020, 1), 1000000, 0);
+        addBuildStorageOrderToCompany(companyB, YearMonth.of(2020, 1), 100000, 0);
         addBuyRawMaterialOrderToCompany(companyB, YearMonth.of(2020, 1), 1000000);
         addBuildFactoryOrderToCompany(companyB, YearMonth.of(2020, 1), 10);
         addEnterMarketOrderToCompany(companyB, YearMonth.of(2020, 1), marketSimulation, 1000, Money.of(CHF, 50));

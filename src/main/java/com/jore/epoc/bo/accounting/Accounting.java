@@ -1,19 +1,21 @@
 package com.jore.epoc.bo.accounting;
 
-import java.time.LocalDate;
-
+import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 
 public interface Accounting {
-    int credit(String rubrik, Money amount);
+    public static final String LONG_TERM_DEBT = "2450";
+    public static final String BANK = "1020";
 
-    int debit(String rubrik, Money amount);
+    void book(BookingRecord bookingRecord);
+
+    boolean checkFunds(Money costsToBeCharged);
+
+    Money getBank();
+
+    Money getLongTermDebt();
 
     Money getPnL();
 
-    void journal(int creditBooking, int debitBooking, LocalDate bookingDate, String bookingText);
-
-    int loss(String rubrik, Money amount);
-
-    int profit(String rubrik, Money amount);
+    void setBaseCurrency(Currency baseCurrency);
 }

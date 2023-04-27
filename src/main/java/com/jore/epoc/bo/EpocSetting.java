@@ -33,6 +33,7 @@ public class EpocSetting extends BusinessObject {
     public static final String PRODUCT_LIFECYCLE_DURATION = "SET0019";
     public static final String DISTRIBUTION_FIXED_COSTS = "SET0020";
     public static final String DISTRIBUTION_VARIABLE_COSTS = "SET0021";
+    public static final String BASE_CURRENCY = "SET0022";
     private String settingKey;
     private String settingFormat;
     private String valueText;

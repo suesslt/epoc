@@ -6,7 +6,6 @@ import com.jore.Assert;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.Storage;
-import com.jore.epoc.bo.accounting.BuyRawMaterialBookingEvent;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -31,12 +30,12 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
         Assert.notNull("Unit price must not be null", unitPrice);
         int storageCapacity = company.getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getExecutionMonth())).sum();
         if (storageCapacity > 0) {
-            BuyRawMaterialBookingEvent buyRawMaterialBookingEvent = new BuyRawMaterialBookingEvent();
-            buyRawMaterialBookingEvent.setBookingText("Buy " + storageCapacity + " units of raw material");
-            buyRawMaterialBookingEvent.setBookingDate(getExecutionMonth().atDay(FIRST_OF_MONTH));
-            buyRawMaterialBookingEvent.setAmount(unitPrice.multiply(storageCapacity));
-            company.book(buyRawMaterialBookingEvent);
             Storage.distributeRawMaterialAccrossStorages(company.getStorages(), storageCapacity, getExecutionMonth());
         }
+    }
+
+    @Override
+    public int getSortOrder() {
+        return 3;
     }
 }

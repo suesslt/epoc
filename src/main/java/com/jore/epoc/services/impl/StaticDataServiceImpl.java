@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.formatter.MoneyDecimalDigits;
 import com.jore.datatypes.formatter.MoneyFormatter;
 import com.jore.datatypes.percent.Percent;
@@ -59,6 +60,9 @@ public class StaticDataServiceImpl implements StaticDataService {
                 break;
             case "YearMonth":
                 result = YearMonth.parse(setting.get().getValueText());
+                break;
+            case "Currency":
+                result = Currency.getInstance(setting.get().getValueText());
                 break;
             default:
                 log.warn("Invalid setting format: " + setting.get().getSettingFormat());

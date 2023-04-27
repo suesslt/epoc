@@ -6,7 +6,6 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.accounting.ProductionCostBookingEvent;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.AttributeOverride;
@@ -42,11 +41,6 @@ public class Factory extends BusinessObject {
         int result = isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine) : 0;
         result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
         if (result > 0) {
-            ProductionCostBookingEvent bookingEvent = new ProductionCostBookingEvent();
-            bookingEvent.setBookingText("Production of " + result + " in month " + productionMonth);
-            bookingEvent.setBookingDate(productionMonth.atDay(1));
-            bookingEvent.setAmount(unitProductionCost.multiply(result).add(unitLabourCost.multiply(result)));
-            company.book(bookingEvent);
         }
         return result;
     }

@@ -1,46 +1,77 @@
 package com.jore.epoc.bo.accounting;
 
-import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 
-public class MilchbuechliAccounting implements Accounting {
-    private Money credit;
-    private Money debit;
-    private Money profit;
-    private Money loss;
+import lombok.Data;
 
-    @Override
-    public int credit(String rubrik, Money amount) {
-        credit = Money.add(credit, amount);
-        return 0;
+public class MilchbuechliAccounting implements Accounting {
+    @Data
+    public class AccountStub {
+        private String number;
+        private Money balance;
+
+        public AccountStub(Money initialBalance) {
+            balance = initialBalance;
+        }
+
+        public void credit(Money amount) {
+            balance = Money.subtract(balance, amount);
+        }
+
+        public void debit(Money amount) {
+            balance = Money.add(balance, amount);
+        }
+    }
+
+    private Map<String, AccountStub> accounts = new HashMap<>();
+    private Currency baseCurrency = Currency.getInstance("CHF");
+
+    public MilchbuechliAccounting() {
+        setBaseCurrency(baseCurrency);
     }
 
     @Override
-    public int debit(String rubrik, Money amount) {
-        debit = Money.add(debit, amount);
-        return 0;
+    public void book(BookingRecord bookingRecord) {
+        String debitAccountNumber = bookingRecord.amount().debitAccount();
+        AccountStub debitAccount = accounts.get(debitAccountNumber);
+        debitAccount.debit(bookingRecord.amount().amount());
+        String creditAccountNumber = bookingRecord.amount().creditAccount();
+        AccountStub creditAccount = accounts.get(creditAccountNumber);
+        creditAccount.credit(bookingRecord.amount().amount());
+    }
+
+    @Override
+    public boolean checkFunds(Money costsToBeCharged) {
+        return getBank().compareTo(costsToBeCharged) > 0;
+    }
+
+    public Money getBalanceForAccount(String accountNumber) {
+        return accounts.get(accountNumber).getBalance();
+    }
+
+    @Override
+    public Money getBank() {
+        return accounts.get(BANK).getBalance();
+    }
+
+    @Override
+    public Money getLongTermDebt() {
+        return accounts.get(LONG_TERM_DEBT).getBalance();
     }
 
     @Override
     public Money getPnL() {
-        return Money.add(Money.subtract(credit, debit), Money.subtract(profit, loss));
+        return null;
     }
 
     @Override
-    public void journal(int creditBooking, int debitBooking, LocalDate bookingDate, String bookingText) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public int loss(String rubrik, Money amount) {
-        loss = Money.add(loss, amount);
-        return 0;
-    }
-
-    @Override
-    public int profit(String rubrik, Money amount) {
-        profit = Money.add(profit, amount);
-        return 0;
+    public void setBaseCurrency(Currency baseCurrency) {
+        this.baseCurrency = baseCurrency;
+        accounts.put(BANK, new AccountStub(Money.of(baseCurrency, 0)));
+        accounts.put(LONG_TERM_DEBT, new AccountStub(Money.of(baseCurrency, 0)));
     }
 }

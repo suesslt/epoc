@@ -36,4 +36,6 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
 
     @Override
     public abstract void apply(Company company);
+
+    public abstract int getSortOrder();
 }

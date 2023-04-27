@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.jore.epoc.bo.orders.AbstractSimulationOrder;
+import org.hibernate.annotations.Type;
+
+import com.jore.datatypes.percent.Percent;
+import com.jore.epoc.bo.orders.SimulationOrder;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -28,6 +31,8 @@ public class Simulation extends BusinessObject {
     private Integer nrOfSteps;
     private boolean isStarted = false;
     private boolean isFinished = false;
+    @Type(com.jore.datatypes.hibernate.PercentUserType.class)
+    private Percent interestRate;
     @ManyToOne(optional = false)
     private Login owner;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
@@ -122,7 +127,7 @@ public class Simulation extends BusinessObject {
         SimulationStep simulationStep = getActiveSimulationStep().get();
         for (CompanySimulationStep companySimulationStep : simulationStep.getCompanySimulationSteps()) {
             Company company = companySimulationStep.getCompany();
-            for (AbstractSimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationMonth)) {
+            for (SimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationMonth)) {
                 simulationOrder.apply(company);
                 simulationOrder.setExecuted(true);
             }

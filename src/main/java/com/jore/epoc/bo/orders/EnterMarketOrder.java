@@ -35,4 +35,9 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
         marketSimulation.addDistributionInMarket(distributionInMarket);
         company.addDistributionInMarket(distributionInMarket);
     }
+
+    @Override
+    public int getSortOrder() {
+        return 5;
+    }
 }

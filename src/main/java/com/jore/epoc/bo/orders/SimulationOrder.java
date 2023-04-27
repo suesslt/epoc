@@ -6,6 +6,8 @@ import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 
 public interface SimulationOrder {
+    void apply(Company company);
+
     Company getCompany();
 
     YearMonth getExecutionMonth();
@@ -16,5 +18,7 @@ public interface SimulationOrder {
 
     boolean isExecuted();
 
-    void apply(Company company);
+    void setCompany(Company company);
+
+    void setExecuted(boolean executed);
 }

@@ -4,15 +4,18 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.Message;
+import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.Storage;
-import com.jore.epoc.bo.accounting.BuildInfrastructureBookingEvent;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 @Getter
 @Setter
@@ -26,15 +29,26 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
 
     @Override
     public void apply(Company company) {
-        Storage storage = new Storage();
-        storage.setCapacity(capacity);
-        storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
-        storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
-        company.addStorage(storage);
-        BuildInfrastructureBookingEvent bookingEvent = new BuildInfrastructureBookingEvent();
-        bookingEvent.setBookingText("Storage construction");
-        bookingEvent.setBookingDate(getExecutionMonth().atDay(FIRST_OF_MONTH));
-        bookingEvent.setAmount(getFixedCosts().add(getVariableCosts().multiply(capacity)));
-        company.book(bookingEvent);
+        Money storageCosts = getFixedCosts().add(getVariableCosts().multiply(capacity));
+        if (company.checkFunds(storageCosts)) {
+            Storage storage = new Storage();
+            storage.setCapacity(capacity);
+            storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
+            storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
+            company.addStorage(storage);
+        } else {
+            this.setExecutionMonth(getExecutionMonth().plusMonths(1));
+            Message message = new Message();
+            message.setRelevantMonth(getExecutionMonth());
+            message.setLevel(MessageLevel.WARNING);
+            message.setMessage("Could not create storage due to insufficent funds. Trying next month again.");
+            company.addMessage(message);
+            log.info(message);
+        }
+    }
+
+    @Override
+    public int getSortOrder() {
+        return 2;
     }
 }
