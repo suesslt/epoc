@@ -26,6 +26,7 @@ import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.UserInCompanyRole;
+import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
@@ -182,7 +183,6 @@ public class SimulationServiceImpl implements SimulationService {
         enterMarketOrder.setIntentedProductSale(enterMarketDto.getIntentedProductSales());
         enterMarketOrder.setOfferedPrice(enterMarketDto.getOfferedPrice());
         enterMarketOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_FIXED_COSTS));
-        enterMarketOrder.setVariableCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_VARIABLE_COSTS));
         companySimulationStep.getCompany().addSimulationOrder(enterMarketOrder);
     }
 
@@ -315,6 +315,7 @@ public class SimulationServiceImpl implements SimulationService {
                 Company company = new Company();
                 company.setId(companyDto.getId());
                 company.setName(companyDto.getName());
+                company.setFinancialAccounting(new FinancialAccounting());
                 company.setBaseCurrency((Currency) staticDataService.getSetting(EpocSetting.BASE_CURRENCY));
                 simulation.addCompany(company);
                 companyRepository.save(company);

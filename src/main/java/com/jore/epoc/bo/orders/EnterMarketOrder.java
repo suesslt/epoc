@@ -5,6 +5,8 @@ import org.hibernate.annotations.CompositeType;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.MarketSimulation;
+import com.jore.epoc.bo.MessageLevel;
+import com.jore.epoc.bo.accounting.FinancialAccounting;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -17,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EnterMarketOrder extends AbstractSimulationOrder {
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true) // TODO Why optional?
     private MarketSimulation marketSimulation;
     private int intentedProductSale;
     @AttributeOverride(name = "amount", column = @Column(name = "offered_price_amount"))
@@ -28,23 +30,29 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money fixedCosts;
-    @AttributeOverride(name = "amount", column = @Column(name = "variable_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "variable_cost_currency"))
-    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money variableCosts;
 
     @Override
     public void execute() {
-        DistributionInMarket distributionInMarket = new DistributionInMarket();
-        distributionInMarket.setOfferedPrice(offeredPrice);
-        distributionInMarket.setIntentedProductSale(intentedProductSale);
-        marketSimulation.addDistributionInMarket(distributionInMarket);
-        getCompany().addDistributionInMarket(distributionInMarket);
-        setExecuted(true);
+        if (getCompany().checkFunds(fixedCosts)) {
+            addDistributionInMarket();
+            book(getExecutionMonth().atDay(1), "Entry into market", FinancialAccounting.SERVICES, FinancialAccounting.BANK, fixedCosts);
+            addMessage(String.format("Successfully set up entry into market %s.", marketSimulation.getMarket().getName()), MessageLevel.INFORMATION);
+            setExecuted(true);
+        } else {
+            addMessage(String.format("Could not enter market %s due to insufficient funding", marketSimulation.getMarket().getName()), MessageLevel.WARNING);
+        }
     }
 
     @Override
     public int getSortOrder() {
         return 5;
+    }
+
+    private void addDistributionInMarket() {
+        DistributionInMarket distributionInMarket = new DistributionInMarket();
+        distributionInMarket.setOfferedPrice(offeredPrice);
+        distributionInMarket.setIntentedProductSale(intentedProductSale);
+        marketSimulation.addDistributionInMarket(distributionInMarket);
+        getCompany().addDistributionInMarket(distributionInMarket);
     }
 }

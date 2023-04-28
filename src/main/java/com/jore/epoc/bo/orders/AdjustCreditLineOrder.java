@@ -7,7 +7,7 @@ import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.bo.MessageLevel;
-import com.jore.epoc.bo.accounting.Accounting;
+import com.jore.epoc.bo.accounting.FinancialAccounting;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -30,9 +30,9 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     @Override
     public void execute() {
         if (direction.equals(CreditEventDirection.INCREASE)) {
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Increase credit line by " + adjustAmount, Accounting.BANK, Accounting.LONG_TERM_DEBT, adjustAmount);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Increase credit line by " + adjustAmount, FinancialAccounting.BANK, FinancialAccounting.LONG_TERM_DEBT, adjustAmount);
         } else {
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + adjustAmount, Accounting.LONG_TERM_DEBT, Accounting.BANK, adjustAmount);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + adjustAmount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, adjustAmount);
         }
         addMessage(String.format("%s credit line for %s.", direction, adjustAmount), MessageLevel.INFORMATION);
         setExecuted(true);

@@ -6,18 +6,16 @@ import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Factory;
 import com.jore.epoc.bo.Message;
 import com.jore.epoc.bo.MessageLevel;
-import com.jore.epoc.bo.accounting.Accounting;
 import com.jore.epoc.bo.accounting.BookingRecord;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
+import com.jore.epoc.bo.accounting.FinancialAccounting;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Entity
 @Getter
 @Setter
@@ -53,17 +51,14 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
             factory.setUnitLabourCost(unitLabourCost);
             factory.setUnitProductionCost(unitProductionCost);
             getCompany().addFactory(factory);
-            BookingRecord bookingRecord = new BookingRecord(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", new DebitCreditAmount(Accounting.IMMOBILIEN, Accounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines))));
+            BookingRecord bookingRecord = new BookingRecord(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", new DebitCreditAmount(FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines))));
             getCompany().book(bookingRecord);
             setExecuted(true);
         } else {
-            this.setExecutionMonth(getExecutionMonth().plusMonths(1));
             Message message = new Message();
-            message.setRelevantMonth(getExecutionMonth());
             message.setLevel(MessageLevel.WARNING);
             message.setMessage("Could not create factory due to insufficent funds. Trying next month again.");
             getCompany().addMessage(message);
-            log.info(message);
         }
     }
 

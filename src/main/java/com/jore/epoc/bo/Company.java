@@ -12,9 +12,8 @@ import java.util.stream.Collectors;
 import com.jore.Assert;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.accounting.Accounting;
 import com.jore.epoc.bo.accounting.BookingRecord;
-import com.jore.epoc.bo.accounting.SimpleAccounting;
+import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.jpa.BusinessObject;
 
@@ -22,7 +21,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -38,6 +37,8 @@ public class Company extends BusinessObject {
     private String name;
     @ManyToOne(optional = false)
     private Simulation simulation;
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    private FinancialAccounting accounting;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<UserInCompanyRole> users = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
@@ -52,8 +53,6 @@ public class Company extends BusinessObject {
     private List<AbstractSimulationOrder> simulationOrders = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
-    @Transient
-    private Accounting accounting = new SimpleAccounting();
 
     public void addCompanySimulationStep(CompanySimulationStep companySimulationStep) {
         companySimulationStep.setCompany(this);
@@ -184,5 +183,9 @@ public class Company extends BusinessObject {
 
     public void setBaseCurrency(Currency baseCurrency) {
         accounting.setBaseCurrency(baseCurrency);
+    }
+
+    public void setFinancialAccounting(FinancialAccounting accounting) {
+        this.accounting = accounting;
     }
 }
