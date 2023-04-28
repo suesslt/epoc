@@ -60,7 +60,7 @@ class OrderTests {
         order.setConstructionCostsPerLine(Money.of("CHF", 1000));
         company.addSimulationOrder(order);
         order.execute();
-        assertEquals(0, company.getMessages().size());
+        assertEquals(1, company.getMessages().size());
         assertTrue(order.isExecuted());
         assertEquals(Money.of("CHF", 90000), accounting.getBalanceForAccount(FinancialAccounting.BANK));
         assertEquals(Money.of("CHF", 1010000), accounting.getBalanceForAccount(FinancialAccounting.IMMOBILIEN));
@@ -100,7 +100,7 @@ class OrderTests {
         order.setStorageCostPerUnitAndMonth(Money.of("CHF", 1));
         company.addSimulationOrder(order);
         order.execute();
-        assertEquals(0, company.getMessages().size());
+        assertEquals(1, company.getMessages().size());
         assertEquals(YearMonth.of(2023, 1), order.getExecutionMonth());
         assertTrue(order.isExecuted());
         assertEquals(Money.of("CHF", 99000), accounting.getBalanceForAccount(FinancialAccounting.BANK));
@@ -169,7 +169,7 @@ class OrderTests {
         order.setUnitPrice(Money.of("CHF", 30));
         company.addSimulationOrder(order);
         order.execute();
-        assertEquals(0, company.getMessages().size());
+        assertEquals(1, company.getMessages().size());
         assertEquals(YearMonth.of(2023, 1), order.getExecutionMonth());
         assertTrue(order.isExecuted());
         assertEquals(Money.of("CHF", 1), accounting.getBalanceForAccount(FinancialAccounting.BANK));
@@ -177,20 +177,36 @@ class OrderTests {
     }
 
     @Test
-    public void testDecreaseCreditAmount() {
+    public void testDecreaseCreditAmountSuccessfully() {
         Company company = new Company();
         FinancialAccounting accounting = new FinancialAccounting();
+        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 100002));
         company.setAccounting(accounting);
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(YearMonth.of(2023, 1));
-        order.setDirection(CreditEventDirection.INCREASE);
+        order.setDirection(CreditEventDirection.DECREASE);
         order.setAdjustAmount(Money.of("CHF", 100001));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
         assertTrue(order.isExecuted());
-        assertEquals(Money.of("CHF", 100001), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 100001).negate(), accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT));
+        assertEquals(Money.of("CHF", 1), accounting.getBalanceForAccount(FinancialAccounting.BANK));
+    }
+
+    @Test
+    public void testDecreaseCreditAmountUnsuccessfully() {
+        Company company = new Company();
+        FinancialAccounting accounting = new FinancialAccounting();
+        company.setAccounting(accounting);
+        AdjustCreditLineOrder order = new AdjustCreditLineOrder();
+        order.setExecutionMonth(YearMonth.of(2023, 1));
+        order.setDirection(CreditEventDirection.DECREASE);
+        order.setAdjustAmount(Money.of("CHF", 100001));
+        company.addSimulationOrder(order);
+        order.execute();
+        assertEquals(1, company.getMessages().size());
+        assertFalse(order.isExecuted());
+        assertEquals(Money.of("CHF", 0), accounting.getBalanceForAccount(FinancialAccounting.BANK));
     }
 
     @Test
@@ -224,13 +240,13 @@ class OrderTests {
         company.setAccounting(accounting);
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(YearMonth.of(2023, 1));
-        order.setDirection(CreditEventDirection.DECREASE);
+        order.setDirection(CreditEventDirection.INCREASE);
         order.setAdjustAmount(Money.of("CHF", 100001));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
         assertTrue(order.isExecuted());
-        assertEquals(Money.of("CHF", 100001).negate(), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 100001), accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT));
+        assertEquals(Money.of("CHF", 100001), accounting.getBalanceForAccount(FinancialAccounting.BANK));
+        assertEquals(Money.of("CHF", 100001).negate(), accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT));
     }
 }

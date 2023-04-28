@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.DistributionStep;
 import com.jore.epoc.bo.Factory;
@@ -97,7 +96,7 @@ class EpocApplicationTests {
         userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
         List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
-        simulationService.adjustCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().direction(CreditEventDirection.INCREASE).amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.increaseCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
         simulationService.buildStorage(companySimulationStep1A.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
         simulationService.buildFactory(companySimulationStep1A.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStep1A.get().getId());
@@ -151,28 +150,33 @@ class EpocApplicationTests {
         Optional<CompanySimulationStepDto> companySimulationStep3A = simulationService.getCurrentCompanySimulationStep(simulations3A.get(0).getCompanyId());
         simulationService.enterMarket(companySimulationStep3A.get().getId(),
                 EnterMarketDto.builder().marketId(companySimulationStep3A.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of("CHF", 50)).executionMonth(companySimulationStep3A.get().getSimulationMonth()).build());
+        simulationService.setIntentedSalesAndPrice(companySimulationStep3A.get().getId(), companySimulationStep3A.get().getMarkets().get(0).getId(), 1000, Money.of("CHF", 50), companySimulationStep1A.get().getSimulationMonth());
         simulationService.finishMoveFor(companySimulationStep3A.get().getId());
         userManagementService.logout();
         //
         // Step 3 for Company B
         //
-        {
-            userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
-            List<OpenUserSimulationDto> simulations3B = simulationService.getOpenSimulationsForUser(RETO);
-            Optional<CompanySimulationStepDto> companySimulationStep3B = simulationService.getCurrentCompanySimulationStep(simulations3B.get(0).getCompanyId());
-            simulationService.finishMoveFor(companySimulationStep3B.get().getId());
-            userManagementService.logout();
-        }
+        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
+        List<OpenUserSimulationDto> simulations3B = simulationService.getOpenSimulationsForUser(RETO);
+        Optional<CompanySimulationStepDto> companySimulationStep3B = simulationService.getCurrentCompanySimulationStep(simulations3B.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep3B.get().getId());
+        userManagementService.logout();
+        //
+        // Repeat getting Step 3 for Company B
+        //
+        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
+        List<OpenUserSimulationDto> simulations3BR = simulationService.getOpenSimulationsForUser(RETO);
+        Optional<CompanySimulationStepDto> companySimulationStep3BR = simulationService.getCurrentCompanySimulationStep(simulations3BR.get(0).getCompanyId());
+        assertEquals(companySimulationStep3B.get().getId(), companySimulationStep3BR.get().getId());
+        userManagementService.logout();
         //
         // Step 3 for Company C
         //
-        {
-            userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
-            List<OpenUserSimulationDto> simulations3C = simulationService.getOpenSimulationsForUser(FELIX);
-            Optional<CompanySimulationStepDto> companySimulationStep3C = simulationService.getCurrentCompanySimulationStep(simulations3C.get(0).getCompanyId());
-            simulationService.finishMoveFor(companySimulationStep3C.get().getId());
-            userManagementService.logout();
-        }
+        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
+        List<OpenUserSimulationDto> simulations3C = simulationService.getOpenSimulationsForUser(FELIX);
+        Optional<CompanySimulationStepDto> companySimulationStep3C = simulationService.getCurrentCompanySimulationStep(simulations3C.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStep3C.get().getId());
+        userManagementService.logout();
         //
         // Step 4 for Company A
         //

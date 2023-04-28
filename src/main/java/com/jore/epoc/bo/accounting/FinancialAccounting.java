@@ -24,6 +24,7 @@ public class FinancialAccounting extends BusinessObject {
     public static final String IMMOBILIEN = "1600";
     public static final String ROHWAREN = "1210";
     public static final String SERVICES = "4400";
+    public static final String PRODUKTE_ERLOESE = "3000";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
     @Type(CurrencyUserType.class)
@@ -39,6 +40,7 @@ public class FinancialAccounting extends BusinessObject {
     }
 
     public void book(BookingRecord bookingRecord) {
+        log.debug(bookingRecord);
         String debitAccountNumber = bookingRecord.amount().debitAccount();
         Account debitAccount = getAccount(debitAccountNumber);
         debitAccount.debit(bookingRecord.amount().amount());
@@ -78,6 +80,7 @@ public class FinancialAccounting extends BusinessObject {
         addAccount(createAccount(IMMOBILIEN));
         addAccount(createAccount(ROHWAREN));
         addAccount(createAccount(SERVICES));
+        addAccount(createAccount(PRODUKTE_ERLOESE));
     }
 
     private Account createAccount(String number) {

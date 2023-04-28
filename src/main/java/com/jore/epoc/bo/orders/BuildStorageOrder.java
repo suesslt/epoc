@@ -3,11 +3,8 @@ package com.jore.epoc.bo.orders;
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.Message;
 import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.Storage;
-import com.jore.epoc.bo.accounting.BookingRecord;
-import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 
 import jakarta.persistence.AttributeOverride;
@@ -39,25 +36,25 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
     public void execute() {
         Money storageCosts = constructionCosts.add(constructionCostsPerUnit.multiply(capacity));
         if (getCompany().checkFunds(storageCosts)) {
-            Storage storage = new Storage();
-            storage.setCapacity(capacity);
-            storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
-            storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
-            getCompany().addStorage(storage);
-            BookingRecord bookingRecord = new BookingRecord(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", new DebitCreditAmount(FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity))));
-            getCompany().book(bookingRecord);
+            addStorage();
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity)));
+            addMessage("Storage added", MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            Message message = new Message();
-            message.setRelevantMonth(getExecutionMonth());
-            message.setLevel(MessageLevel.WARNING);
-            message.setMessage("Could not create storage due to insufficent funds. Trying next month again.");
-            getCompany().addMessage(message);
+            addMessage("Could not create storage due to insufficent funds. Trying next month again.", MessageLevel.WARNING);
         }
     }
 
     @Override
     public int getSortOrder() {
         return 2;
+    }
+
+    private void addStorage() {
+        Storage storage = new Storage();
+        storage.setCapacity(capacity);
+        storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
+        storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
+        getCompany().addStorage(storage);
     }
 }

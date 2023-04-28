@@ -36,13 +36,18 @@ public class Market extends BusinessObject {
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent gdpGrowth;
     private int laborForce;
+    private int requiredSalesforce;
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent unemployment;
     private BigDecimal lifeExpectancy;
-    @AttributeOverride(name = "amount", column = @Column(name = "productivity_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "productivity_currency"))
+    //    @AttributeOverride(name = "amount", column = @Column(name = "productivity_amount"))
+    //    @AttributeOverride(name = "currency", column = @Column(name = "productivity_currency"))
+    //    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    //    private Money productivity;
+    @AttributeOverride(name = "amount", column = @Column(name = "cost_to_enter_market_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "cost_to_enter_market_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money productivity;
+    private Money costToEnterMarket;
     private int ageTo14Male;
     private int ageTo14Female;
     private int ageTo24Male;
@@ -161,7 +166,7 @@ public class Market extends BusinessObject {
     public String toString() {
         return "Market [id=" + getId() + ", ageTo14Male=" + ageTo14Male + ", ageTo14Female=" + ageTo14Female + ", ageTo24Male=" + ageTo24Male + ", ageTo24Female=" + ageTo24Female + ", ageTo54Male=" + ageTo54Male + ", ageTo54Female=" + ageTo54Female + ", ageTo64Male=" + ageTo64Male
                 + ", ageTo64Female=" + ageTo64Female + ", age65olderMale=" + age65olderMale + ", age65olderFemale=" + age65olderFemale + ", ageTableUpdated=" + ageTableUpdated + ", ageTableMale=" + Arrays.toString(ageTableMale) + ", ageTableFemale=" + Arrays.toString(ageTableFemale)
-                + ", lifeExpectancy=" + lifeExpectancy + ", laborForce=" + laborForce + ", productivity=" + productivity + ", unemploymentRate=" + unemployment + ", name=" + name + "]";
+                + ", lifeExpectancy=" + lifeExpectancy + ", laborForce=" + laborForce + ", unemploymentRate=" + unemployment + ", name=" + name + "]";
     }
 
     private int calculateForAgeOver65(int number, int divider, int maximumAge, int i) {

@@ -133,6 +133,8 @@ public class Simulation extends BusinessObject {
             company.manufactureProducts(simulationStep.getSimulationMonth());
             company.chargeStorageCost(simulationStep.getSimulationMonth());
             company.chargeInterest(simulationStep.getSimulationMonth());
+            company.depreciate(simulationStep.getSimulationMonth());
+            company.chargeWorkforceCost(simulationStep.getSimulationMonth());
         }
         for (MarketSimulation marketSimulation : simulationStep.getSimulation().getMarketSimulations()) {
             marketSimulation.simulateMarket(simulationMonth);

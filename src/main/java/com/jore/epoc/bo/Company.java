@@ -13,6 +13,7 @@ import com.jore.Assert;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.BookingRecord;
+import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.jpa.BusinessObject;
@@ -107,8 +108,16 @@ public class Company extends BusinessObject {
         }
     }
 
+    public void chargeWorkforceCost(YearMonth simulationMonth) {
+        // TODO Auto-generated method stub
+    }
+
     public boolean checkFunds(Money costsToBeCharged) {
         return accounting.checkFunds(costsToBeCharged);
+    }
+
+    public void depreciate(YearMonth simulationMonth) {
+        // TODO Auto-generated method stub
     }
 
     public List<DistributionInMarket> getDistributionInMarkets() {
@@ -174,9 +183,11 @@ public class Company extends BusinessObject {
         int storedAmount = storages.stream().mapToInt(storage -> storage.getStoredProducts()).sum();
         int intentedProductSale = distributionInMarket.getIntentedProductSale(simulationMonth);
         int maximumToSell = Math.min(Math.min(storedAmount, intentedProductSale), productMarketPotential);
-        distributionInMarket.setSoldProducts(simulationMonth, maximumToSell);
         if (maximumToSell > 0) {
+            distributionInMarket.setSoldProducts(simulationMonth, maximumToSell);
             Storage.removeProductsFromStorages(getStorages(), maximumToSell);
+            // TODO book inventory decrease
+            book(new BookingRecord(simulationMonth.atEndOfMonth(), "Sold %s products.", new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(maximumToSell))));
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in %s. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", maximumToSell, simulationMonth, getName(), storedAmount, intentedProductSale, productMarketPotential));
     }

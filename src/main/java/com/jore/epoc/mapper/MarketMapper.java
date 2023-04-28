@@ -31,8 +31,9 @@ public interface MarketMapper {
             market.setGdpPpp(marketDto.getGdpPpp());
             market.setLifeExpectancy(marketDto.getLifeExpectancy());
             market.setName(marketDto.getName());
-            market.setProductivity(marketDto.getProductivity());
+            market.setCostToEnterMarket(marketDto.getCostToEnterMarket());
             market.setUnemployment(marketDto.getUnemployment());
+            market.setRequiredSalesforce(marketDto.getRequiredSalesforce());
         }
     };
 

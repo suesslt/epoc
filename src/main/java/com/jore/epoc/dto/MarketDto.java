@@ -18,7 +18,7 @@ public class MarketDto implements DataTransferObject {
     private int laborForce;
     private Percent unemployment;
     private BigDecimal lifeExpectancy;
-    private Money productivity;
+    private Money costToEnterMarket;
     private int ageTo14Male;
     private int ageTo14Female;
     private int ageTo24Male;
@@ -29,4 +29,5 @@ public class MarketDto implements DataTransferObject {
     private int ageTo64Female;
     private int age65olderMale;
     private int age65olderFemale;
+    private int requiredSalesforce;
 }

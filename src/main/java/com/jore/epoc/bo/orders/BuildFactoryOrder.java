@@ -4,10 +4,7 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Factory;
-import com.jore.epoc.bo.Message;
 import com.jore.epoc.bo.MessageLevel;
-import com.jore.epoc.bo.accounting.BookingRecord;
-import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 
 import jakarta.persistence.AttributeOverride;
@@ -44,26 +41,27 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
     public void execute() {
         Money factoryCosts = constructionCosts.add(constructionCostsPerLine.multiply(productionLines));
         if (getCompany().checkFunds(factoryCosts)) {
-            Factory factory = new Factory();
-            factory.setProductionLines(productionLines);
-            factory.setProductionStartMonth(getExecutionMonth().plusMonths(timeToBuild));
-            factory.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
-            factory.setUnitLabourCost(unitLabourCost);
-            factory.setUnitProductionCost(unitProductionCost);
-            getCompany().addFactory(factory);
-            BookingRecord bookingRecord = new BookingRecord(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", new DebitCreditAmount(FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines))));
-            getCompany().book(bookingRecord);
+            addFactory();
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines)));
+            addMessage("Factory created.", MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            Message message = new Message();
-            message.setLevel(MessageLevel.WARNING);
-            message.setMessage("Could not create factory due to insufficent funds. Trying next month again.");
-            getCompany().addMessage(message);
+            addMessage("Could not create factory due to insufficent funds. Trying next month again.", MessageLevel.WARNING);
         }
     }
 
     @Override
     public int getSortOrder() {
         return 4;
+    }
+
+    private void addFactory() {
+        Factory factory = new Factory();
+        factory.setProductionLines(productionLines);
+        factory.setProductionStartMonth(getExecutionMonth().plusMonths(timeToBuild));
+        factory.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
+        factory.setUnitLabourCost(unitLabourCost);
+        factory.setUnitProductionCost(unitProductionCost);
+        getCompany().addFactory(factory);
     }
 }

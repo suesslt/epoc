@@ -31,11 +31,17 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     public void execute() {
         if (direction.equals(CreditEventDirection.INCREASE)) {
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Increase credit line by " + adjustAmount, FinancialAccounting.BANK, FinancialAccounting.LONG_TERM_DEBT, adjustAmount);
-        } else {
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + adjustAmount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, adjustAmount);
+            addMessage(String.format("%s credit line for %s.", direction, adjustAmount), MessageLevel.INFORMATION);
+            setExecuted(true);
+        } else if (direction.equals(CreditEventDirection.DECREASE)) {
+            if (getCompany().checkFunds(adjustAmount)) {
+                book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + adjustAmount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, adjustAmount);
+                addMessage(String.format("%s credit line for %s.", direction, adjustAmount), MessageLevel.INFORMATION);
+                setExecuted(true);
+            } else {
+                addMessage(String.format("Insufficient funds to decreaase by %s.", direction, adjustAmount), MessageLevel.WARNING);
+            }
         }
-        addMessage(String.format("%s credit line for %s.", direction, adjustAmount), MessageLevel.INFORMATION);
-        setExecuted(true);
     }
 
     @Override

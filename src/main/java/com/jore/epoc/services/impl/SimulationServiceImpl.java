@@ -16,6 +16,7 @@ import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.CompanySimulationStep;
+import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.EpocSetting;
 import com.jore.epoc.bo.Factory;
@@ -31,6 +32,7 @@ import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
 import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
+import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 import com.jore.epoc.dto.AdjustCreditLineDto;
 import com.jore.epoc.dto.BuildFactoryDto;
@@ -81,18 +83,6 @@ public class SimulationServiceImpl implements SimulationService {
     private StaticDataService staticDataService;
     @Autowired
     private MarketSimulationRepository marketSimulationRepository;
-
-    @Override
-    @Transactional
-    public void adjustCreditLine(Integer companySimulationStepId, AdjustCreditLineDto adjustCreditLineDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
-        AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
-        adjustCreditLineOrder.setExecutionMonth(adjustCreditLineDto.getExecutionMonth());
-        adjustCreditLineOrder.setDirection(adjustCreditLineDto.getDirection());
-        adjustCreditLineOrder.setAdjustAmount(adjustCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
-        companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
-    }
 
     @Override
     @Transactional
@@ -156,6 +146,17 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public Integer countAvailableSimulations(String user) {
         return (int) simulationRepository.findByIsStartedAndOwnerLogin(false, user).size();
+    }
+
+    @Override
+    public void decreaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto decreaseCreditLineDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
+        adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
+        adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
+        adjustCreditLineOrder.setAdjustAmount(decreaseCreditLineDto.getAmount());
+        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
+        companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
 
     @Override
@@ -301,6 +302,30 @@ public class SimulationServiceImpl implements SimulationService {
         Simulation simulation = simulationRepository.findById(simulationId).get();
         result.setTotalSoldProducts(simulation.getSoldProducts());
         return result;
+    }
+
+    @Override
+    @Transactional
+    public void increaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto increaseCreditLineDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
+        adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
+        adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
+        adjustCreditLineOrder.setAdjustAmount(increaseCreditLineDto.getAmount());
+        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
+        companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
+    }
+
+    @Override
+    @Transactional
+    public void setIntentedSalesAndPrice(Integer companySimulationStepId, Integer marketId, Integer intentedSales, Money price, YearMonth executionMonth) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        ChangeAmountAndPriceOrder changeIntentedAmountAndPriceOrder = new ChangeAmountAndPriceOrder();
+        changeIntentedAmountAndPriceOrder.setExecutionMonth(executionMonth);
+        changeIntentedAmountAndPriceOrder.setIntentedSales(intentedSales);
+        changeIntentedAmountAndPriceOrder.setOfferedPrice(price);
+        changeIntentedAmountAndPriceOrder.setMarket(marketRepository.findById(marketId).get());
+        companySimulationStep.getCompany().addSimulationOrder(changeIntentedAmountAndPriceOrder);
     }
 
     @Override

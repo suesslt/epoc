@@ -4,11 +4,8 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.Message;
 import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.Storage;
-import com.jore.epoc.bo.accounting.BookingRecord;
-import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 
 import jakarta.persistence.AttributeOverride;
@@ -35,15 +32,15 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
         Money cost = unitPrice.multiply(amount);
         if (storageCapacity >= amount && getCompany().checkFunds(cost)) {
             Storage.distributeRawMaterialAccrossStorages(getCompany().getStorages(), amount, getExecutionMonth());
-            BookingRecord bookingRecord = new BookingRecord(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", new DebitCreditAmount(FinancialAccounting.ROHWAREN, FinancialAccounting.BANK, cost));
-            getCompany().book(bookingRecord);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.ROHWAREN, FinancialAccounting.BANK, cost);
+            addMessage("Bought raw materials.", MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            Message message = new Message();
-            message.setRelevantMonth(getExecutionMonth());
-            message.setLevel(MessageLevel.WARNING);
-            message.setMessage("Could not buy raw material due to insufficent funds or missing storage capacity. Trying next month again.");
-            getCompany().addMessage(message);
+            if (storageCapacity < amount) {
+                addMessage("Could not buy raw material due to missing storage capacity.", MessageLevel.WARNING);
+            } else {
+                addMessage("Could not buy raw material due to insufficent funds.", MessageLevel.WARNING);
+            }
         }
     }
 
