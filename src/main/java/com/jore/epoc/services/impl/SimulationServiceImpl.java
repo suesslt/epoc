@@ -137,6 +137,8 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.setIsStarted(false);
             simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.START_MONTH));
             simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
+            simulation.setBuildingMaintenanceCost((Money) staticDataService.getSetting(EpocSetting.BUILDING_MAINTENANCE));
+            simulation.setDepreciationRate((Percent) staticDataService.getSetting(EpocSetting.DEPRECIATION_RATE));
             simulationRepository.save(simulation);
         }
     }
@@ -189,7 +191,6 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void finishMoveFor(Integer companySimulationStepId) {
-        // TODO expect sales intention and price, create corresponding order
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
     }

@@ -17,6 +17,7 @@ public class EpocSetting extends BusinessObject {
     public static final String START_MONTH = "SET0009";
     public static final String UNIT_PRODUCTION_COST = "SET0010";
     public static final String UNIT_LABOUR_COST = "SET0011";
+    public static final String BUILDING_MAINTENANCE = "SET0012";
     public static final String CREDIT_LINE_INTEREST_RATE = "SET0013";
     public static final String RAW_MATERIAL_UNIT_PRICE = "SET0014";
     public static final String DEMAND_HIGHER_PERCENT = "SET0015";
@@ -27,6 +28,7 @@ public class EpocSetting extends BusinessObject {
     public static final String DISTRIBUTION_FIXED_COSTS = "SET0020";
     public static final String DISTRIBUTION_VARIABLE_COSTS = "SET0021";
     public static final String BASE_CURRENCY = "SET0022";
+    public static final String DEPRECIATION_RATE = "SET0023";
     private String settingKey;
     private String settingFormat;
     private String valueText;

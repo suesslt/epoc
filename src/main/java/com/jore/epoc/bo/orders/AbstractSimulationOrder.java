@@ -66,6 +66,6 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     }
 
     protected void book(LocalDate bookingDate, String bookingText, String debitAccount, String creditAccount, Money bookingAmount) {
-        company.book(new BookingRecord(bookingDate, bookingText, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount)));
+        company.getAccounting().book(new BookingRecord(bookingDate, bookingText, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount)));
     }
 }

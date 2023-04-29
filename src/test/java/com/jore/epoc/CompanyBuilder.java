@@ -48,6 +48,8 @@ public class CompanyBuilder {
     private Money factoryLaborCost = Money.of(CHF, 10);
     private String marketName = "Switzerland";
     private int laborForce = 1000000;
+    private Money buildingMaintenanceCost = Money.of(CHF, 10000);
+    private Percent depreciationRate = Percent.of("15%");
     // To be set in application
     private Money initialOfferedPrice = Money.of(CHF, 50);
     private int initialIntendedSale = 1000;
@@ -76,6 +78,8 @@ public class CompanyBuilder {
             simulation.setStartMonth(simulationStart);
             simulation.setNrOfSteps(numberOfSimulationSteps);
             simulation.setInterestRate(interestRate);
+            simulation.setBuildingMaintenanceCost(buildingMaintenanceCost);
+            simulation.setDepreciationRate(depreciationRate);
             Market market = new Market();
             market.setId(ID++);
             market.setName(marketName);

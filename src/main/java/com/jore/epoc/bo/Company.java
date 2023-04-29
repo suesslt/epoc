@@ -90,29 +90,27 @@ public class Company extends BusinessObject {
         storages.add(storage);
     }
 
-    public void book(BookingRecord bookingRecord) {
-        accounting.book(bookingRecord);
-    }
-
     public void chargeBuildingMaintenanceCosts(YearMonth simulationMonth) {
-        // TODO Auto-generated method stub
+        int nrOfBuildings = 1; // Main Building
+        nrOfBuildings += factories.size();
+        nrOfBuildings += storages.size();
+        getAccounting()
+                .book(new BookingRecord(simulationMonth.atDay(1), String.format("Building maintenance for %d buildings.", nrOfBuildings), new DebitCreditAmount(FinancialAccounting.RAUMAUFWAND, FinancialAccounting.BANK, simulation.getBuildingMaintenanceCost().multiply(nrOfBuildings).divide(12))));
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
         Money interestAmount = accounting.getLongTermDebt().multiply(simulation.getInterestRate()).divide(12);
-        book(new BookingRecord(simulationMonth.atDay(1), String.format("%s interest on debt amount of %s.", simulation.getInterestRate(), accounting.getLongTermDebt()), new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount)));
+        getAccounting().book(new BookingRecord(simulationMonth.atDay(1), String.format("%s interest on debt amount of %s.", simulation.getInterestRate(), accounting.getLongTermDebt()), new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount)));
     }
 
     public void chargeWorkforceCost(YearMonth simulationMonth) {
         // TODO Auto-generated method stub
     }
 
-    public boolean checkFunds(Money costsToBeCharged) {
-        return accounting.checkFunds(costsToBeCharged);
-    }
-
     public void depreciate(YearMonth simulationMonth) {
-        // TODO Auto-generated method stub
+        Money realEstateBalance = accounting.getRealEstateBalance();
+        Money depreciation = realEstateBalance.multiply(getSimulation().getDepreciationRate()).divide(12);
+        getAccounting().book(new BookingRecord(simulationMonth.atDay(1), String.format("Depreciation of %s on value %s.", simulation.getDepreciationRate(), realEstateBalance), new DebitCreditAmount(FinancialAccounting.DEPRECIATION, FinancialAccounting.REAL_ESTATE, depreciation)));
     }
 
     public FinancialAccounting getAccounting() {
@@ -198,7 +196,7 @@ public class Company extends BusinessObject {
             distributionInMarket.setSoldProducts(simulationMonth, amountToSell);
             Storage.removeProductsFromStorages(getStorages(), amountToSell);
             // TODO book inventory decrease
-            book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Sale of %s products.", amountToSell), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(amountToSell))));
+            getAccounting().book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Sale of %s products.", amountToSell), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(amountToSell))));
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in '%s'. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", amountToSell, simulationMonth, name, storedAmount, intentedProductSale, productMarketPotential));
     }

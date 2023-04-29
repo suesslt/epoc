@@ -30,7 +30,7 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
             addMessage(String.format("Increased credit line for %s in %s.", amount, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else if (direction.equals(CreditEventDirection.DECREASE)) {
-            if (getCompany().checkFunds(amount)) {
+            if (getCompany().getAccounting().checkFunds(amount)) {
                 book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + amount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, amount);
                 addMessage(String.format("Decreased credit line for %s in %s.", amount, getExecutionMonth()), MessageLevel.INFORMATION);
                 setExecuted(true);

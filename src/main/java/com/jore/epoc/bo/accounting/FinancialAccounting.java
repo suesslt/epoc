@@ -21,11 +21,13 @@ public class FinancialAccounting extends BusinessObject {
     private static final int INFINITY_MULTIPLIER = 6;
     public static final String LONG_TERM_DEBT = "2100";
     public static final String BANK = "1020";
-    public static final String IMMOBILIEN = "1600";
+    public static final String REAL_ESTATE = "1600";
     public static final String ROHWAREN = "1210";
     public static final String SERVICES = "4400";
     public static final String PRODUKTE_ERLOESE = "3000";
     public static final String INTEREST = "6900";
+    public static final String RAUMAUFWAND = "6000";
+    public static final String DEPRECIATION = "6800";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
     @Type(CurrencyUserType.class)
@@ -34,11 +36,13 @@ public class FinancialAccounting extends BusinessObject {
     public FinancialAccounting() {
         addAccount(new Account(AccountType.BALANCE_SHEET, BANK, "Bank"));
         addAccount(new Account(AccountType.BALANCE_SHEET, LONG_TERM_DEBT, "Bankverbindlichkeiten"));
-        addAccount(new Account(AccountType.BALANCE_SHEET, IMMOBILIEN, "Liegenschaften"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, REAL_ESTATE, "Liegenschaften"));
         addAccount(new Account(AccountType.BALANCE_SHEET, ROHWAREN, "Rohmaterialvorrat"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, SERVICES, "Bezogene Dienstleistungen"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, PRODUKTE_ERLOESE, "Produktionsertrag"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, INTEREST, "Zinsaufwand"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, RAUMAUFWAND, "Gebäudeunterhalt"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, DEPRECIATION, "Abschreibung"));
     }
 
     public void addAccount(Account account) {
@@ -79,7 +83,7 @@ public class FinancialAccounting extends BusinessObject {
     public Money getOwnersCapital() {
         Money result = null;
         result = Money.add(result, getBalanceForAccount(BANK));
-        result = Money.add(result, getBalanceForAccount(IMMOBILIEN));
+        result = Money.add(result, getBalanceForAccount(REAL_ESTATE));
         result = Money.add(result, getBalanceForAccount(ROHWAREN));
         result = Money.add(result, getBalanceForAccount(LONG_TERM_DEBT));
         return result;
@@ -90,7 +94,13 @@ public class FinancialAccounting extends BusinessObject {
         result = Money.add(result, getBalanceForAccount(PRODUKTE_ERLOESE));
         result = Money.add(result, getBalanceForAccount(SERVICES));
         result = Money.add(result, getBalanceForAccount(INTEREST));
+        result = Money.add(result, getBalanceForAccount(RAUMAUFWAND));
+        result = Money.add(result, getBalanceForAccount(DEPRECIATION));
         return result;
+    }
+
+    public Money getRealEstateBalance() {
+        return nullToZero(getAccount(REAL_ESTATE).getBalance());
     }
 
     public void setBalanceForAccount(String accountNumber, Money balance) {

@@ -191,6 +191,8 @@ class MarketSimulationTests {
         result.setNrOfSteps(nrOfSteps);
         result.setStartMonth(startMonth);
         result.setInterestRate(interestRate);
+        result.setBuildingMaintenanceCost(Money.of("CHF", 30000));
+        result.setDepreciationRate(Percent.of("15%"));
         return result;
     }
 }

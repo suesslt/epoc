@@ -8,13 +8,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.hibernate.annotations.CompositeType;
 import org.hibernate.annotations.Type;
 
+import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.orders.SimulationOrder;
 import com.jore.jpa.BusinessObject;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -38,6 +42,12 @@ public class Simulation extends BusinessObject {
     private List<SimulationStep> simulationSteps = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
     private List<MarketSimulation> marketSimulations = new ArrayList<>();
+    @AttributeOverride(name = "amount", column = @Column(name = "maintenance_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "maintenance_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money buildingMaintenanceCost;
+    @Type(com.jore.datatypes.hibernate.PercentUserType.class)
+    private Percent depreciationRate;
 
     public void addCompany(Company company) {
         company.setSimulation(this);
@@ -94,6 +104,14 @@ public class Simulation extends BusinessObject {
         return result;
     }
 
+    public Money getBuildingMaintenanceCost() {
+        return buildingMaintenanceCost;
+    }
+
+    public Percent getDepreciationRate() {
+        return depreciationRate;
+    }
+
     public Percent getInterestRate() {
         return interestRate;
     }
@@ -128,6 +146,14 @@ public class Simulation extends BusinessObject {
 
     public boolean isStarted() {
         return isStarted;
+    }
+
+    public void setBuildingMaintenanceCost(Money buildingMaintenanceCost) {
+        this.buildingMaintenanceCost = buildingMaintenanceCost;
+    }
+
+    public void setDepreciationRate(Percent depreciationRate) {
+        this.depreciationRate = depreciationRate;
     }
 
     public void setInterestRate(Percent interestRate) {

@@ -63,7 +63,7 @@ class OrderTests {
         assertEquals(1, company.getMessages().size());
         assertTrue(order.isExecuted());
         assertEquals(Money.of("CHF", 90000), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 1010000), accounting.getBalanceForAccount(FinancialAccounting.IMMOBILIEN));
+        assertEquals(Money.of("CHF", 1010000), accounting.getBalanceForAccount(FinancialAccounting.REAL_ESTATE));
     }
 
     @Test
@@ -102,7 +102,7 @@ class OrderTests {
         assertEquals(YearMonth.of(2023, 1), order.getExecutionMonth());
         assertTrue(order.isExecuted());
         assertEquals(Money.of("CHF", 99000), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 1001000), accounting.getBalanceForAccount(FinancialAccounting.IMMOBILIEN));
+        assertEquals(Money.of("CHF", 1001000), accounting.getBalanceForAccount(FinancialAccounting.REAL_ESTATE));
     }
 
     @Test

@@ -27,9 +27,9 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
     @Override
     public void execute() {
         Money storageCosts = constructionCosts.add(constructionCostsPerUnit.multiply(capacity));
-        if (getCompany().checkFunds(storageCosts)) {
+        if (getCompany().getAccounting().checkFunds(storageCosts)) {
             addStorage();
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity)));
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.REAL_ESTATE, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity)));
             addMessage(String.format("Build Storage for capacity of %s units in %s.", capacity, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else {

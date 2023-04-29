@@ -26,13 +26,13 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
         Assert.notNull("Unit price must not be null", unitPrice);
         int storageCapacity = getCompany().getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getExecutionMonth())).sum();
         Money cost = unitPrice.multiply(amount);
-        if (storageCapacity >= amount && getCompany().checkFunds(cost)) {
+        if (storageCapacity >= amount && getCompany().getAccounting().checkFunds(cost)) {
             Storage.distributeRawMaterialAccrossStorages(getCompany().getStorages(), amount, getExecutionMonth());
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Buy of raw material", FinancialAccounting.ROHWAREN, FinancialAccounting.BANK, cost);
             addMessage(String.format("Bought %s raw materials in %s.", amount, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            if (!getCompany().checkFunds(cost)) {
+            if (!getCompany().getAccounting().checkFunds(cost)) {
                 addMessage(String.format("Could not buy raw material in %s due to insufficent funds. Required were %s, available %s.", getExecutionMonth(), cost, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
             } else {
                 addMessage(String.format("Could not buy raw material in %s due to missing storage capacity. Required was %s, available %s.", getExecutionMonth(), amount, storageCapacity), MessageLevel.WARNING);
