@@ -12,34 +12,30 @@ import com.jore.epoc.bo.accounting.FinancialAccounting;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     private CreditEventDirection direction;
     @AttributeOverride(name = "amount", column = @Column(name = "adjust_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "adjust_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money adjustAmount;
+    private Money amount;
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent interestRate;
 
     @Override
     public void execute() {
         if (direction.equals(CreditEventDirection.INCREASE)) {
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Increase credit line by " + adjustAmount, FinancialAccounting.BANK, FinancialAccounting.LONG_TERM_DEBT, adjustAmount);
-            addMessage(String.format("%s credit line for %s.", direction, adjustAmount), MessageLevel.INFORMATION);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Increase credit line by " + amount, FinancialAccounting.BANK, FinancialAccounting.LONG_TERM_DEBT, amount);
+            addMessage(String.format("Increased credit line for %s in %s.", amount, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else if (direction.equals(CreditEventDirection.DECREASE)) {
-            if (getCompany().checkFunds(adjustAmount)) {
-                book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + adjustAmount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, adjustAmount);
-                addMessage(String.format("%s credit line for %s.", direction, adjustAmount), MessageLevel.INFORMATION);
+            if (getCompany().checkFunds(amount)) {
+                book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + amount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, amount);
+                addMessage(String.format("Decreased credit line for %s in %s.", amount, getExecutionMonth()), MessageLevel.INFORMATION);
                 setExecuted(true);
             } else {
-                addMessage(String.format("Insufficient funds to decreaase by %s.", direction, adjustAmount), MessageLevel.WARNING);
+                addMessage(String.format("Insufficient funds to decrease credit line. Required %s, available %s.", amount, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
             }
         }
     }
@@ -47,5 +43,17 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     @Override
     public int getSortOrder() {
         return 1;
+    }
+
+    public void setAmount(Money amount) {
+        this.amount = amount;
+    }
+
+    public void setDirection(CreditEventDirection direction) {
+        this.direction = direction;
+    }
+
+    public void setInterestRate(Percent interestRate) {
+        this.interestRate = interestRate;
     }
 }

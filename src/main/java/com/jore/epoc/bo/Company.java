@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.jore.Assert;
@@ -23,14 +22,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Entity
-@Getter
-@Setter
 public class Company extends BusinessObject {
     public record MonthlySale(YearMonth simulationMonth, String name, Integer productsSold) {
     }
@@ -99,13 +94,13 @@ public class Company extends BusinessObject {
         accounting.book(bookingRecord);
     }
 
-    public void chargeInterest(YearMonth simulationMonth) {
+    public void chargeBuildingMaintenanceCosts(YearMonth simulationMonth) {
+        // TODO Auto-generated method stub
     }
 
-    public void chargeStorageCost(YearMonth simulationMonth) {
-        Optional<Money> storageCost = storages.stream().map(storage -> storage.getCost()).reduce((m1, m2) -> m1.add(m2));
-        if (storageCost.isPresent()) {
-        }
+    public void chargeInterest(YearMonth simulationMonth) {
+        Money interestAmount = accounting.getLongTermDebt().multiply(simulation.getInterestRate()).divide(12);
+        book(new BookingRecord(simulationMonth.atDay(1), String.format("%s interest on debt amount of %s.", simulation.getInterestRate(), accounting.getLongTermDebt()), new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount)));
     }
 
     public void chargeWorkforceCost(YearMonth simulationMonth) {
@@ -120,12 +115,28 @@ public class Company extends BusinessObject {
         // TODO Auto-generated method stub
     }
 
+    public FinancialAccounting getAccounting() {
+        return accounting;
+    }
+
+    public List<CompanySimulationStep> getCompanySimulationSteps() {
+        return Collections.unmodifiableList(companySimulationSteps);
+    }
+
     public List<DistributionInMarket> getDistributionInMarkets() {
         return Collections.unmodifiableList(distributionInMarkets);
     }
 
     public List<Factory> getFactories() {
         return Collections.unmodifiableList(factories);
+    }
+
+    public List<Message> getMessages() {
+        return Collections.unmodifiableList(messages);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<AbstractSimulationOrder> getOrdersForExecutionIn(YearMonth simulationMonth) {
@@ -137,8 +148,8 @@ public class Company extends BusinessObject {
         }).collect(Collectors.toList());
     }
 
-    public Money getPnL() {
-        return accounting.getPnL();
+    public Simulation getSimulation() {
+        return simulation;
     }
 
     public List<AbstractSimulationOrder> getSimulationOrders() {
@@ -146,7 +157,7 @@ public class Company extends BusinessObject {
     }
 
     public Integer getSoldProducts() {
-        return getDistributionInMarkets().stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
+        return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
     }
 
     public List<MonthlySale> getSoldProductsPerMonth() {
@@ -165,7 +176,7 @@ public class Company extends BusinessObject {
         int totalAmountProduced = 0;
         int maximumToProduce = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
         // TODO get max of storage or market capacity
-        log.debug(String.format("Maximum to produce is %d for company '%s' (%d)", maximumToProduce, getName(), getId()));
+        log.debug(String.format("Maximum to produce is %d for company '%s' (%d)", maximumToProduce, name, getId()));
         if (maximumToProduce > 0) {
             Iterator<Factory> iter = factories.iterator();
             while (iter.hasNext() && maximumToProduce > 0) {
@@ -182,14 +193,18 @@ public class Company extends BusinessObject {
     public void sellMaximumOf(DistributionInMarket distributionInMarket, YearMonth simulationMonth, int productMarketPotential, Money sellPrice) {
         int storedAmount = storages.stream().mapToInt(storage -> storage.getStoredProducts()).sum();
         int intentedProductSale = distributionInMarket.getIntentedProductSale(simulationMonth);
-        int maximumToSell = Math.min(Math.min(storedAmount, intentedProductSale), productMarketPotential);
-        if (maximumToSell > 0) {
-            distributionInMarket.setSoldProducts(simulationMonth, maximumToSell);
-            Storage.removeProductsFromStorages(getStorages(), maximumToSell);
+        int amountToSell = Math.min(Math.min(storedAmount, intentedProductSale), productMarketPotential);
+        if (amountToSell > 0) {
+            distributionInMarket.setSoldProducts(simulationMonth, amountToSell);
+            Storage.removeProductsFromStorages(getStorages(), amountToSell);
             // TODO book inventory decrease
-            book(new BookingRecord(simulationMonth.atEndOfMonth(), "Sold %s products.", new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(maximumToSell))));
+            book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Sale of %s products.", amountToSell), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(amountToSell))));
         }
-        log.debug(String.format("Sell a maximum of %d products for month %s in %s. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", maximumToSell, simulationMonth, getName(), storedAmount, intentedProductSale, productMarketPotential));
+        log.debug(String.format("Sell a maximum of %d products for month %s in '%s'. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", amountToSell, simulationMonth, name, storedAmount, intentedProductSale, productMarketPotential));
+    }
+
+    public void setAccounting(FinancialAccounting accounting) {
+        this.accounting = accounting;
     }
 
     public void setBaseCurrency(Currency baseCurrency) {
@@ -198,5 +213,13 @@ public class Company extends BusinessObject {
 
     public void setFinancialAccounting(FinancialAccounting accounting) {
         this.accounting = accounting;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
     }
 }

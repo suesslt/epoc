@@ -24,7 +24,6 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 
 class MarketSimulationTests {
-    private static final Money STORAGE_COST_PER_UNIT_AND_MONTH = Money.of("CHF", 1);
     private static final int MONTHLY_CAPACITY_PER_PRODUCTION_LINE = 1000;
     private static final Money FACTORY_COST_PER_PRODUCTION_LINE = Money.of("CHF", 10);
     private static final Money FACTORY_FIXED_COSTS = Money.of("CHF", 1000);
@@ -40,7 +39,7 @@ class MarketSimulationTests {
 
     @Test
     public void testSoldProductsFullDistributionForOneCompany() {
-        Simulation simulation = createSimulation(100, YearMonth.of(2020, 1));
+        Simulation simulation = createSimulation(100, YearMonth.of(2020, 1), Percent.of("5%"));
         Market market = createMarket();
         MarketSimulation marketSimulation = createMarketSimulation(market);
         simulation.addMarketSimulation(marketSimulation);
@@ -65,7 +64,7 @@ class MarketSimulationTests {
 
     @Test
     public void testSoldProductsFullDistributionForTwoCompanies() {
-        Simulation simulation = createSimulation(100, YearMonth.of(2020, 1));
+        Simulation simulation = createSimulation(100, YearMonth.of(2020, 1), Percent.of("5%"));
         Market market = createMarket();
         MarketSimulation marketSimulation = createMarketSimulation(market);
         simulation.addMarketSimulation(marketSimulation);
@@ -106,7 +105,7 @@ class MarketSimulationTests {
         order.setId(id++);
         order.setExecutionMonth(executionMonth);
         order.setDirection(CreditEventDirection.INCREASE);
-        order.setAdjustAmount(amount);
+        order.setAmount(amount);
         order.setInterestRate(CREDIT_LINE_INTEREST_RATE);
         company.addSimulationOrder(order);
     }
@@ -119,7 +118,7 @@ class MarketSimulationTests {
         order.setConstructionCostsPerLine(FACTORY_COST_PER_PRODUCTION_LINE);
         order.setMonthlyCapacityPerProductionLine(MONTHLY_CAPACITY_PER_PRODUCTION_LINE);
         order.setProductionLines(productionLines);
-        order.setUnitLabourCost(FACTORY_UNIT_LABOR_COST);
+        order.setUnitLaborCost(FACTORY_UNIT_LABOR_COST);
         order.setUnitProductionCost(FACTORY_UNIT_PRODUCTION_COST);
         order.setTimeToBuild(FACTORY_TIME_TO_BUILD);
         company.addSimulationOrder(order);
@@ -132,7 +131,6 @@ class MarketSimulationTests {
         order.setConstructionCosts(FACTORY_FIXED_COSTS);
         order.setConstructionCostsPerUnit(FACTORY_COST_PER_PRODUCTION_LINE);
         order.setCapacity(capacity);
-        order.setStorageCostPerUnitAndMonth(STORAGE_COST_PER_UNIT_AND_MONTH);
         order.setTimeToBuild(STORAGE_TIME_TO_BUILD);
         company.addSimulationOrder(order);
     }
@@ -184,7 +182,7 @@ class MarketSimulationTests {
         return result;
     }
 
-    private Simulation createSimulation(int nrOfSteps, YearMonth startMonth) {
+    private Simulation createSimulation(int nrOfSteps, YearMonth startMonth, Percent interestRate) {
         Simulation result = new Simulation();
         result.setId(id++);
         result.setName("Test Simulation");
@@ -192,6 +190,7 @@ class MarketSimulationTests {
         result.setFinished(false);
         result.setNrOfSteps(nrOfSteps);
         result.setStartMonth(startMonth);
+        result.setInterestRate(interestRate);
         return result;
     }
 }

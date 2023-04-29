@@ -11,12 +11,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class ChangeAmountAndPriceOrder extends AbstractSimulationOrder {
     private Integer intentedSales;
     @AttributeOverride(name = "amount", column = @Column(name = "price_amount"))
@@ -37,5 +33,17 @@ public class ChangeAmountAndPriceOrder extends AbstractSimulationOrder {
     @Override
     public int getSortOrder() {
         return 6;
+    }
+
+    public void setIntentedSales(Integer intentedSales) {
+        this.intentedSales = intentedSales;
+    }
+
+    public void setMarket(Market market) {
+        this.market = market;
+    }
+
+    public void setOfferedPrice(Money offeredPrice) {
+        this.offeredPrice = offeredPrice;
     }
 }

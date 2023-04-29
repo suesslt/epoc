@@ -2,7 +2,6 @@ package com.jore.epoc.bo.accounting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.hibernate.annotations.Type;
 
@@ -19,19 +18,27 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Entity
 public class FinancialAccounting extends BusinessObject {
-    public static final String LONG_TERM_DEBT = "2450";
+    private static final int INFINITY_MULTIPLIER = 6;
+    public static final String LONG_TERM_DEBT = "2100";
     public static final String BANK = "1020";
     public static final String IMMOBILIEN = "1600";
     public static final String ROHWAREN = "1210";
     public static final String SERVICES = "4400";
     public static final String PRODUKTE_ERLOESE = "3000";
+    public static final String INTEREST = "6900";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
     @Type(CurrencyUserType.class)
     private Currency baseCurrency = Currency.getInstance("CHF");
 
     public FinancialAccounting() {
-        setBaseCurrency(baseCurrency);
+        addAccount(new Account(AccountType.BALANCE_SHEET, BANK, "Bank"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, LONG_TERM_DEBT, "Bankverbindlichkeiten"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, IMMOBILIEN, "Liegenschaften"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, ROHWAREN, "Rohmaterialvorrat"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, SERVICES, "Bezogene Dienstleistungen"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, PRODUKTE_ERLOESE, "Produktionsertrag"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, INTEREST, "Zinsaufwand"));
     }
 
     public void addAccount(Account account) {
@@ -50,23 +57,40 @@ public class FinancialAccounting extends BusinessObject {
     }
 
     public boolean checkFunds(Money costsToBeCharged) {
-        return getBank().compareTo(costsToBeCharged) >= 0;
+        return getBankBalance().compareTo(costsToBeCharged) >= 0;
     }
 
     public Money getBalanceForAccount(String accountNumber) {
-        return getAccount(accountNumber).getBalance();
+        return nullToZero(getAccount(accountNumber).getBalance());
     }
 
-    public Money getBank() {
-        return getAccount(BANK).getBalance();
+    public Money getBankBalance() {
+        return nullToZero(getAccount(BANK).getBalance());
+    }
+
+    public Money getCompanyValue() {
+        return Money.add(getOwnersCapital(), getPnL() != null ? getPnL().multiply(INFINITY_MULTIPLIER) : null);
     }
 
     public Money getLongTermDebt() {
-        return getAccount(LONG_TERM_DEBT).getBalance();
+        return nullToZero(getAccount(LONG_TERM_DEBT).getBalance()).negate();
+    }
+
+    public Money getOwnersCapital() {
+        Money result = null;
+        result = Money.add(result, getBalanceForAccount(BANK));
+        result = Money.add(result, getBalanceForAccount(IMMOBILIEN));
+        result = Money.add(result, getBalanceForAccount(ROHWAREN));
+        result = Money.add(result, getBalanceForAccount(LONG_TERM_DEBT));
+        return result;
     }
 
     public Money getPnL() {
-        return null;
+        Money result = null;
+        result = Money.add(result, getBalanceForAccount(PRODUKTE_ERLOESE));
+        result = Money.add(result, getBalanceForAccount(SERVICES));
+        result = Money.add(result, getBalanceForAccount(INTEREST));
+        return result;
     }
 
     public void setBalanceForAccount(String accountNumber, Money balance) {
@@ -75,27 +99,28 @@ public class FinancialAccounting extends BusinessObject {
 
     public void setBaseCurrency(Currency baseCurrency) {
         this.baseCurrency = baseCurrency;
-        addAccount(createAccount(BANK));
-        addAccount(createAccount(LONG_TERM_DEBT));
-        addAccount(createAccount(IMMOBILIEN));
-        addAccount(createAccount(ROHWAREN));
-        addAccount(createAccount(SERVICES));
-        addAccount(createAccount(PRODUKTE_ERLOESE));
     }
 
-    private Account createAccount(String number) {
-        Account result = new Account();
-        result.setNumber(number);
-        result.setBalance(Money.of(baseCurrency, 0));
-        return result;
+    @Override
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        for (Account account : accounts) {
+            result.append("\n");
+            result.append(account.getNumber());
+            result.append(": ");
+            result.append(account.getBalance());
+            result.append(" (");
+            result.append(account.getName());
+            result.append(")");
+        }
+        return result.toString();
     }
 
     private Account getAccount(String number) {
-        Optional<Account> result = accounts.stream().filter(account -> account.getNumber().equals(number)).findFirst();
-        if (result.isEmpty()) {
-            result = Optional.of(new Account());
-            log.warn("Created temporary account for number '" + number + "'."); // TODO for development only, remove afterwrds
-        }
-        return result.get();
+        return accounts.stream().filter(account -> account.getNumber().equals(number)).findFirst().get();
+    }
+
+    private Money nullToZero(Money balance) {
+        return balance == null ? Money.of(baseCurrency, 0) : balance;
     }
 }

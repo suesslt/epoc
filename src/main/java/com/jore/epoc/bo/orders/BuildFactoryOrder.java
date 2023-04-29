@@ -10,12 +10,8 @@ import com.jore.epoc.bo.accounting.FinancialAccounting;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class BuildFactoryOrder extends AbstractSimulationOrder {
     private Integer productionLines;
     private Integer timeToBuild;
@@ -27,7 +23,7 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "amount", column = @Column(name = "labour_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "labour_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money unitLabourCost;
+    private Money unitLaborCost;
     @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -43,10 +39,10 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         if (getCompany().checkFunds(factoryCosts)) {
             addFactory();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines)));
-            addMessage("Factory created.", MessageLevel.INFORMATION);
+            addMessage(String.format("Factory created for total cost of %s in %s.", factoryCosts, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            addMessage("Could not create factory due to insufficent funds. Trying next month again.", MessageLevel.WARNING);
+            addMessage(String.format("Could not create factory due to insufficent funds in %s. Required were %s, available %s.", getExecutionMonth(), factoryCosts, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
         }
     }
 
@@ -55,12 +51,40 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         return 4;
     }
 
+    public void setConstructionCosts(Money constructionCosts) {
+        this.constructionCosts = constructionCosts;
+    }
+
+    public void setConstructionCostsPerLine(Money constructionCostsPerLine) {
+        this.constructionCostsPerLine = constructionCostsPerLine;
+    }
+
+    public void setMonthlyCapacityPerProductionLine(Integer monthlyCapacityPerProductionLine) {
+        this.monthlyCapacityPerProductionLine = monthlyCapacityPerProductionLine;
+    }
+
+    public void setProductionLines(int productionLines) {
+        this.productionLines = productionLines;
+    }
+
+    public void setTimeToBuild(Integer timeToBuild) {
+        this.timeToBuild = timeToBuild;
+    }
+
+    public void setUnitLaborCost(Money unitLaborCosts) {
+        unitLaborCost = unitLaborCosts;
+    }
+
+    public void setUnitProductionCost(Money unitProductionCosts) {
+        unitProductionCost = unitProductionCosts;
+    }
+
     private void addFactory() {
         Factory factory = new Factory();
         factory.setProductionLines(productionLines);
         factory.setProductionStartMonth(getExecutionMonth().plusMonths(timeToBuild));
         factory.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
-        factory.setUnitLabourCost(unitLabourCost);
+        factory.setUnitLabourCost(unitLaborCost);
         factory.setUnitProductionCost(unitProductionCost);
         getCompany().addFactory(factory);
     }

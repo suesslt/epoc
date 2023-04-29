@@ -31,6 +31,10 @@ public class CompanySimulationStep extends BusinessObject {
         distributionSteps.add(distributionStep);
     }
 
+    public void finish() {
+        getSimulationStep().getSimulation().finishCompanyStep(this);
+    }
+
     public List<MonthlySale> getSoldProductsPerMonth() {
         List<MonthlySale> result = new ArrayList<>();
         for (DistributionStep distributionStep : distributionSteps) {

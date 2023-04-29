@@ -12,12 +12,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class EnterMarketOrder extends AbstractSimulationOrder {
     @ManyToOne(optional = true) // TODO Why optional?
     private MarketSimulation marketSimulation;
@@ -46,6 +42,22 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
     @Override
     public int getSortOrder() {
         return 5;
+    }
+
+    public void setFixedCosts(Money fixedCosts) {
+        this.fixedCosts = fixedCosts;
+    }
+
+    public void setIntentedProductSale(Integer intentedProductSale) {
+        this.intentedProductSale = intentedProductSale;
+    }
+
+    public void setMarketSimulation(MarketSimulation marketSimulation) {
+        this.marketSimulation = marketSimulation;
+    }
+
+    public void setOfferedPrice(Money offeredPrice) {
+        this.offeredPrice = offeredPrice;
     }
 
     private void addDistributionInMarket() {

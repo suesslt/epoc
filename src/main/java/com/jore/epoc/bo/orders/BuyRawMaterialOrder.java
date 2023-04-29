@@ -11,12 +11,8 @@ import com.jore.epoc.bo.accounting.FinancialAccounting;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class BuyRawMaterialOrder extends AbstractSimulationOrder {
     private Integer amount;
     @AttributeOverride(name = "amount", column = @Column(name = "unit_price_amount"))
@@ -32,14 +28,14 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
         Money cost = unitPrice.multiply(amount);
         if (storageCapacity >= amount && getCompany().checkFunds(cost)) {
             Storage.distributeRawMaterialAccrossStorages(getCompany().getStorages(), amount, getExecutionMonth());
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.ROHWAREN, FinancialAccounting.BANK, cost);
-            addMessage("Bought raw materials.", MessageLevel.INFORMATION);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Buy of raw material", FinancialAccounting.ROHWAREN, FinancialAccounting.BANK, cost);
+            addMessage(String.format("Bought %s raw materials in %s.", amount, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            if (storageCapacity < amount) {
-                addMessage("Could not buy raw material due to missing storage capacity.", MessageLevel.WARNING);
+            if (!getCompany().checkFunds(cost)) {
+                addMessage(String.format("Could not buy raw material in %s due to insufficent funds. Required were %s, available %s.", getExecutionMonth(), cost, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
             } else {
-                addMessage("Could not buy raw material due to insufficent funds.", MessageLevel.WARNING);
+                addMessage(String.format("Could not buy raw material in %s due to missing storage capacity. Required was %s, available %s.", getExecutionMonth(), amount, storageCapacity), MessageLevel.WARNING);
             }
         }
     }
@@ -47,5 +43,13 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
     @Override
     public int getSortOrder() {
         return 3;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
+
+    public void setUnitPrice(Money unitPrice) {
+        this.unitPrice = unitPrice;
     }
 }

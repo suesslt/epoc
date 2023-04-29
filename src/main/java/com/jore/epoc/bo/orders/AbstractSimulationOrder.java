@@ -13,12 +13,10 @@ import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
-@Getter
-@Setter
 // TODO Check if subclasses can be stored in one table
 public abstract class AbstractSimulationOrder extends BusinessObject implements SimulationOrder {
     protected static final int FIRST_OF_MONTH = 1;
@@ -30,9 +28,36 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     @Override
     public abstract void execute();
 
+    public Company getCompany() {
+        return company;
+    }
+
+    @Override
+    public YearMonth getExecutionMonth() {
+        return executionMonth;
+    }
+
     public abstract int getSortOrder();
 
+    @Override
+    public boolean isExecuted() {
+        return isExecuted;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public void setExecuted(boolean isExecuted) {
+        this.isExecuted = isExecuted;
+    }
+
+    public void setExecutionMonth(YearMonth executionMonth) {
+        this.executionMonth = executionMonth;
+    }
+
     protected void addMessage(String messageText, MessageLevel level) {
+        log.debug(messageText);
         Message message = new Message();
         message.setRelevantMonth(getExecutionMonth());
         message.setLevel(level);

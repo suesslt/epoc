@@ -96,7 +96,7 @@ public class SimulationServiceImpl implements SimulationService {
         buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
         buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
         buildFactoryOrder.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
-        buildFactoryOrder.setUnitLabourCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
+        buildFactoryOrder.setUnitLaborCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
         companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
     }
 
@@ -110,7 +110,6 @@ public class SimulationServiceImpl implements SimulationService {
         buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CREATION_MONTHS));
         buildStorageOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
         buildStorageOrder.setConstructionCostsPerUnit((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
-        buildStorageOrder.setStorageCostPerUnitAndMonth((Money) staticDataService.getSetting(EpocSetting.STORAGE_COST_PER_UNIT_AND_MONTH));
         companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
     }
 
@@ -154,7 +153,7 @@ public class SimulationServiceImpl implements SimulationService {
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
-        adjustCreditLineOrder.setAdjustAmount(decreaseCreditLineDto.getAmount());
+        adjustCreditLineOrder.setAmount(decreaseCreditLineDto.getAmount());
         adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
@@ -190,6 +189,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void finishMoveFor(Integer companySimulationStepId) {
+        // TODO expect sales intention and price, create corresponding order
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
     }
@@ -311,7 +311,7 @@ public class SimulationServiceImpl implements SimulationService {
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
-        adjustCreditLineOrder.setAdjustAmount(increaseCreditLineDto.getAmount());
+        adjustCreditLineOrder.setAmount(increaseCreditLineDto.getAmount());
         adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }

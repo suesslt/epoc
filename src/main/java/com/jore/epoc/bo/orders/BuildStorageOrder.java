@@ -10,19 +10,11 @@ import com.jore.epoc.bo.accounting.FinancialAccounting;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class BuildStorageOrder extends AbstractSimulationOrder {
     private Integer capacity;
     private Integer timeToBuild;
-    @AttributeOverride(name = "amount", column = @Column(name = "storage_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "storage_cost_currency"))
-    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money storageCostPerUnitAndMonth;
     @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -38,10 +30,10 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         if (getCompany().checkFunds(storageCosts)) {
             addStorage();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.IMMOBILIEN, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity)));
-            addMessage("Storage added", MessageLevel.INFORMATION);
+            addMessage(String.format("Build Storage for capacity of %s units in %s.", capacity, getExecutionMonth()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
-            addMessage("Could not create storage due to insufficent funds. Trying next month again.", MessageLevel.WARNING);
+            addMessage(String.format("Could not create storage due to insufficent funds in %s. Required were %s, available %s.", getExecutionMonth(), storageCosts, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
         }
     }
 
@@ -50,11 +42,26 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         return 2;
     }
 
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setConstructionCosts(Money constructionCosts) {
+        this.constructionCosts = constructionCosts;
+    }
+
+    public void setConstructionCostsPerUnit(Money constructionCostsPerUnit) {
+        this.constructionCostsPerUnit = constructionCostsPerUnit;
+    }
+
+    public void setTimeToBuild(Integer timeToBuild) {
+        this.timeToBuild = timeToBuild;
+    }
+
     private void addStorage() {
         Storage storage = new Storage();
         storage.setCapacity(capacity);
         storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
-        storage.setStorageCostPerUnitAndMonth(storageCostPerUnitAndMonth);
         getCompany().addStorage(storage);
     }
 }

@@ -117,7 +117,7 @@ public class Simulation extends BusinessObject {
     }
 
     private void setSimulationToFinishedIfThisWasTheLastStep(SimulationStep simulationStep) {
-        if (!simulationStep.getSimulationMonth().isBefore(Objects.requireNonNull(startMonth).plusMonths(Objects.requireNonNull(nrOfSteps) - 1))) {
+        if (!simulationStep.getSimulationMonth().isBefore(Objects.requireNonNull(startMonth, "Start month must not be null.").plusMonths(Objects.requireNonNull(nrOfSteps, "Number of steps must not be null") - 1))) {
             isFinished = true;
         }
     }
@@ -130,10 +130,10 @@ public class Simulation extends BusinessObject {
             for (SimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationMonth)) {
                 simulationOrder.execute();
             }
-            company.manufactureProducts(simulationStep.getSimulationMonth());
-            company.chargeStorageCost(simulationStep.getSimulationMonth());
             company.chargeInterest(simulationStep.getSimulationMonth());
             company.depreciate(simulationStep.getSimulationMonth());
+            company.manufactureProducts(simulationStep.getSimulationMonth());
+            company.chargeBuildingMaintenanceCosts(simulationStep.getSimulationMonth());
             company.chargeWorkforceCost(simulationStep.getSimulationMonth());
         }
         for (MarketSimulation marketSimulation : simulationStep.getSimulation().getMarketSimulations()) {

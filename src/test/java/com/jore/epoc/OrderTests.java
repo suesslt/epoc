@@ -33,7 +33,7 @@ class OrderTests {
         order.setProductionLines(10);
         order.setMonthlyCapacityPerProductionLine(100);
         order.setTimeToBuild(0);
-        order.setUnitLabourCost(Money.of("CHF", 1));
+        order.setUnitLaborCost(Money.of("CHF", 1));
         order.setUnitProductionCost(Money.of("CHF", 1));
         order.setConstructionCostsPerLine(Money.of("CHF", 1000));
         company.addSimulationOrder(order);
@@ -55,7 +55,7 @@ class OrderTests {
         order.setProductionLines(10);
         order.setMonthlyCapacityPerProductionLine(100);
         order.setTimeToBuild(0);
-        order.setUnitLabourCost(Money.of("CHF", 1));
+        order.setUnitLaborCost(Money.of("CHF", 1));
         order.setUnitProductionCost(Money.of("CHF", 1));
         order.setConstructionCostsPerLine(Money.of("CHF", 1000));
         company.addSimulationOrder(order);
@@ -77,7 +77,6 @@ class OrderTests {
         order.setCapacity(1000);
         order.setConstructionCostsPerUnit(Money.of("CHF", 1));
         order.setTimeToBuild(0);
-        order.setStorageCostPerUnitAndMonth(Money.of("CHF", 1));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
@@ -97,7 +96,6 @@ class OrderTests {
         order.setCapacity(1000);
         order.setConstructionCostsPerUnit(Money.of("CHF", 1));
         order.setTimeToBuild(0);
-        order.setStorageCostPerUnitAndMonth(Money.of("CHF", 1));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
@@ -185,7 +183,7 @@ class OrderTests {
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(YearMonth.of(2023, 1));
         order.setDirection(CreditEventDirection.DECREASE);
-        order.setAdjustAmount(Money.of("CHF", 100001));
+        order.setAmount(Money.of("CHF", 100001));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
@@ -201,7 +199,7 @@ class OrderTests {
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(YearMonth.of(2023, 1));
         order.setDirection(CreditEventDirection.DECREASE);
-        order.setAdjustAmount(Money.of("CHF", 100001));
+        order.setAmount(Money.of("CHF", 100001));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
@@ -230,7 +228,7 @@ class OrderTests {
         assertTrue(order.isExecuted());
         assertEquals(1, company.getMessages().size());
         assertEquals(Money.of("CHF", 0), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 100000), accounting.getBalanceForAccount(FinancialAccounting.SERVICES));
+        assertEquals(Money.of("CHF", 100000).negate(), accounting.getBalanceForAccount(FinancialAccounting.SERVICES));
     }
 
     @Test
@@ -241,7 +239,7 @@ class OrderTests {
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(YearMonth.of(2023, 1));
         order.setDirection(CreditEventDirection.INCREASE);
-        order.setAdjustAmount(Money.of("CHF", 100001));
+        order.setAmount(Money.of("CHF", 100001));
         company.addSimulationOrder(order);
         order.execute();
         assertEquals(1, company.getMessages().size());
