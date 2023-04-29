@@ -25,8 +25,8 @@ class StorageTests {
     @Test
     public void testMultipleStoragesAndDistributeProduct() {
         Company company = new Company();
-        company.addStorage(Storage.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
-        company.addStorage(Storage.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
+        company.addStorage(StorageBuilder.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
+        company.addStorage(StorageBuilder.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
         Storage.distributeProductAccrossStorages(company.getStorages(), 600, STORAGE_MONTH);
         assertEquals(600, company.getStorages().stream().mapToInt(storage -> storage.getTotalStored()).sum());
         assertEquals(400, company.getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(STORAGE_MONTH)).sum());
@@ -35,8 +35,8 @@ class StorageTests {
     @Test
     public void testMultipleStoragesAndDistributeRawMaterials() {
         Company company = new Company();
-        company.addStorage(Storage.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
-        company.addStorage(Storage.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
+        company.addStorage(StorageBuilder.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
+        company.addStorage(StorageBuilder.builder().company(company).capacity(500).storageStartMonth(STORAGE_MONTH).build());
         Storage.distributeRawMaterialAccrossStorages(company.getStorages(), 700, STORAGE_MONTH);
         assertEquals(700, company.getStorages().stream().mapToInt(storage -> storage.getTotalStored()).sum());
         assertEquals(300, company.getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(STORAGE_MONTH)).sum());

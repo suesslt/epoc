@@ -9,9 +9,9 @@ public interface SimulationMapper {
         public Simulation simulationDtoToSimulation(SimulationDto simulationDto) {
             Simulation result = new Simulation();
             result.setId(simulationDto.getId());
-            result.setFinished(simulationDto.isFinished());
+            result.setIsFinished(simulationDto.isFinished());
             result.setName(simulationDto.getName());
-            result.setStarted(simulationDto.isStarted());
+            result.setIsStarted(simulationDto.isStarted());
             result.setNrOfSteps(simulationDto.getNrOfSteps());
             result.setStartMonth(simulationDto.getStartMonth());
             return result;

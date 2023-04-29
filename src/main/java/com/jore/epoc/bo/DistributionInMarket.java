@@ -16,12 +16,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class DistributionInMarket extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
@@ -33,19 +29,35 @@ public class DistributionInMarket extends BusinessObject {
     @AttributeOverride(name = "currency", column = @Column(name = "offered_price_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money offeredPrice; // TODO rename, can be confused with method to get offered price from distribution step
-    private int intentedProductSale;
+    private Integer intentedProductSale;
 
     public void addDistributionStep(DistributionStep distributionStep) {
         distributionStep.setDistributionInMarket(this);
         distributionSteps.add(distributionStep);
     }
 
-    public int getIntentedProductSale(YearMonth simulationMonth) {
+    public Company getCompany() {
+        return company;
+    }
+
+    public Integer getIntentedProductSale() {
+        return intentedProductSale;
+    }
+
+    public Integer getIntentedProductSale(YearMonth simulationMonth) {
         return getDistributionStep(simulationMonth).getIntentedProductSale();
     }
 
-    public int getMarketPotentialForProduct(YearMonth simulationMonth) {
+    public Integer getMarketPotentialForProduct(YearMonth simulationMonth) {
         return getDistributionStep(simulationMonth).getMarketPotentialForProduct();
+    }
+
+    public MarketSimulation getMarketSimulation() {
+        return marketSimulation;
+    }
+
+    public Money getOfferedPrice() {
+        return offeredPrice;
     }
 
     public Money getOfferedPrice(YearMonth simulationMonth) {
@@ -56,8 +68,24 @@ public class DistributionInMarket extends BusinessObject {
         return distributionSteps.stream().mapToInt(distributionStep -> distributionStep.getSoldProducts()).sum();
     }
 
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public void setIntentedProductSale(Integer intentedProductSale) {
+        this.intentedProductSale = intentedProductSale;
+    }
+
     public void setMarketPotentialForProduct(YearMonth simulationMonth, int marketPotentialForProduct) {
         getDistributionStep(simulationMonth).setMarketPotentialForProduct(marketPotentialForProduct);
+    }
+
+    public void setMarketSimulation(MarketSimulation marketSimulation) {
+        this.marketSimulation = marketSimulation;
+    }
+
+    public void setOfferedPrice(Money offeredPrice) {
+        this.offeredPrice = offeredPrice;
     }
 
     public void setSoldProducts(YearMonth simulationMonth, int maximumToSell) {

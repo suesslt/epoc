@@ -186,8 +186,8 @@ class MarketSimulationTests {
         Simulation result = new Simulation();
         result.setId(id++);
         result.setName("Test Simulation");
-        result.setStarted(true);
-        result.setFinished(false);
+        result.setIsStarted(true);
+        result.setIsFinished(false);
         result.setNrOfSteps(nrOfSteps);
         result.setStartMonth(startMonth);
         result.setInterestRate(interestRate);

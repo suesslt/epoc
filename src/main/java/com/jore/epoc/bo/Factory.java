@@ -12,12 +12,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class Factory extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
@@ -33,6 +29,30 @@ public class Factory extends BusinessObject {
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money unitLabourCost;
 
+    public Company getCompany() {
+        return company;
+    }
+
+    public int getMonthlyCapacityPerProductionLine() {
+        return monthlyCapacityPerProductionLine;
+    }
+
+    public int getProductionLines() {
+        return productionLines;
+    }
+
+    public YearMonth getProductionStartMonth() {
+        return productionStartMonth;
+    }
+
+    public Money getUnitLabourCost() {
+        return unitLabourCost;
+    }
+
+    public Money getUnitProductionCost() {
+        return unitProductionCost;
+    }
+
     public int produce(int maximumToProduce, YearMonth productionMonth) {
         Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
         Assert.notNull("Production start month must not be null", productionStartMonth);
@@ -43,6 +63,30 @@ public class Factory extends BusinessObject {
         if (result > 0) {
         }
         return result;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public void setMonthlyCapacityPerProductionLine(int monthlyCapacityPerProductionLine) {
+        this.monthlyCapacityPerProductionLine = monthlyCapacityPerProductionLine;
+    }
+
+    public void setProductionLines(int productionLines) {
+        this.productionLines = productionLines;
+    }
+
+    public void setProductionStartMonth(YearMonth productionStartMonth) {
+        this.productionStartMonth = productionStartMonth;
+    }
+
+    public void setUnitLabourCost(Money unitLabourCost) {
+        this.unitLabourCost = unitLabourCost;
+    }
+
+    public void setUnitProductionCost(Money unitProductionCost) {
+        this.unitProductionCost = unitProductionCost;
     }
 
     private boolean isProductionReady(YearMonth productionMonth) {

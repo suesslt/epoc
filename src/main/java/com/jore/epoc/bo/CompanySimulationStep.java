@@ -11,12 +11,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class CompanySimulationStep extends BusinessObject {
     @ManyToOne(optional = false)
     private SimulationStep simulationStep;
@@ -32,7 +28,15 @@ public class CompanySimulationStep extends BusinessObject {
     }
 
     public void finish() {
-        getSimulationStep().getSimulation().finishCompanyStep(this);
+        simulationStep.getSimulation().finishCompanyStep(this);
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public SimulationStep getSimulationStep() {
+        return simulationStep;
     }
 
     public List<MonthlySale> getSoldProductsPerMonth() {
@@ -44,5 +48,21 @@ public class CompanySimulationStep extends BusinessObject {
             result.add(new MonthlySale(simulationMonth, market.getName(), productsSold));
         }
         return result;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
+    public void setSimulationStep(SimulationStep simulationStep) {
+        this.simulationStep = simulationStep;
     }
 }

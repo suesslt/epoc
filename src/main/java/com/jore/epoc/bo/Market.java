@@ -17,11 +17,7 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 public class Market extends BusinessObject {
     private String name;
@@ -73,6 +69,10 @@ public class Market extends BusinessObject {
         return (int) (marketSizeForConsumption * percentageSold);
     }
 
+    public Money getCostToEnterMarket() {
+        return costToEnterMarket;
+    }
+
     public int getFemalePopulation() {
         updateAgetable();
         int result = 0;
@@ -80,6 +80,26 @@ public class Market extends BusinessObject {
             result = result + ageTableFemale[i];
         }
         return result;
+    }
+
+    public Money getGdp() {
+        return gdp;
+    }
+
+    public Percent getGdpGrowth() {
+        return gdpGrowth;
+    }
+
+    public Money getGdpPpp() {
+        return gdpPpp;
+    }
+
+    public int getLaborForce() {
+        return laborForce;
+    }
+
+    public BigDecimal getLifeExpectancy() {
+        return lifeExpectancy;
     }
 
     public int getMalePopulation() {
@@ -97,14 +117,26 @@ public class Market extends BusinessObject {
         return result;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public int getPopulationForAge(int age) {
         updateAgetable();
         return age < ageTableMale.length ? ageTableMale[age] + ageTableFemale[age] : 0;
     }
 
+    public int getRequiredSalesforce() {
+        return requiredSalesforce;
+    }
+
     public int getTotalPopulation() {
         updateAgetable();
         return getMalePopulation() + getFemalePopulation();
+    }
+
+    public Percent getUnemployment() {
+        return unemployment;
     }
 
     public void setAge65olderFemale(int age65olderFemale) {
@@ -157,9 +189,41 @@ public class Market extends BusinessObject {
         this.ageTo64Male = ageTo64Male;
     }
 
+    public void setCostToEnterMarket(Money costToEnterMarket) {
+        this.costToEnterMarket = costToEnterMarket;
+    }
+
+    public void setGdp(Money gdp) {
+        this.gdp = gdp;
+    }
+
+    public void setGdpGrowth(Percent gdpGrowth) {
+        this.gdpGrowth = gdpGrowth;
+    }
+
+    public void setGdpPpp(Money gdpPpp) {
+        this.gdpPpp = gdpPpp;
+    }
+
+    public void setLaborForce(int laborForce) {
+        this.laborForce = laborForce;
+    }
+
     public void setLifeExpectancy(BigDecimal lifeExpectancy) {
         ageTableUpdated = false;
         this.lifeExpectancy = lifeExpectancy;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRequiredSalesforce(int requiredSalesforce) {
+        this.requiredSalesforce = requiredSalesforce;
+    }
+
+    public void setUnemployment(Percent unemployment) {
+        this.unemployment = unemployment;
     }
 
     @Override

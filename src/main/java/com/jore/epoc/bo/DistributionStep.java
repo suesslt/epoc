@@ -9,12 +9,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class DistributionStep extends BusinessObject {
     @ManyToOne(optional = false)
     private DistributionInMarket distributionInMarket;
@@ -27,4 +23,52 @@ public class DistributionStep extends BusinessObject {
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money offeredPrice;
     private int marketPotentialForProduct;
+
+    public CompanySimulationStep getCompanySimulationStep() {
+        return companySimulationStep;
+    }
+
+    public DistributionInMarket getDistributionInMarket() {
+        return distributionInMarket;
+    }
+
+    public int getIntentedProductSale() {
+        return intentedProductSale;
+    }
+
+    public int getMarketPotentialForProduct() {
+        return marketPotentialForProduct;
+    }
+
+    public Money getOfferedPrice() {
+        return offeredPrice;
+    }
+
+    public int getSoldProducts() {
+        return soldProducts;
+    }
+
+    public void setCompanySimulationStep(CompanySimulationStep companySimulationStep) {
+        this.companySimulationStep = companySimulationStep;
+    }
+
+    public void setDistributionInMarket(DistributionInMarket distributionInMarket) {
+        this.distributionInMarket = distributionInMarket;
+    }
+
+    public void setIntentedProductSale(int intentedProductSale) {
+        this.intentedProductSale = intentedProductSale;
+    }
+
+    public void setMarketPotentialForProduct(int marketPotentialForProduct) {
+        this.marketPotentialForProduct = marketPotentialForProduct;
+    }
+
+    public void setOfferedPrice(Money offeredPrice) {
+        this.offeredPrice = offeredPrice;
+    }
+
+    public void setSoldProducts(int soldProducts) {
+        this.soldProducts = soldProducts;
+    }
 }

@@ -3,14 +3,8 @@ package com.jore.epoc.bo;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
-@ToString
 public class EpocSetting extends BusinessObject {
     public static final String FACTORY_FIXED_COSTS = "SET0001";
     public static final String FACTORY_VARIABLE_COSTS = "SET0002";
@@ -37,4 +31,41 @@ public class EpocSetting extends BusinessObject {
     private String settingFormat;
     private String valueText;
     private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSettingFormat() {
+        return settingFormat;
+    }
+
+    public String getSettingKey() {
+        return settingKey;
+    }
+
+    public String getValueText() {
+        return valueText;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSettingFormat(String settingFormat) {
+        this.settingFormat = settingFormat;
+    }
+
+    public void setSettingKey(String settingKey) {
+        this.settingKey = settingKey;
+    }
+
+    public void setValueText(String valueText) {
+        this.valueText = valueText;
+    }
+
+    @Override
+    public String toString() {
+        return "EpocSetting [settingKey=" + settingKey + ", settingFormat=" + settingFormat + ", valueText=" + valueText + ", description=" + description + "]";
+    }
 }

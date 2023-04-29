@@ -82,9 +82,9 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public Iterable<Mail> getEmailsForNewUsers() {
         List<Mail> result = new ArrayList<>();
-        Iterable<UserInCompanyRole> findByIsInvitationRequired = userInCompanyRoleRepository.findByInvitationRequired(true);
+        Iterable<UserInCompanyRole> findByIsInvitationRequired = userInCompanyRoleRepository.findByIsInvitationRequired(true);
         for (UserInCompanyRole userInCompany : findByIsInvitationRequired) {
-            userInCompany.setInvitationRequired(false);
+            userInCompany.setIsInvitationRequired(false);
             userInCompanyRoleRepository.save(userInCompany);
             Mail mail = new Mail();
             mail.setSender(ADMIN_EPOC_CH);

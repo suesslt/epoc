@@ -11,18 +11,8 @@ import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Storage extends BusinessObject {
     // TODO Write test cases
     public static void distributeProductAccrossStorages(List<Storage> storages, int productsToStore, YearMonth storageMonth) {
@@ -77,13 +67,19 @@ public class Storage extends BusinessObject {
     private Company company;
     private YearMonth storageStartMonth;
     private int capacity;
-    @Builder.Default
     private int storedProducts = 0;
-    @Builder.Default
     private int storedRawMaterials = 0;
 
     public int getAvailableCapacity(YearMonth storageMonth) {
         return isBuiltAndReady(storageMonth) ? capacity - getTotalStored() : 0;
+    }
+
+    public Integer getStoredProducts() {
+        return storedProducts;
+    }
+
+    public Integer getStoredRawMaterials() {
+        return storedRawMaterials;
     }
 
     public int getTotalStored() {
@@ -104,6 +100,18 @@ public class Storage extends BusinessObject {
         int result = Math.min(storedRawMaterials, rawMaterialToRemove);
         storedRawMaterials -= result;
         return result;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public void setStorageStartMonth(YearMonth storageStartMonth) {
+        this.storageStartMonth = storageStartMonth;
     }
 
     public int storeProducts(int productsToStore, YearMonth storeMonth) {

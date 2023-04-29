@@ -18,12 +18,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 //@Log4j2
 /**
  * marketSize = Nr of potential sales in market
@@ -81,8 +77,80 @@ public class MarketSimulation extends BusinessObject {
         return demandCurve.getDemandForPrice(offeredPrice).applyTo(marketSize);
     }
 
+    public List<DistributionInMarket> getDistributionInMarkets() {
+        return distributionInMarkets;
+    }
+
+    public Percent getHigherPercent() {
+        return higherPercent;
+    }
+
+    public Money getHigherPrice() {
+        return higherPrice;
+    }
+
+    public Percent getLowerPercent() {
+        return lowerPercent;
+    }
+
+    public Money getLowerPrice() {
+        return lowerPrice;
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public int getProductLifecycleDuration() {
+        return productLifecycleDuration;
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
+    }
+
     public Integer getSoldProducts() {
         return distributionInMarkets.stream().mapToInt(distributionInMarket -> distributionInMarket.getSoldProducts()).sum();
+    }
+
+    public YearMonth getStartMonth() {
+        return startMonth;
+    }
+
+    public void setDistributionInMarkets(List<DistributionInMarket> distributionInMarkets) {
+        this.distributionInMarkets = distributionInMarkets;
+    }
+
+    public void setHigherPercent(Percent higherPercent) {
+        this.higherPercent = higherPercent;
+    }
+
+    public void setHigherPrice(Money higherPrice) {
+        this.higherPrice = higherPrice;
+    }
+
+    public void setLowerPercent(Percent lowerPercent) {
+        this.lowerPercent = lowerPercent;
+    }
+
+    public void setLowerPrice(Money lowerPrice) {
+        this.lowerPrice = lowerPrice;
+    }
+
+    public void setMarket(Market market) {
+        this.market = market;
+    }
+
+    public void setProductLifecycleDuration(int productLifecycleDuration) {
+        this.productLifecycleDuration = productLifecycleDuration;
+    }
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
+    }
+
+    public void setStartMonth(YearMonth startMonth) {
+        this.startMonth = startMonth;
     }
 
     public void simulateMarket(YearMonth simulationMonth) {

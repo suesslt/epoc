@@ -27,8 +27,8 @@ class SimulationTests {
     public void testFirstCall() {
         Simulation simulation = new Simulation();
         simulation.setId(42);
-        simulation.setFinished(false);
-        simulation.setStarted(false);
+        simulation.setIsFinished(false);
+        simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
         simulation.setNrOfSteps(12);
@@ -42,8 +42,8 @@ class SimulationTests {
     public void testLastCall() {
         Simulation simulation = new Simulation();
         simulation.setId(42);
-        simulation.setFinished(false);
-        simulation.setStarted(false);
+        simulation.setIsFinished(false);
+        simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
         simulation.setNrOfSteps(12);
@@ -55,8 +55,8 @@ class SimulationTests {
     public void testWithinSimulation() {
         Simulation simulation = new Simulation();
         simulation.setId(42);
-        simulation.setFinished(false);
-        simulation.setStarted(false);
+        simulation.setIsFinished(false);
+        simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
         simulation.setNrOfSteps(12);
@@ -74,8 +74,8 @@ class SimulationTests {
     public void testWithinSimulationLastStepClosed() {
         Simulation simulation = new Simulation();
         simulation.setId(42);
-        simulation.setFinished(false);
-        simulation.setStarted(false);
+        simulation.setIsFinished(false);
+        simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
         simulation.setNrOfSteps(12);

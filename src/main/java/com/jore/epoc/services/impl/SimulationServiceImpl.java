@@ -134,7 +134,7 @@ public class SimulationServiceImpl implements SimulationService {
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
             simulation.setOwner(user.get());
-            simulation.setStarted(false);
+            simulation.setIsStarted(false);
             simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.START_MONTH));
             simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
             simulationRepository.save(simulation);
@@ -355,7 +355,7 @@ public class SimulationServiceImpl implements SimulationService {
                         login.get().setPassword(Util.createPassword((Integer) staticDataService.getSetting(EpocSetting.PASSWORD_LENGTH)));
                     }
                     UserInCompanyRole userInCompany = company.addLogin(login.get());
-                    userInCompany.setInvitationRequired(true);
+                    userInCompany.setIsInvitationRequired(true);
                     loginRepository.save(login.get());
                 }
             }
