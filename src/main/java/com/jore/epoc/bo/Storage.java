@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.CompositeType;
-import org.jfree.util.Log;
 
+import com.jore.Assert;
 import com.jore.datatypes.money.Money;
 import com.jore.jpa.BusinessObject;
 
@@ -27,22 +27,41 @@ public class Storage extends BusinessObject {
             int capacity = storage.getAvailableCapacity(storageMonth);
             toStore -= storage.storeProducts(Math.min(toStore, capacity), storageMonth);
         }
-        if (toStore > 0) {
-            Log.warn("*** Remainder > 0");
-        }
+        Assert.isTrue("Remainder in storing products must not be greater zero.", toStore == 0);
     }
 
-    public static void distributeRawMaterialAccrossStorages(List<Storage> storages, int rawMaterialToStore, YearMonth storageMonth) {
+    public static void distributeRawMaterialAccrossStorages(List<Storage> storages, int rawMaterialToStore, YearMonth storageMonth, Money unitPrice) {
+        int rawMaterialStored = getTotalRawMaterialStored(storages);
+        Money currentValue = getRawMaterialValue(storages);
+        Money newValue = Money.add(currentValue, unitPrice.multiply(rawMaterialToStore));
+        Money newAveragePrice = newValue.divide(rawMaterialStored + rawMaterialToStore);
         int toStore = rawMaterialToStore;
         Iterator<Storage> iter = storages.iterator();
         while (toStore > 0 && iter.hasNext()) {
             Storage storage = iter.next();
             int capacity = storage.getAvailableCapacity(storageMonth);
-            toStore -= storage.storeRawMaterials(Math.min(toStore, capacity), storageMonth);
+            toStore -= storage.storeRawMaterials(Math.min(toStore, capacity), storageMonth, unitPrice);
+            storage.setAveragePrice(newAveragePrice);
         }
-        if (toStore > 0) {
-            Log.warn("*** Remainder > 0");
+        Assert.isTrue("Remainder in storing raw material must not be greater zero.", toStore == 0);
+    }
+
+    public static Money getAverageRawMaterialPrice(List<Storage> storages) {
+        Money value = getRawMaterialValue(storages);
+        int inventory = getTotalRawMaterialStored(storages);
+        return value != null ? value.divide(inventory) : null;
+    }
+
+    public static Money getRawMaterialValue(List<Storage> storages) {
+        Money result = null;
+        for (Storage storage : storages) {
+            result = Money.add(result, storage.getValue());
         }
+        return result;
+    }
+
+    public static Integer getTotalStored(List<Storage> storages) {
+        return storages.stream().mapToInt(storage -> storage.getTotalStored()).sum();
     }
 
     public static void removeProductsFromStorages(List<Storage> storages, int productsToRemove) {
@@ -51,20 +70,20 @@ public class Storage extends BusinessObject {
         while (toRemove > 0 && iter.hasNext()) {
             toRemove -= iter.next().removeProducts(productsToRemove);
         }
-        if (toRemove > 0) {
-            Log.warn("*** Remainder > 0");
-        }
+        Assert.isTrue("Remainder in removing product must not be greater zero.", toRemove == 0);
     }
 
     public static void removeRawMaterialFromStorages(List<Storage> storages, int rawMaterialToRemove) {
         int toRemove = rawMaterialToRemove;
-        Iterator<Storage> iter = storages.iterator();
-        while (toRemove > 0 && iter.hasNext()) {
-            toRemove -= iter.next().removeRawMaterials(toRemove);
+        Iterator<Storage> storageIterator = storages.iterator();
+        while (toRemove > 0 && storageIterator.hasNext()) {
+            toRemove -= storageIterator.next().removeRawMaterials(toRemove);
         }
-        if (toRemove > 0) {
-            Log.warn("*** Remainder > 0");
-        }
+        Assert.isTrue("Remainder in removing raw material must not be greater zero.", toRemove == 0);
+    }
+
+    private static int getTotalRawMaterialStored(List<Storage> storages) {
+        return storages.stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
     }
 
     @ManyToOne(optional = false)
@@ -77,6 +96,10 @@ public class Storage extends BusinessObject {
     @AttributeOverride(name = "currency", column = @Column(name = "inventory_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money inventoryManagementCost;
+    @AttributeOverride(name = "amount", column = @Column(name = "average_price_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "average_price_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money averagePrice;
 
     public int getAvailableCapacity(YearMonth storageMonth) {
         return isBuiltAndReady(storageMonth) ? capacity - getTotalStored() : 0;
@@ -96,10 +119,6 @@ public class Storage extends BusinessObject {
 
     public int getTotalStored() {
         return storedProducts + storedRawMaterials;
-    }
-
-    public boolean isBuiltAndReady(YearMonth storageMonth) {
-        return !Objects.requireNonNull(storageMonth, "Storage Month must not be null.").isBefore(Objects.requireNonNull(storageStartMonth, "Storage start month must not be null."));
     }
 
     public int removeProducts(int productsToRemove) {
@@ -136,9 +155,21 @@ public class Storage extends BusinessObject {
         return result;
     }
 
-    public int storeRawMaterials(int rawMaterialToStore, YearMonth storeMonth) {
+    public int storeRawMaterials(int rawMaterialToStore, YearMonth storeMonth, Money unitPrice) {
         int result = Math.min(rawMaterialToStore, getAvailableCapacity(storeMonth));
         storedRawMaterials += result;
         return result;
+    }
+
+    private Money getValue() {
+        return averagePrice != null ? averagePrice.multiply(storedRawMaterials) : null;
+    }
+
+    private boolean isBuiltAndReady(YearMonth storageMonth) {
+        return !Objects.requireNonNull(storageMonth, "Storage Month must not be null.").isBefore(Objects.requireNonNull(storageStartMonth, "Storage start month must not be null."));
+    }
+
+    private void setAveragePrice(Money averagePrice) {
+        this.averagePrice = averagePrice;
     }
 }

@@ -34,7 +34,7 @@ class CompanyTests {
         Optional<SimulationStep> activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         CompanySimulationStep companySimulationStep = activeSimulationStep.get().getCompanySimulationStepFor(company);
         companySimulationStep.finish();
-        assertEquals(Money.of(CHF, -804166.66), company.getAccounting().getPnL());
+        assertEquals(Money.of(CHF, -750000.00), company.getAccounting().getSalaries());
     }
 
     @Test

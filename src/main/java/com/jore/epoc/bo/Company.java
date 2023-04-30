@@ -71,12 +71,12 @@ public class Company extends BusinessObject {
     }
 
     public UserInCompanyRole addLogin(User login) {
-        UserInCompanyRole userInCompanyRole = new UserInCompanyRole();
-        userInCompanyRole.setCompany(this);
-        userInCompanyRole.setUser(login);
-        login.addCompanyRole(userInCompanyRole);
-        users.add(userInCompanyRole);
-        return userInCompanyRole;
+        UserInCompanyRole result = new UserInCompanyRole();
+        result.setCompany(this);
+        result.setUser(login);
+        login.addCompanyRole(result);
+        users.add(result);
+        return result;
     }
 
     public void addMessage(Message message) {
@@ -95,7 +95,7 @@ public class Company extends BusinessObject {
         storages.add(storage);
     }
 
-    public void chargeBuildingMaintenanceCosts(YearMonth simulationMonth) {
+    public void chargeBuildingMaintenanceCost(YearMonth simulationMonth) {
         int nrOfBuildings = 1; // Main Building
         nrOfBuildings += factories.size();
         nrOfBuildings += storages.size();
@@ -116,17 +116,16 @@ public class Company extends BusinessObject {
 
     public void chargeWorkforceCost(YearMonth simulationMonth) {
         Money headquarterCost = getSimulation().getHeadquarterCost();
-        Optional<Money> distributionCosts = getDistributionInMarkets().stream().map(dim -> dim.getDistributionCost()).reduce((c1, c2) -> c1.add(c2));
+        Optional<Money> distributionCost = getDistributionInMarkets().stream().map(dim -> dim.getDistributionCost()).reduce((c1, c2) -> c1.add(c2));
         Optional<Money> inventoryManagementCost = getStorages().stream().map(storage -> storage.getInventoryManagementCost()).reduce((c1, c2) -> c1.add(c2));
         Optional<Money> productionCost = getFactories().stream().map(factory -> factory.getProductionCost()).reduce((c1, c2) -> c1.add(c2));
         Money workforceCost = headquarterCost;
-        workforceCost = Money.add(workforceCost, distributionCosts.orElse(null));
+        workforceCost = Money.add(workforceCost, distributionCost.orElse(null));
         workforceCost = Money.add(workforceCost, inventoryManagementCost.orElse(null));
         workforceCost = Money.add(workforceCost, productionCost.orElse(null));
         workforceCost = workforceCost.divide(ONE_TWELFTH);
-        accounting.book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Charging costs for HQ: %s, distribution: %s, inventory management: %s, production lines %s.", headquarterCost, distributionCosts, inventoryManagementCost, productionCost),
+        accounting.book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Charging costs for HQ: %s, distribution: %s, inventory management: %s, production lines %s.", headquarterCost, distributionCost, inventoryManagementCost, productionCost),
                 new DebitCreditAmount(FinancialAccounting.SALARIES, FinancialAccounting.BANK, workforceCost)));
-        log.info(String.format("Charging total costs of %s for HQ: %s, distribution: %s, inventory management: %s, production lines %s.", workforceCost, headquarterCost, distributionCosts, inventoryManagementCost, productionCost));
     }
 
     public FinancialAccounting getAccounting() {
@@ -174,30 +173,23 @@ public class Company extends BusinessObject {
         return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
     }
 
-    public List<MonthlySale> getSoldProductsPerMonth() {
-        List<MonthlySale> result = new ArrayList<>();
-        for (CompanySimulationStep companySimulationStep : companySimulationSteps) {
-            result.addAll(companySimulationStep.getSoldProductsPerMonth());
-        }
-        return result;
-    }
-
     public List<Storage> getStorages() {
         return Collections.unmodifiableList(storages);
     }
 
     public int manufactureProducts(YearMonth productionMonth) {
         int totalAmountProduced = 0;
-        int maximumToProduce = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
-        // TODO get max of storage or market capacity
-        log.debug(String.format("Maximum to produce is %d for company '%s' (%d)", maximumToProduce, name, getId()));
-        if (maximumToProduce > 0) {
-            Iterator<Factory> iter = factories.iterator();
-            while (iter.hasNext() && maximumToProduce > 0) {
-                int amountProduced = iter.next().produce(maximumToProduce, productionMonth);
-                maximumToProduce -= amountProduced;
+        int rawMaterialInStorage = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
+        log.debug(String.format("Raw material in storage is %d for company '%s' (%d)", rawMaterialInStorage, name, getId()));
+        if (rawMaterialInStorage > 0) {
+            Iterator<Factory> factoryIterator = factories.iterator();
+            while (factoryIterator.hasNext() && rawMaterialInStorage > 0) {
+                int amountProduced = factoryIterator.next().produce(rawMaterialInStorage, productionMonth);
+                rawMaterialInStorage -= amountProduced;
                 totalAmountProduced += amountProduced;
             }
+            Money averageRawMaterialPrice = Storage.getAverageRawMaterialPrice(storages);
+            accounting.book(new BookingRecord(productionMonth.atEndOfMonth(), "", new DebitCreditAmount(FinancialAccounting.MATERIALAUFWAND, FinancialAccounting.ROHWAREN, averageRawMaterialPrice.multiply(totalAmountProduced))));
             Storage.removeRawMaterialFromStorages(storages, totalAmountProduced);
             Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         }
@@ -211,7 +203,6 @@ public class Company extends BusinessObject {
         if (amountToSell > 0) {
             distributionInMarket.setSoldProducts(simulationMonth, amountToSell);
             Storage.removeProductsFromStorages(getStorages(), amountToSell);
-            // TODO book inventory decrease
             getAccounting().book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Sale of %s products.", amountToSell), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(amountToSell))));
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in '%s'. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", amountToSell, simulationMonth, name, storedAmount, intentedProductSale, productMarketPotential));

@@ -29,6 +29,7 @@ public class FinancialAccounting extends BusinessObject {
     public static final String RAUMAUFWAND = "6000";
     public static final String DEPRECIATION = "6800";
     public static final String SALARIES = "5000";
+    public static final String MATERIALAUFWAND = "4000";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
     @Type(CurrencyUserType.class)
@@ -45,6 +46,7 @@ public class FinancialAccounting extends BusinessObject {
         addAccount(new Account(AccountType.INCOME_STATEMENT, RAUMAUFWAND, "Gebäudeunterhalt"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, DEPRECIATION, "Abschreibung"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, SALARIES, "Abschreibung"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, MATERIALAUFWAND, "Materialaufwand Produktion"));
     }
 
     public void addAccount(Account account) {
@@ -99,11 +101,16 @@ public class FinancialAccounting extends BusinessObject {
         result = Money.add(result, getBalanceForAccount(RAUMAUFWAND));
         result = Money.add(result, getBalanceForAccount(DEPRECIATION));
         result = Money.add(result, getBalanceForAccount(SALARIES));
+        result = Money.add(result, getBalanceForAccount(MATERIALAUFWAND));
         return result;
     }
 
     public Money getRealEstateBalance() {
         return nullToZero(getAccount(REAL_ESTATE).getBalance());
+    }
+
+    public Money getSalaries() {
+        return nullToZero(getAccount(SALARIES).getBalance());
     }
 
     public void setBalanceForAccount(String accountNumber, Money balance) {
