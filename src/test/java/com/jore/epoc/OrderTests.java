@@ -219,7 +219,7 @@ class OrderTests {
         accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 100000));
         EnterMarketOrder order = new EnterMarketOrder();
         order.setExecutionMonth(YearMonth.of(2023, 1));
-        order.setFixedCosts(Money.of("CHF", 100000));
+        order.setEnterMarktCost(Money.of("CHF", 100000));
         order.setIntentedProductSale(1000);
         order.setOfferedPrice(Money.of("CHF", 80));
         order.setMarketSimulation(marketSimulation);

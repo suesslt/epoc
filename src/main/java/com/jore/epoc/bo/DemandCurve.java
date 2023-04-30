@@ -1,6 +1,7 @@
 package com.jore.epoc.bo;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 import com.jore.Assert;
@@ -34,7 +35,7 @@ public class DemandCurve {
     public Percent getDemandForPrice(Money price) {
         final Money priceDifference = higherPrice.subtract(lowerPrice);
         final Percent percentDifference = higherPricePercent.subtract(lowerPricePercent);
-        final BigDecimal aValue = percentDifference.getFactorAmount().divide(priceDifference.getAmount());
+        final BigDecimal aValue = percentDifference.getFactorAmount().divide(priceDifference.getAmount(), 6, RoundingMode.HALF_UP); // TODO calculate within own datatype
         final BigDecimal bValue = lowerPricePercent.getFactorAmount().subtract(aValue.multiply(lowerPrice.getAmount()));
         return Percent.of(bValue.min(Objects.requireNonNull(price, "Price must not be null").getAmount().multiply(aValue).add(bValue).max(BigDecimal.ZERO)));
     }

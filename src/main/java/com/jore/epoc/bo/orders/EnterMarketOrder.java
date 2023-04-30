@@ -22,16 +22,16 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "currency", column = @Column(name = "offered_price_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money offeredPrice;
-    @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
+    @AttributeOverride(name = "amount", column = @Column(name = "market_entry_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "market_entry_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money fixedCosts;
+    private Money marketEntryCost;
 
     @Override
     public void execute() {
-        if (getCompany().getAccounting().checkFunds(fixedCosts)) {
+        if (getCompany().getAccounting().checkFunds(marketEntryCost)) {
             addDistributionInMarket();
-            book(getExecutionMonth().atDay(1), "Entry into market", FinancialAccounting.SERVICES, FinancialAccounting.BANK, fixedCosts);
+            book(getExecutionMonth().atDay(1), "Entry into market", FinancialAccounting.SERVICES, FinancialAccounting.BANK, marketEntryCost);
             addMessage(String.format("Successfully set up entry into market %s.", marketSimulation.getMarket().getName()), MessageLevel.INFORMATION);
             setExecuted(true);
         } else {
@@ -44,8 +44,8 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
         return 5;
     }
 
-    public void setFixedCosts(Money fixedCosts) {
-        this.fixedCosts = fixedCosts;
+    public void setEnterMarktCost(Money marketEntryCost) {
+        this.marketEntryCost = marketEntryCost;
     }
 
     public void setIntentedProductSale(Integer intentedProductSale) {

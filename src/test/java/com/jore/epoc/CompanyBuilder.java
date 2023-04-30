@@ -34,12 +34,12 @@ public class CompanyBuilder {
     private Currency baseCurrency = Currency.getInstance(CHF);
     private Money constructionCostsPerUnit = Money.of(CHF, 100);
     private Money constructionCosts = Money.of(CHF, 1000000);
-    private Money rawMaterialUnitPrice = Money.of(CHF, 10);
+    private Money rawMaterialUnitPrice = Money.of(CHF, 300);
     private Money factoryConstructionCosts = Money.of(CHF, 1000000);
     private Percent demandCurveLowerPercent = Percent.of("80%");
-    private Money demandCurveLowerPrice = Money.of(CHF, 20);
+    private Money demandCurveLowerPrice = Money.of(CHF, 500);
     private Percent demandCurveHigherPercent = Percent.of("20%");
-    private Money demandCurveHigherPrice = Money.of(CHF, 80);
+    private Money demandCurveHigherPrice = Money.of(CHF, 1200);
     private int productLifecycleDuration = 100;
     private Integer timeToBuildStorage = 0;
     private Integer timeToBuildFactory = 0;
@@ -53,8 +53,10 @@ public class CompanyBuilder {
     private Percent depreciationRate = Percent.of("15%");
     private Money headquarterCost = Money.of(CHF, 1500000);
     private Money inventoryManagementCost = Money.of(CHF, 500000);
+    private Money marketEntryCost = Money.of(CHF, 400000);
+    private Money productionCost = Money.of(CHF, 30);
     // To be set in application
-    private Money initialOfferedPrice = Money.of(CHF, 50);
+    private Money initialOfferedPrice = Money.of(CHF, 800);
     private int initialIntendedSale = 1000;
     private Integer productionLines = 10;
     private Money productionLineConstructionCosts = Money.of(CHF, 100000);
@@ -147,6 +149,7 @@ public class CompanyBuilder {
         order.setExecutionMonth(executionMonth);
         order.setOfferedPrice(initialOfferedPrice);
         order.setIntentedProductSale(initialIntendedSale);
+        order.setEnterMarktCost(marketEntryCost);
         orders.add(order);
         return this;
     }
@@ -197,6 +200,7 @@ public class CompanyBuilder {
         market.setName(marketName);
         market.setLaborForce(marketLaborForce);
         market.setDistributionCost(marketDistributionCost);
+        market.setCostToEnterMarket(marketEntryCost);
         return market;
     }
 
@@ -222,5 +226,6 @@ public class CompanyBuilder {
         simulation.setBuildingMaintenanceCost(buildingMaintenanceCost);
         simulation.setDepreciationRate(depreciationRate);
         simulation.setHeadquarterCost(headquarterCost);
+        simulation.setProductionCost(productionCost);
     }
 }

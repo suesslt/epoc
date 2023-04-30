@@ -12,6 +12,12 @@ public class DemandCurveTest {
     DemandCurve demandCurve = DemandCurve.create("USD", 1000, "20%", 200, "80%");
 
     @Test
+    public void testFailedInTestExample() {
+        DemandCurve myCurve = DemandCurve.create("CHF", 1200, "20%", 500, "80%");
+        assertEquals(Percent.of("54.29%"), myCurve.getDemandForPrice(Money.of("CHF", 800)));
+    }
+
+    @Test
     public void testGetDemandForPriceOf1000() {
         assertEquals(Percent.of("20%"), demandCurve.getDemandForPrice(Money.of("USD", 1000)));
     }

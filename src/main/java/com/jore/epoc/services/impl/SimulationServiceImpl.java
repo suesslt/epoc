@@ -96,7 +96,7 @@ public class SimulationServiceImpl implements SimulationService {
         buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
         buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
         buildFactoryOrder.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
-        buildFactoryOrder.setProductionLineLaborCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
+        buildFactoryOrder.setProductionLineLaborCost((Money) staticDataService.getSetting(EpocSetting.PRODUCTION_LINE_LABOR));
         companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
     }
 
@@ -141,6 +141,7 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.setBuildingMaintenanceCost((Money) staticDataService.getSetting(EpocSetting.BUILDING_MAINTENANCE));
             simulation.setHeadquarterCost((Money) staticDataService.getSetting(EpocSetting.HEADQUARTER_COST));
             simulation.setDepreciationRate((Percent) staticDataService.getSetting(EpocSetting.DEPRECIATION_RATE));
+            simulation.setProductionCost((Money) staticDataService.getSetting(EpocSetting.PRODUCTION_COST));
             simulationRepository.save(simulation);
         }
     }
@@ -186,7 +187,7 @@ public class SimulationServiceImpl implements SimulationService {
         enterMarketOrder.setMarketSimulation(marketSimulation.get());
         enterMarketOrder.setIntentedProductSale(enterMarketDto.getIntentedProductSales());
         enterMarketOrder.setOfferedPrice(enterMarketDto.getOfferedPrice());
-        enterMarketOrder.setFixedCosts((Money) staticDataService.getSetting(EpocSetting.DISTRIBUTION_FIXED_COSTS));
+        enterMarketOrder.setEnterMarktCost(market.getCostToEnterMarket());
         companySimulationStep.getCompany().addSimulationOrder(enterMarketOrder);
     }
 

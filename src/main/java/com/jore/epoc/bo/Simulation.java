@@ -55,6 +55,10 @@ public class Simulation extends BusinessObject {
     @AttributeOverride(name = "currency", column = @Column(name = "headquarter_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money headquarterCost;
+    @AttributeOverride(name = "amount", column = @Column(name = "production_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "production_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money productionCost;
 
     public void addCompany(Company company) {
         company.setSimulation(this);
@@ -143,6 +147,10 @@ public class Simulation extends BusinessObject {
         return owner;
     }
 
+    public Money getProductionCost() {
+        return productionCost;
+    }
+
     public Integer getSoldProducts() {
         return marketSimulations.stream().mapToInt(marketSimulation -> marketSimulation.getSoldProducts()).sum();
     }
@@ -195,6 +203,10 @@ public class Simulation extends BusinessObject {
         this.owner = owner;
     }
 
+    public void setProductionCost(Money productionCost) {
+        this.productionCost = productionCost;
+    }
+
     public void setStartMonth(YearMonth startMonth) {
         this.startMonth = startMonth;
     }
@@ -228,11 +240,11 @@ public class Simulation extends BusinessObject {
             for (SimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationMonth)) {
                 simulationOrder.execute();
             }
+            company.manufactureProducts(simulationStep.getSimulationMonth());
+            company.chargeWorkforceCost(simulationStep.getSimulationMonth());
             company.chargeInterest(simulationStep.getSimulationMonth());
             company.chargeDepreciation(simulationStep.getSimulationMonth());
-            company.manufactureProducts(simulationStep.getSimulationMonth());
             company.chargeBuildingMaintenanceCost(simulationStep.getSimulationMonth());
-            company.chargeWorkforceCost(simulationStep.getSimulationMonth());
         }
         for (MarketSimulation marketSimulation : simulationStep.getSimulation().getMarketSimulations()) {
             marketSimulation.simulateMarket(simulationMonth);

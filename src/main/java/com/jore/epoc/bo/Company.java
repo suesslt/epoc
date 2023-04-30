@@ -189,7 +189,8 @@ public class Company extends BusinessObject {
                 totalAmountProduced += amountProduced;
             }
             Money averageRawMaterialPrice = Storage.getAverageRawMaterialPrice(storages);
-            accounting.book(new BookingRecord(productionMonth.atEndOfMonth(), "", new DebitCreditAmount(FinancialAccounting.MATERIALAUFWAND, FinancialAccounting.ROHWAREN, averageRawMaterialPrice.multiply(totalAmountProduced))));
+            accounting.book(new BookingRecord(productionMonth.atEndOfMonth(), "Production, removal of raw materials from inventory.", new DebitCreditAmount(FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, FinancialAccounting.ROHWAREN, averageRawMaterialPrice.multiply(totalAmountProduced))));
+            accounting.book(new BookingRecord(productionMonth.atEndOfMonth(), "Production, adding products to inventory.", new DebitCreditAmount(FinancialAccounting.PRODUKTE, FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, getSimulation().getProductionCost().multiply(totalAmountProduced))));
             Storage.removeRawMaterialFromStorages(storages, totalAmountProduced);
             Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         }
@@ -204,6 +205,8 @@ public class Company extends BusinessObject {
             distributionInMarket.setSoldProducts(simulationMonth, amountToSell);
             Storage.removeProductsFromStorages(getStorages(), amountToSell);
             getAccounting().book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Sale of %s products.", amountToSell), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUKTE_ERLOESE, sellPrice.multiply(amountToSell))));
+            getAccounting()
+                    .book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Sale of %s products.", amountToSell), new DebitCreditAmount(FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, FinancialAccounting.PRODUKTE, getSimulation().getProductionCost().multiply(amountToSell))));
         }
         log.debug(String.format("Sell a maximum of %d products for month %s in '%s'. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", amountToSell, simulationMonth, name, storedAmount, intentedProductSale, productMarketPotential));
     }
