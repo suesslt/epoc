@@ -33,7 +33,7 @@ class OrderTests {
         order.setProductionLines(10);
         order.setMonthlyCapacityPerProductionLine(100);
         order.setTimeToBuild(0);
-        order.setUnitLaborCost(Money.of("CHF", 1));
+        order.setProductionLineLaborCost(Money.of("CHF", 1));
         order.setUnitProductionCost(Money.of("CHF", 1));
         order.setConstructionCostsPerLine(Money.of("CHF", 1000));
         company.addSimulationOrder(order);
@@ -55,7 +55,7 @@ class OrderTests {
         order.setProductionLines(10);
         order.setMonthlyCapacityPerProductionLine(100);
         order.setTimeToBuild(0);
-        order.setUnitLaborCost(Money.of("CHF", 1));
+        order.setProductionLineLaborCost(Money.of("CHF", 1));
         order.setUnitProductionCost(Money.of("CHF", 1));
         order.setConstructionCostsPerLine(Money.of("CHF", 1000));
         company.addSimulationOrder(order);

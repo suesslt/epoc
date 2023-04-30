@@ -40,6 +40,10 @@ public class DistributionInMarket extends BusinessObject {
         return company;
     }
 
+    public Money getDistributionCost() {
+        return getMarketSimulation().getMarket().getDistributionCost();
+    }
+
     public Integer getIntentedProductSale() {
         return intentedProductSale;
     }

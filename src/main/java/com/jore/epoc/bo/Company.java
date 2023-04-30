@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.jore.Assert;
@@ -30,6 +31,7 @@ public class Company extends BusinessObject {
     public record MonthlySale(YearMonth simulationMonth, String name, Integer productsSold) {
     }
 
+    private static final int ONE_TWELFTH = 12;
     private String name;
     @ManyToOne(optional = false)
     private Simulation simulation;
@@ -98,19 +100,30 @@ public class Company extends BusinessObject {
                 .book(new BookingRecord(simulationMonth.atDay(1), String.format("Building maintenance for %d buildings.", nrOfBuildings), new DebitCreditAmount(FinancialAccounting.RAUMAUFWAND, FinancialAccounting.BANK, simulation.getBuildingMaintenanceCost().multiply(nrOfBuildings).divide(12))));
     }
 
+    public void chargeDepreciation(YearMonth simulationMonth) {
+        Money realEstateBalance = accounting.getRealEstateBalance();
+        Money depreciation = realEstateBalance.multiply(getSimulation().getDepreciationRate()).divide(12);
+        getAccounting().book(new BookingRecord(simulationMonth.atDay(1), String.format("Depreciation of %s on value %s.", simulation.getDepreciationRate(), realEstateBalance), new DebitCreditAmount(FinancialAccounting.DEPRECIATION, FinancialAccounting.REAL_ESTATE, depreciation)));
+    }
+
     public void chargeInterest(YearMonth simulationMonth) {
         Money interestAmount = accounting.getLongTermDebt().multiply(simulation.getInterestRate()).divide(12);
         getAccounting().book(new BookingRecord(simulationMonth.atDay(1), String.format("%s interest on debt amount of %s.", simulation.getInterestRate(), accounting.getLongTermDebt()), new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount)));
     }
 
     public void chargeWorkforceCost(YearMonth simulationMonth) {
-        // TODO Auto-generated method stub
-    }
-
-    public void depreciate(YearMonth simulationMonth) {
-        Money realEstateBalance = accounting.getRealEstateBalance();
-        Money depreciation = realEstateBalance.multiply(getSimulation().getDepreciationRate()).divide(12);
-        getAccounting().book(new BookingRecord(simulationMonth.atDay(1), String.format("Depreciation of %s on value %s.", simulation.getDepreciationRate(), realEstateBalance), new DebitCreditAmount(FinancialAccounting.DEPRECIATION, FinancialAccounting.REAL_ESTATE, depreciation)));
+        Money headquarterCost = getSimulation().getHeadquarterCost();
+        Optional<Money> distributionCosts = getDistributionInMarkets().stream().map(dim -> dim.getDistributionCost()).reduce((c1, c2) -> c1.add(c2));
+        Optional<Money> inventoryManagementCost = getStorages().stream().map(storage -> storage.getInventoryManagementCost()).reduce((c1, c2) -> c1.add(c2));
+        Optional<Money> productionCost = getFactories().stream().map(factory -> factory.getProductionCost()).reduce((c1, c2) -> c1.add(c2));
+        Money workforceCost = headquarterCost;
+        workforceCost = Money.add(workforceCost, distributionCosts.orElse(null));
+        workforceCost = Money.add(workforceCost, inventoryManagementCost.orElse(null));
+        workforceCost = Money.add(workforceCost, productionCost.orElse(null));
+        workforceCost = workforceCost.divide(ONE_TWELFTH);
+        accounting.book(new BookingRecord(simulationMonth.atEndOfMonth(), String.format("Charging costs for HQ: %s, distribution: %s, inventory management: %s, production lines %s.", headquarterCost, distributionCosts, inventoryManagementCost, productionCost),
+                new DebitCreditAmount(FinancialAccounting.SALARIES, FinancialAccounting.BANK, workforceCost)));
+        log.info(String.format("Charging total costs of %s for HQ: %s, distribution: %s, inventory management: %s, production lines %s.", workforceCost, headquarterCost, distributionCosts, inventoryManagementCost, productionCost));
     }
 
     public FinancialAccounting getAccounting() {

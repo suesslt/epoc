@@ -33,7 +33,7 @@ public interface MarketMapper {
             market.setName(marketDto.getName());
             market.setCostToEnterMarket(marketDto.getCostToEnterMarket());
             market.setUnemployment(marketDto.getUnemployment());
-            market.setRequiredSalesforce(marketDto.getRequiredSalesforce());
+            market.setDistributionCost(marketDto.getDistributionCost());
         }
     };
 

@@ -48,6 +48,10 @@ public class Simulation extends BusinessObject {
     private Money buildingMaintenanceCost;
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent depreciationRate;
+    @AttributeOverride(name = "amount", column = @Column(name = "headquarter_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "headquarter_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money headquarterCost;
 
     public void addCompany(Company company) {
         company.setSimulation(this);
@@ -112,6 +116,10 @@ public class Simulation extends BusinessObject {
         return depreciationRate;
     }
 
+    public Money getHeadquarterCost() {
+        return headquarterCost;
+    }
+
     public Percent getInterestRate() {
         return interestRate;
     }
@@ -154,6 +162,10 @@ public class Simulation extends BusinessObject {
 
     public void setDepreciationRate(Percent depreciationRate) {
         this.depreciationRate = depreciationRate;
+    }
+
+    public void setHeadquarterCost(Money headquarterCost) {
+        this.headquarterCost = headquarterCost;
     }
 
     public void setInterestRate(Percent interestRate) {
@@ -214,7 +226,7 @@ public class Simulation extends BusinessObject {
                 simulationOrder.execute();
             }
             company.chargeInterest(simulationStep.getSimulationMonth());
-            company.depreciate(simulationStep.getSimulationMonth());
+            company.chargeDepreciation(simulationStep.getSimulationMonth());
             company.manufactureProducts(simulationStep.getSimulationMonth());
             company.chargeBuildingMaintenanceCosts(simulationStep.getSimulationMonth());
             company.chargeWorkforceCost(simulationStep.getSimulationMonth());

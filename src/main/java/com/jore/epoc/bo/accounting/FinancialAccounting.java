@@ -28,6 +28,7 @@ public class FinancialAccounting extends BusinessObject {
     public static final String INTEREST = "6900";
     public static final String RAUMAUFWAND = "6000";
     public static final String DEPRECIATION = "6800";
+    public static final String SALARIES = "5000";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
     @Type(CurrencyUserType.class)
@@ -43,6 +44,7 @@ public class FinancialAccounting extends BusinessObject {
         addAccount(new Account(AccountType.INCOME_STATEMENT, INTEREST, "Zinsaufwand"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, RAUMAUFWAND, "Gebäudeunterhalt"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, DEPRECIATION, "Abschreibung"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, SALARIES, "Abschreibung"));
     }
 
     public void addAccount(Account account) {
@@ -96,6 +98,7 @@ public class FinancialAccounting extends BusinessObject {
         result = Money.add(result, getBalanceForAccount(INTEREST));
         result = Money.add(result, getBalanceForAccount(RAUMAUFWAND));
         result = Money.add(result, getBalanceForAccount(DEPRECIATION));
+        result = Money.add(result, getBalanceForAccount(SALARIES));
         return result;
     }
 
@@ -123,6 +126,12 @@ public class FinancialAccounting extends BusinessObject {
             result.append(account.getName());
             result.append(")");
         }
+        result.append("\n");
+        result.append("PnL:           ");
+        result.append(getPnL());
+        result.append("\n");
+        result.append("Company Value: ");
+        result.append(getCompanyValue());
         return result.toString();
     }
 

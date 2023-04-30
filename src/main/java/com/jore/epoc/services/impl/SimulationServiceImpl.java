@@ -96,7 +96,7 @@ public class SimulationServiceImpl implements SimulationService {
         buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
         buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
         buildFactoryOrder.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
-        buildFactoryOrder.setUnitLaborCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
+        buildFactoryOrder.setProductionLineLaborCost((Money) staticDataService.getSetting(EpocSetting.UNIT_LABOUR_COST));
         companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
     }
 
@@ -110,6 +110,7 @@ public class SimulationServiceImpl implements SimulationService {
         buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CREATION_MONTHS));
         buildStorageOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
         buildStorageOrder.setConstructionCostsPerUnit((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
+        buildStorageOrder.setInventoryManagementCost((Money) staticDataService.getSetting(EpocSetting.INVENTORY_MANAGEMENT_COST));
         companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
     }
 
@@ -138,6 +139,7 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.START_MONTH));
             simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
             simulation.setBuildingMaintenanceCost((Money) staticDataService.getSetting(EpocSetting.BUILDING_MAINTENANCE));
+            simulation.setHeadquarterCost((Money) staticDataService.getSetting(EpocSetting.HEADQUARTER_COST));
             simulation.setDepreciationRate((Percent) staticDataService.getSetting(EpocSetting.DEPRECIATION_RATE));
             simulationRepository.save(simulation);
         }

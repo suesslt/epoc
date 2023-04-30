@@ -4,10 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.jore.datatypes.currency.Currency;
+import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.CompanySimulationStep;
+import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
@@ -16,6 +21,22 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 
 class CompanyTests {
+    private static final YearMonth FIRST_MONTH = YearMonth.of(2020, 1);
+    private static final Currency CHF = Currency.getInstance("CHF");
+
+    @Test
+    public void testChargeWorkforceCost() {
+        CompanyBuilder builder = CompanyBuilder.builder().increaseCreditLine(FIRST_MONTH, Money.of(CHF, 3100000));
+        builder.enterMarket(FIRST_MONTH);
+        builder.buildFactory(FIRST_MONTH);
+        builder.buildStorage(FIRST_MONTH, 1000);
+        Company company = builder.build();
+        Optional<SimulationStep> activeSimulationStep = company.getSimulation().getActiveSimulationStep();
+        CompanySimulationStep companySimulationStep = activeSimulationStep.get().getCompanySimulationStepFor(company);
+        companySimulationStep.finish();
+        assertEquals(Money.of(CHF, -804166.66), company.getAccounting().getPnL());
+    }
+
     @Test
     public void testSortingOfOrders() {
         Company company = new Company();

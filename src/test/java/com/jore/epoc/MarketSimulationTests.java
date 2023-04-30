@@ -35,6 +35,8 @@ class MarketSimulationTests {
     private static final Money FACTORY_UNIT_PRODUCTION_COST = Money.of("CHF", 1);
     private static final int STORAGE_TIME_TO_BUILD = 0;
     private static final Money RAW_MATERIAL_UNIT_PRICE = Money.of("CHF", 1);
+    private static final Money DISTRIBUTION_COST = Money.of("CHF", 500000);
+    private static final Money INVENTORY_MANAGEMENT_COST = Money.of("CHF", 100000);
     private int id = 1;
 
     @Test
@@ -118,7 +120,7 @@ class MarketSimulationTests {
         order.setConstructionCostsPerLine(FACTORY_COST_PER_PRODUCTION_LINE);
         order.setMonthlyCapacityPerProductionLine(MONTHLY_CAPACITY_PER_PRODUCTION_LINE);
         order.setProductionLines(productionLines);
-        order.setUnitLaborCost(FACTORY_UNIT_LABOR_COST);
+        order.setProductionLineLaborCost(FACTORY_UNIT_LABOR_COST);
         order.setUnitProductionCost(FACTORY_UNIT_PRODUCTION_COST);
         order.setTimeToBuild(FACTORY_TIME_TO_BUILD);
         company.addSimulationOrder(order);
@@ -132,6 +134,7 @@ class MarketSimulationTests {
         order.setConstructionCostsPerUnit(FACTORY_COST_PER_PRODUCTION_LINE);
         order.setCapacity(capacity);
         order.setTimeToBuild(STORAGE_TIME_TO_BUILD);
+        order.setInventoryManagementCost(INVENTORY_MANAGEMENT_COST);
         company.addSimulationOrder(order);
     }
 
@@ -166,6 +169,7 @@ class MarketSimulationTests {
         result.setId(id++);
         result.setName("Europe");
         result.setLaborForce(MARKET_SIZE);
+        result.setDistributionCost(DISTRIBUTION_COST);
         return result;
     }
 

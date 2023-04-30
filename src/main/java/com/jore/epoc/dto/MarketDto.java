@@ -30,4 +30,5 @@ public class MarketDto implements DataTransferObject {
     private int age65olderMale;
     private int age65olderFemale;
     private int requiredSalesforce;
+    private Money distributionCost;
 }

@@ -32,7 +32,6 @@ public class Market extends BusinessObject {
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent gdpGrowth;
     private int laborForce;
-    private int requiredSalesforce;
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent unemployment;
     private BigDecimal lifeExpectancy;
@@ -44,6 +43,10 @@ public class Market extends BusinessObject {
     @AttributeOverride(name = "currency", column = @Column(name = "cost_to_enter_market_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money costToEnterMarket;
+    @AttributeOverride(name = "amount", column = @Column(name = "distribution_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "distribution_cost__currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money distributionCost;
     private int ageTo14Male;
     private int ageTo14Female;
     private int ageTo24Male;
@@ -61,9 +64,9 @@ public class Market extends BusinessObject {
     @Transient
     private int[] ageTableFemale;
 
-    public int calculateMarketPotential(YearMonth startMonth, YearMonth simulationMonth) {
+    public int calculateMarketPotential(YearMonth startMonth, YearMonth simulationMonth, Integer productLifecycleDuration) {
         ProductLifecycle productLifecycle = new ProductLifecycle();
-        productLifecycle.setProductLifecycleDuration(100); // TODO no magic number
+        productLifecycle.setProductLifecycleDuration(productLifecycleDuration);
         double percentageSold = productLifecycle.getPercentageSoldForMonths(Util.monthDiff(simulationMonth, startMonth));
         int marketSizeForConsumption = getMarketSizeForConsumption();
         return (int) (marketSizeForConsumption * percentageSold);
@@ -71,6 +74,10 @@ public class Market extends BusinessObject {
 
     public Money getCostToEnterMarket() {
         return costToEnterMarket;
+    }
+
+    public Money getDistributionCost() {
+        return distributionCost;
     }
 
     public int getFemalePopulation() {
@@ -124,10 +131,6 @@ public class Market extends BusinessObject {
     public int getPopulationForAge(int age) {
         updateAgetable();
         return age < ageTableMale.length ? ageTableMale[age] + ageTableFemale[age] : 0;
-    }
-
-    public int getRequiredSalesforce() {
-        return requiredSalesforce;
     }
 
     public int getTotalPopulation() {
@@ -193,6 +196,10 @@ public class Market extends BusinessObject {
         this.costToEnterMarket = costToEnterMarket;
     }
 
+    public void setDistributionCost(Money distributionCost) {
+        this.distributionCost = distributionCost;
+    }
+
     public void setGdp(Money gdp) {
         this.gdp = gdp;
     }
@@ -216,10 +223,6 @@ public class Market extends BusinessObject {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setRequiredSalesforce(int requiredSalesforce) {
-        this.requiredSalesforce = requiredSalesforce;
     }
 
     public void setUnemployment(Percent unemployment) {

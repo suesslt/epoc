@@ -23,6 +23,10 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "currency", column = @Column(name = "variable_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money constructionCostsPerUnit;
+    @AttributeOverride(name = "amount", column = @Column(name = "inventory_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "inventory_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money inventoryManagementCost;
 
     @Override
     public void execute() {
@@ -35,6 +39,10 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         } else {
             addMessage(String.format("Could not create storage due to insufficent funds in %s. Required were %s, available %s.", getExecutionMonth(), storageCosts, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
         }
+    }
+
+    public Money getInventoryManagementCost() {
+        return inventoryManagementCost;
     }
 
     @Override
@@ -54,6 +62,10 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         this.constructionCostsPerUnit = constructionCostsPerUnit;
     }
 
+    public void setInventoryManagementCost(Money inventoryManagementCost) {
+        this.inventoryManagementCost = inventoryManagementCost;
+    }
+
     public void setTimeToBuild(Integer timeToBuild) {
         this.timeToBuild = timeToBuild;
     }
@@ -62,6 +74,7 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         Storage storage = new Storage();
         storage.setCapacity(capacity);
         storage.setStorageStartMonth(getExecutionMonth().plusMonths(timeToBuild));
+        storage.setInventoryManagementCost(inventoryManagementCost);
         getCompany().addStorage(storage);
     }
 }

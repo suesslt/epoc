@@ -5,10 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import org.hibernate.annotations.CompositeType;
 import org.jfree.util.Log;
 
+import com.jore.datatypes.money.Money;
 import com.jore.jpa.BusinessObject;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
@@ -69,9 +73,17 @@ public class Storage extends BusinessObject {
     private int capacity;
     private int storedProducts = 0;
     private int storedRawMaterials = 0;
+    @AttributeOverride(name = "amount", column = @Column(name = "inventory_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "inventory_cost_currency"))
+    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
+    private Money inventoryManagementCost;
 
     public int getAvailableCapacity(YearMonth storageMonth) {
         return isBuiltAndReady(storageMonth) ? capacity - getTotalStored() : 0;
+    }
+
+    public Money getInventoryManagementCost() {
+        return inventoryManagementCost;
     }
 
     public Integer getStoredProducts() {
@@ -108,6 +120,10 @@ public class Storage extends BusinessObject {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public void setInventoryManagementCost(Money inventoryManagementCost) {
+        this.inventoryManagementCost = inventoryManagementCost;
     }
 
     public void setStorageStartMonth(YearMonth storageStartMonth) {

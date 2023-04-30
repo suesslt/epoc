@@ -20,10 +20,10 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
     @AttributeOverride(name = "currency", column = @Column(name = "production_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money unitProductionCost;
-    @AttributeOverride(name = "amount", column = @Column(name = "labour_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "labour_cost_currency"))
+    @AttributeOverride(name = "amount", column = @Column(name = "labor_cost_amount"))
+    @AttributeOverride(name = "currency", column = @Column(name = "labor_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money unitLaborCost;
+    private Money productionLineLaborCost;
     @AttributeOverride(name = "amount", column = @Column(name = "fixed_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "fixed_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -63,16 +63,16 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         this.monthlyCapacityPerProductionLine = monthlyCapacityPerProductionLine;
     }
 
+    public void setProductionLineLaborCost(Money productionLineLaborCost) {
+        this.productionLineLaborCost = productionLineLaborCost;
+    }
+
     public void setProductionLines(int productionLines) {
         this.productionLines = productionLines;
     }
 
     public void setTimeToBuild(Integer timeToBuild) {
         this.timeToBuild = timeToBuild;
-    }
-
-    public void setUnitLaborCost(Money unitLaborCosts) {
-        unitLaborCost = unitLaborCosts;
     }
 
     public void setUnitProductionCost(Money unitProductionCosts) {
@@ -84,7 +84,7 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         factory.setProductionLines(productionLines);
         factory.setProductionStartMonth(getExecutionMonth().plusMonths(timeToBuild));
         factory.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
-        factory.setUnitLabourCost(unitLaborCost);
+        factory.setProductionLineLaborCost(productionLineLaborCost);
         factory.setUnitProductionCost(unitProductionCost);
         getCompany().addFactory(factory);
     }
