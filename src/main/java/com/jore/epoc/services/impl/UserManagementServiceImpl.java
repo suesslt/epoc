@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jore.epoc.bo.Login;
-import com.jore.epoc.bo.UserInCompanyRole;
+import com.jore.epoc.bo.user.User;
+import com.jore.epoc.bo.user.UserInCompanyRole;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.mapper.LoginMapper;
 import com.jore.epoc.repositories.LoginRepository;
@@ -28,7 +28,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     LoginRepository loginRepository;
     @Autowired
     UserInCompanyRoleRepository userInCompanyRoleRepository;
-    Login userLoggedIn = null;
+    User userLoggedIn = null;
 
     @Override
     public LoginDto createAdmin(LoginDto adminDto) {
@@ -38,7 +38,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (!userLoggedIn.isAdmin()) {
             throw new IllegalStateException("Current logged in user is not an admin.");
         }
-        Login login = LoginMapper.INSTANCE.loginDtoToLogin(adminDto);
+        User login = LoginMapper.INSTANCE.loginDtoToLogin(adminDto);
         login.setAdmin(true);
         return LoginMapper.INSTANCE.loginToLoginDto(loginRepository.save(login));
     }
@@ -46,7 +46,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     @Transactional
     public void createInitialUser(String user, String password) {
-        Login login = new Login();
+        User login = new User();
         login.setLogin("admin");
         login.setPassword("g00dPa&word");
         login.setAdmin(true);
@@ -55,7 +55,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public LoginDto createUser(LoginDto userDto) {
-        Login login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
+        User login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
         login.setAdmin(true);
         return LoginMapper.INSTANCE.loginToLoginDto(loginRepository.save(login));
     }
@@ -100,7 +100,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public boolean login(String login, String password) {
         logout();
-        Optional<Login> result = loginRepository.findByLoginAndPassword(login, password);
+        Optional<User> result = loginRepository.findByLoginAndPassword(login, password);
         if (result.isPresent()) {
             userLoggedIn = result.get();
         }

@@ -15,25 +15,25 @@ import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.CompanySimulationStep;
-import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.EpocSetting;
 import com.jore.epoc.bo.Factory;
-import com.jore.epoc.bo.Login;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Simulation;
-import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.Storage;
-import com.jore.epoc.bo.UserInCompanyRole;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
 import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
+import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.SimulationStep;
+import com.jore.epoc.bo.user.User;
+import com.jore.epoc.bo.user.UserInCompanyRole;
 import com.jore.epoc.dto.AdjustCreditLineDto;
 import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
@@ -128,7 +128,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void buySimulations(String userLogin, int nrOfSimulations) {
-        Optional<Login> user = loginRepository.findByLogin(userLogin);
+        Optional<User> user = loginRepository.findByLogin(userLogin);
         if (!user.isPresent()) {
             throw new IllegalStateException("User not found: " + userLogin);
         }
@@ -201,7 +201,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String user) {
         List<CompletedUserSimulationDto> result = new ArrayList<>();
-        Login login = loginRepository.findByLogin(user).get();
+        User login = loginRepository.findByLogin(user).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -277,7 +277,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public List<OpenUserSimulationDto> getOpenSimulationsForUser(String user) {
         List<OpenUserSimulationDto> result = new ArrayList<>();
-        Login login = loginRepository.findByLogin(user).get();
+        User login = loginRepository.findByLogin(user).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -348,9 +348,9 @@ public class SimulationServiceImpl implements SimulationService {
                 simulation.addCompany(company);
                 companyRepository.save(company);
                 for (LoginDto loginDto : companyDto.getUsers()) {
-                    Optional<Login> login = loginRepository.findByLogin(loginDto.getEmail());
+                    Optional<User> login = loginRepository.findByLogin(loginDto.getEmail());
                     if (login.isEmpty()) {
-                        login = Optional.of(new Login());
+                        login = Optional.of(new User());
                         login.get().setAdmin(false);
                         login.get().setEmail(loginDto.getEmail());
                         login.get().setName(loginDto.getName());

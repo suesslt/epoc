@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.jore.epoc.bo.Login;
+import com.jore.epoc.bo.user.User;
 
-public interface LoginRepository extends CrudRepository<Login, Integer> {
+public interface LoginRepository extends CrudRepository<User, Integer> {
     void deleteByLogin(String login);
 
-    Optional<Login> findByLogin(String userLogin);
+    Optional<User> findByLogin(String userLogin);
 
-    Optional<Login> findByLoginAndPassword(String login, String password);
+    Optional<User> findByLoginAndPassword(String login, String password);
 }

@@ -1,8 +1,9 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.step;
 
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.AttributeOverride;

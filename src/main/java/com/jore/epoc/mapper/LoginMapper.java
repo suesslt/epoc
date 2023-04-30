@@ -1,13 +1,13 @@
 package com.jore.epoc.mapper;
 
-import com.jore.epoc.bo.Login;
+import com.jore.epoc.bo.user.User;
 import com.jore.epoc.dto.LoginDto;
 
 public interface LoginMapper {
     public LoginMapper INSTANCE = new LoginMapper() {
         @Override
-        public Login loginDtoToLogin(LoginDto loginDto) {
-            Login result = new Login();
+        public User loginDtoToLogin(LoginDto loginDto) {
+            User result = new User();
             result.setId(loginDto.getId());
             result.setName(loginDto.getName());
             result.setEmail(loginDto.getEmail());
@@ -18,12 +18,12 @@ public interface LoginMapper {
         }
 
         @Override
-        public LoginDto loginToLoginDto(Login login) {
+        public LoginDto loginToLoginDto(User login) {
             return LoginDto.builder().id(login.getId()).name(login.getName()).email(login.getEmail()).login(login.getLogin()).password(login.getPassword()).isAdmin(login.isAdmin()).build();
         }
     };
 
-    public Login loginDtoToLogin(LoginDto loginDto);
+    public User loginDtoToLogin(LoginDto loginDto);
 
-    public LoginDto loginToLoginDto(Login login);
+    public LoginDto loginToLoginDto(User login);
 }

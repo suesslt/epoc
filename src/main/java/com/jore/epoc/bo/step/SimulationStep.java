@@ -1,10 +1,12 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.step;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.Simulation;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;

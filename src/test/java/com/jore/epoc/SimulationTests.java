@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.Simulation;
-import com.jore.epoc.bo.SimulationStep;
+import com.jore.epoc.bo.step.SimulationStep;
 
 class SimulationTests {
     @Test

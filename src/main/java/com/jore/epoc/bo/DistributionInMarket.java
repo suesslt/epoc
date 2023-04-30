@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.step.DistributionStep;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.AttributeOverride;

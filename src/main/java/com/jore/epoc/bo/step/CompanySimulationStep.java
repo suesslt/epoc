@@ -1,9 +1,11 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.step;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.Company.MonthlySale;
 import com.jore.jpa.BusinessObject;
 

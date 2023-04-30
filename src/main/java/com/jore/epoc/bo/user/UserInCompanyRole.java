@@ -1,5 +1,6 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.user;
 
+import com.jore.epoc.bo.Company;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
@@ -10,14 +11,14 @@ public class UserInCompanyRole extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     @ManyToOne(optional = false)
-    private Login user;
+    private User user;
     private boolean isInvitationRequired = false;
 
     public Company getCompany() {
         return company;
     }
 
-    public Login getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -33,7 +34,7 @@ public class UserInCompanyRole extends BusinessObject {
         this.isInvitationRequired = isInvitationRequired;
     }
 
-    public void setUser(Login user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

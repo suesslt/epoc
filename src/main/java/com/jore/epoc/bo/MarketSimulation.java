@@ -9,6 +9,8 @@ import org.hibernate.annotations.Type;
 
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.DistributionStep;
 import com.jore.jpa.BusinessObject;
 import com.jore.util.Util;
 

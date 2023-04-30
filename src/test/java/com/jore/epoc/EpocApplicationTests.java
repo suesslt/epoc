@@ -15,12 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.DistributionInMarket;
-import com.jore.epoc.bo.DistributionStep;
 import com.jore.epoc.bo.Factory;
-import com.jore.epoc.bo.Login;
 import com.jore.epoc.bo.Simulation;
-import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.Storage;
+import com.jore.epoc.bo.step.DistributionStep;
+import com.jore.epoc.bo.step.SimulationStep;
+import com.jore.epoc.bo.user.User;
 import com.jore.epoc.dto.AdjustCreditLineDto;
 import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
@@ -234,7 +234,7 @@ class EpocApplicationTests {
         //
         DatabaseViewer databaseViewer = new DatabaseViewer(entityManager);
         databaseViewer.logDatabase();
-        assertTrue(databaseViewer.classHasNumberOfRecords(Login.class, 8));
+        assertTrue(databaseViewer.classHasNumberOfRecords(User.class, 8));
         assertTrue(databaseViewer.classHasNumberOfRecords(Simulation.class, 2));
         assertTrue(databaseViewer.classHasNumberOfRecords(Company.class, 6));
         assertTrue(databaseViewer.classHasNumberOfRecords(SimulationStep.class, 13));

@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Test;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.CompanySimulationStep;
-import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
 import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.SimulationStep;
 
 class CompanyTests {
     private static final YearMonth FIRST_MONTH = YearMonth.of(2020, 1);

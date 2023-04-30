@@ -10,18 +10,18 @@ import org.junit.jupiter.api.Test;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.CompanySimulationStep;
-import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Simulation;
-import com.jore.epoc.bo.SimulationStep;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
 import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
+import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.SimulationStep;
 
 class MarketSimulationTests {
     private static final int MONTHLY_CAPACITY_PER_PRODUCTION_LINE = 1000;

@@ -16,6 +16,9 @@ import com.jore.epoc.bo.accounting.BookingRecord;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.user.User;
+import com.jore.epoc.bo.user.UserInCompanyRole;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -67,7 +70,7 @@ public class Company extends BusinessObject {
         factories.add(factory);
     }
 
-    public UserInCompanyRole addLogin(Login login) {
+    public UserInCompanyRole addLogin(User login) {
         UserInCompanyRole userInCompanyRole = new UserInCompanyRole();
         userInCompanyRole.setCompany(this);
         userInCompanyRole.setUser(login);

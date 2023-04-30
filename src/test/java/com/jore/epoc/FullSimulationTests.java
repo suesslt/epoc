@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.CompanySimulationStep;
-import com.jore.epoc.bo.SimulationStep;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.SimulationStep;
 
 import lombok.extern.log4j.Log4j2;
 

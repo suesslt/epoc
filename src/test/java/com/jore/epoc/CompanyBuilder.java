@@ -8,7 +8,6 @@ import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.CreditEventDirection;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Simulation;
@@ -19,6 +18,7 @@ import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
 import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
+import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 
 public class CompanyBuilder {

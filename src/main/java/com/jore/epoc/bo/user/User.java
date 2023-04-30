@@ -1,8 +1,9 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.user;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jore.epoc.bo.Simulation;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -11,8 +12,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity
-public class Login extends BusinessObject {
+/**
+ */
+@Entity(name = "Login")
+public class User extends BusinessObject {
     @Column(unique = true)
     private String login;
     private String password;

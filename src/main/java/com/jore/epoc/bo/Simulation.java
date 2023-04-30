@@ -14,6 +14,9 @@ import org.hibernate.annotations.Type;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.orders.SimulationOrder;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.SimulationStep;
+import com.jore.epoc.bo.user.User;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.AttributeOverride;
@@ -35,7 +38,7 @@ public class Simulation extends BusinessObject {
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent interestRate;
     @ManyToOne(optional = false)
-    private Login owner;
+    private User owner;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
     private List<Company> companies = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
@@ -136,7 +139,7 @@ public class Simulation extends BusinessObject {
         return nrOfSteps;
     }
 
-    public Login getOwner() {
+    public User getOwner() {
         return owner;
     }
 
@@ -188,7 +191,7 @@ public class Simulation extends BusinessObject {
         this.nrOfSteps = nrOfSteps;
     }
 
-    public void setOwner(Login owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 

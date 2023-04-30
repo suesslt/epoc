@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.jore.epoc.bo.Login;
+import com.jore.epoc.bo.user.User;
 import com.jore.epoc.services.SimulationService;
 
 import jakarta.persistence.EntityManager;
@@ -24,7 +24,7 @@ class SimulationManagementServiceTests {
     @Transactional
     public void insertSystemAdministrator() {
         entityManager.createQuery("delete from Login");
-        Login login = new Login();
+        User login = new User();
         login.setLogin("User");
         login.setPassword("g00dPa&word");
         login.setAdmin(false);

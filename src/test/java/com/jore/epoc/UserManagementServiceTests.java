@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.jore.epoc.bo.Login;
+import com.jore.epoc.bo.user.User;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.services.UserManagementService;
 
@@ -34,7 +34,7 @@ class UserManagementServiceTests {
     @BeforeEach
     @Transactional
     public void insertSystemAdministrator() {
-        Login login = new Login();
+        User login = new User();
         login.setLogin("admin");
         login.setPassword("g00dPa&word");
         login.setAdmin(true);
@@ -53,7 +53,7 @@ class UserManagementServiceTests {
     public void testCreateNewAdmin() {
         userManagementService.login("admin", "g00dPa&word");
         LoginDto loginDto = userManagementService.createAdmin(LoginDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
-        Login storedLogin = entityManager.find(Login.class, loginDto.getId());
+        User storedLogin = entityManager.find(User.class, loginDto.getId());
         assertEquals("epocadmin", storedLogin.getLogin());
     }
 
@@ -61,7 +61,7 @@ class UserManagementServiceTests {
     @Transactional
     public void testCreateUser() {
         LoginDto loginDto = userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
-        Login storedLogin = entityManager.find(Login.class, loginDto.getId());
+        User storedLogin = entityManager.find(User.class, loginDto.getId());
         assertEquals("user", storedLogin.getLogin());
     }
 
