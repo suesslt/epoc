@@ -10,6 +10,7 @@ import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 
+// TODO do not take amount out of money!
 public class DemandCurve {
     public static DemandCurve create(Currency demandCurveCurrency, BigDecimal demandCurveHigherPrice, Percent demandCurveHigherPricePercent, BigDecimal demandCurveLowerPrice, Percent demandCurveLowerPricePercent) {
         return new DemandCurve(Money.of(demandCurveCurrency, demandCurveHigherPrice), demandCurveHigherPricePercent, Money.of(demandCurveCurrency, demandCurveLowerPrice), demandCurveLowerPricePercent);

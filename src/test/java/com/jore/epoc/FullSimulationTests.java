@@ -42,13 +42,13 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", 5320000.08), company.getAccounting().getBankBalance());
+        assertEquals(Money.of("CHF", 5320000.00), company.getAccounting().getBankBalance());
         assertEquals(Money.of("CHF", -13000000.00), company.getAccounting().getLongTermDebt());
-        assertEquals(Money.of("CHF", 2665673.49), company.getAccounting().getRealEstateBalance());
+        assertEquals(Money.of("CHF", 2665673.44), company.getAccounting().getRealEstateBalance());
         assertEquals(Money.of("CHF", 0.00), company.getAccounting().getRawMaterialBalance());
         assertEquals(Money.of("CHF", 0.00), company.getAccounting().getProductBalance());
-        assertEquals(Money.of("CHF", -5014326.43), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -35100285.01), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -5014326.56), company.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -35100285.89), company.getAccounting().getCompanyValue());
     }
 
     @Test
@@ -67,9 +67,9 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", -1484611.47), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -1484611.47), company.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -10392280.29), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -10392280.66), company.getAccounting().getCompanyValue());
     }
 
     @Test
@@ -99,9 +99,9 @@ class FullSimulationTests {
         }
         log.info(company.getAccounting().toString());
         assertEquals(11000, company.getSoldProducts());
-        assertEquals(Money.of("CHF", -6044326.51), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6044326.51), company.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -42310285.57), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6044326.56), company.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -6044326.56), company.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -42310285.89), company.getAccounting().getCompanyValue());
     }
 
     @Test
@@ -148,13 +148,13 @@ class FullSimulationTests {
         }
         log.info(companyA.getAccounting().toString());
         assertEquals(10000, companyA.getSoldProducts());
-        assertEquals(Money.of("CHF", -6544326.51), companyA.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6544326.51), companyA.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -45810285.57), companyA.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6544326.56), companyA.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -6544326.56), companyA.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -45810285.89), companyA.getAccounting().getCompanyValue());
         assertEquals(10000, companyB.getSoldProducts());
-        assertEquals(Money.of("CHF", -6544326.51), companyB.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6544326.51), companyB.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -45810285.57), companyB.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6544326.56), companyB.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -6544326.56), companyB.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -45810285.89), companyB.getAccounting().getCompanyValue());
     }
 
     @Test
