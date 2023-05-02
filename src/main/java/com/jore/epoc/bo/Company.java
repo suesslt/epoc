@@ -110,7 +110,7 @@ public class Company extends BusinessObject {
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
-        Money interestAmount = accounting.getLongTermDebt().multiply(simulation.getInterestRate()).divide(12);
+        Money interestAmount = accounting.getLongTermDebt().negate().multiply(simulation.getInterestRate()).divide(12);
         getAccounting().book(new BookingRecord(simulationMonth.atDay(1), String.format("%s interest on debt amount of %s.", simulation.getInterestRate(), accounting.getLongTermDebt()), new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount)));
     }
 

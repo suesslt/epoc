@@ -16,10 +16,6 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
     private Integer productionLines;
     private Integer timeToBuild;
     private Integer monthlyCapacityPerProductionLine;
-    @AttributeOverride(name = "amount", column = @Column(name = "production_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "production_cost_currency"))
-    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money unitProductionCost;
     @AttributeOverride(name = "amount", column = @Column(name = "labor_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "labor_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -75,17 +71,12 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         this.timeToBuild = timeToBuild;
     }
 
-    public void setUnitProductionCost(Money unitProductionCosts) {
-        unitProductionCost = unitProductionCosts;
-    }
-
     private void addFactory() {
         Factory factory = new Factory();
         factory.setProductionLines(productionLines);
         factory.setProductionStartMonth(getExecutionMonth().plusMonths(timeToBuild));
         factory.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
         factory.setProductionLineLaborCost(productionLineLaborCost);
-        factory.setUnitProductionCost(unitProductionCost);
         getCompany().addFactory(factory);
     }
 }

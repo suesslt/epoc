@@ -44,7 +44,6 @@ public class CompanyBuilder {
     private Integer timeToBuildStorage = 0;
     private Integer timeToBuildFactory = 0;
     private Integer monthlyCapacityPerProductionLine = 100;
-    private Money unitProductionCost = Money.of(CHF, 10);
     private Money factoryLaborCost = Money.of(CHF, 500000);
     private String marketName = "Switzerland";
     private Money marketDistributionCost = Money.of(CHF, 2000000);
@@ -109,7 +108,6 @@ public class CompanyBuilder {
         order.setTimeToBuild(timeToBuildFactory);
         order.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
         order.setProductionLineLaborCost(factoryLaborCost);
-        order.setUnitProductionCost(unitProductionCost);
         orders.add(order);
         return this;
     }

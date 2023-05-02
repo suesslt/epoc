@@ -42,9 +42,16 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
+        assertEquals(Money.of("CHF", 5320000.08), company.getAccounting().getBankBalance());
+        assertEquals(Money.of("CHF", -13000000.00), company.getAccounting().getLongTermDebt());
+        assertEquals(Money.of("CHF", 2665673.49), company.getAccounting().getRealEstateBalance());
+        assertEquals(Money.of("CHF", 0.00), company.getAccounting().getRawMaterialBalance());
+        assertEquals(Money.of("CHF", 0.00), company.getAccounting().getProductBalance());
+        assertEquals(Money.of("CHF", -5014326.43), company.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -35100285.01), company.getAccounting().getCompanyValue());
     }
 
-    //    @Test
+    @Test
     public void testOneCompanyThreeSteps() {
         CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(3);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 3110000));
@@ -60,12 +67,12 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", -2371177.91), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -2371177.91), company.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -16598245.37), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -1484611.47), company.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -1484611.47), company.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -10392280.29), company.getAccounting().getCompanyValue());
     }
 
-    //    @Test
+    @Test
     public void testOneCompanyTwelveSteps() {
         CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
@@ -92,12 +99,12 @@ class FullSimulationTests {
         }
         log.info(company.getAccounting().toString());
         assertEquals(11000, company.getSoldProducts());
-        assertEquals(Money.of("CHF", -10704326.51), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -10704326.51), company.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -74930285.57), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6044326.51), company.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -6044326.51), company.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -42310285.57), company.getAccounting().getCompanyValue());
     }
 
-    //    @Test
+    @Test
     public void testTwoCompaniesEquallyTwelveSteps() {
         CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
@@ -141,19 +148,19 @@ class FullSimulationTests {
         }
         log.info(companyA.getAccounting().toString());
         assertEquals(10000, companyA.getSoldProducts());
-        assertEquals(Money.of("CHF", -10744326.51), companyA.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -10744326.51), companyA.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -75210285.57), companyA.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6544326.51), companyA.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -6544326.51), companyA.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -45810285.57), companyA.getAccounting().getCompanyValue());
         assertEquals(10000, companyB.getSoldProducts());
-        assertEquals(Money.of("CHF", -10744326.51), companyB.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -10744326.51), companyB.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -75210285.57), companyB.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6544326.51), companyB.getAccounting().getPnL());
+        assertEquals(Money.of("CHF", -6544326.51), companyB.getAccounting().getOwnersCapital());
+        assertEquals(Money.of("CHF", -45810285.57), companyB.getAccounting().getCompanyValue());
     }
 
-    //    @Test
+    @Test
     public void testTwoCompaniesFierceCompetitionTwelveSteps() {
         CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12).laborForce(10000);
-        companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 3360000));
+        companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buildFactory(YearMonth.of(2020, 1));
@@ -170,7 +177,7 @@ class FullSimulationTests {
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 12), 1000);
         Company companyA = companyBuilder.build();
         companyBuilder = CompanyBuilder.builder().simulation(companyA.getSimulation()).name("B Company");
-        companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 3360000));
+        companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buildFactory(YearMonth.of(2020, 1));
@@ -193,7 +200,7 @@ class FullSimulationTests {
             activeSimulationStep.get().getCompanySimulationStepFor(companyB).finish();
             activeSimulationStep = companyA.getSimulation().getActiveSimulationStep();
         }
-        assertEquals(532, companyA.getSoldProducts());
-        assertEquals(716, companyB.getSoldProducts());
+        assertEquals(416, companyA.getSoldProducts());
+        assertEquals(832, companyB.getSoldProducts());
     }
 }

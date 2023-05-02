@@ -20,10 +20,6 @@ public class Factory extends BusinessObject {
     private int productionLines;
     private YearMonth productionStartMonth;
     private int monthlyCapacityPerProductionLine;
-    @AttributeOverride(name = "amount", column = @Column(name = "production_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "production_cost_currency"))
-    @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
-    private Money unitProductionCost;
     @AttributeOverride(name = "amount", column = @Column(name = "labour_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "labour_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -49,14 +45,9 @@ public class Factory extends BusinessObject {
         return productionStartMonth;
     }
 
-    public Money getUnitProductionCost() {
-        return unitProductionCost;
-    }
-
     public int produce(int maximumToProduce, YearMonth productionMonth) {
         Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
         Assert.notNull("Production start month must not be null", productionStartMonth);
-        Assert.notNull("Unit production costs must not be null", unitProductionCost);
         Assert.notNull("Production line labour costs must not be null", productionLineLaborCost);
         int result = isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine) : 0;
         result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
@@ -83,10 +74,6 @@ public class Factory extends BusinessObject {
 
     public void setProductionStartMonth(YearMonth productionStartMonth) {
         this.productionStartMonth = productionStartMonth;
-    }
-
-    public void setUnitProductionCost(Money unitProductionCost) {
-        this.unitProductionCost = unitProductionCost;
     }
 
     private boolean isProductionReady(YearMonth productionMonth) {

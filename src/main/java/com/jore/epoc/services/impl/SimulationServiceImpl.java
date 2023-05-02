@@ -91,12 +91,11 @@ public class SimulationServiceImpl implements SimulationService {
         BuildFactoryOrder buildFactoryOrder = new BuildFactoryOrder();
         buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
         buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
-        buildFactoryOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.FACTORY_CREATION_MONTHS));
-        buildFactoryOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COSTS));
-        buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_VARIABLE_COSTS));
+        buildFactoryOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.FACTORY_CONSTRUCTION_MONTHS));
+        buildFactoryOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COST));
+        buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_COST_PER_PRODUCTION_LINE));
         buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
-        buildFactoryOrder.setUnitProductionCost((Money) staticDataService.getSetting(EpocSetting.UNIT_PRODUCTION_COST));
-        buildFactoryOrder.setProductionLineLaborCost((Money) staticDataService.getSetting(EpocSetting.PRODUCTION_LINE_LABOR));
+        buildFactoryOrder.setProductionLineLaborCost((Money) staticDataService.getSetting(EpocSetting.LABOR_COST_PER_PRODUCTION_LINE));
         companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
     }
 
@@ -107,9 +106,9 @@ public class SimulationServiceImpl implements SimulationService {
         BuildStorageOrder buildStorageOrder = new BuildStorageOrder();
         buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
         buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
-        buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CREATION_MONTHS));
-        buildStorageOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COSTS));
-        buildStorageOrder.setConstructionCostsPerUnit((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COSTS));
+        buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CONSTRUCTION_MONTHS));
+        buildStorageOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COST));
+        buildStorageOrder.setConstructionCostsPerUnit((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COST_PER_SLOT));
         buildStorageOrder.setInventoryManagementCost((Money) staticDataService.getSetting(EpocSetting.INVENTORY_MANAGEMENT_COST));
         companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
     }
@@ -121,7 +120,7 @@ public class SimulationServiceImpl implements SimulationService {
         BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
         buyRawMaterialOrder.setExecutionMonth(buyRawMaterialDto.getExecutionMonth());
         buyRawMaterialOrder.setAmount(buyRawMaterialDto.getAmount());
-        buyRawMaterialOrder.setUnitPrice((Money) staticDataService.getSetting(EpocSetting.RAW_MATERIAL_UNIT_PRICE));
+        buyRawMaterialOrder.setUnitPrice((Money) staticDataService.getSetting(EpocSetting.RAW_MATERIAL_PURCHASE_PRICE));
         companySimulationStep.getCompany().addSimulationOrder(buyRawMaterialOrder);
     }
 
@@ -136,9 +135,9 @@ public class SimulationServiceImpl implements SimulationService {
             Simulation simulation = new Simulation();
             simulation.setOwner(user.get());
             simulation.setIsStarted(false);
-            simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.START_MONTH));
-            simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
-            simulation.setBuildingMaintenanceCost((Money) staticDataService.getSetting(EpocSetting.BUILDING_MAINTENANCE));
+            simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.DEFAULT_SIMULATION_START_MONTH));
+            simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.DEBT_INTEREST_RATE));
+            simulation.setBuildingMaintenanceCost((Money) staticDataService.getSetting(EpocSetting.MAINTENANCE_COST_PER_BUILDING));
             simulation.setHeadquarterCost((Money) staticDataService.getSetting(EpocSetting.HEADQUARTER_COST));
             simulation.setDepreciationRate((Percent) staticDataService.getSetting(EpocSetting.DEPRECIATION_RATE));
             simulation.setProductionCost((Money) staticDataService.getSetting(EpocSetting.PRODUCTION_COST));
@@ -159,7 +158,7 @@ public class SimulationServiceImpl implements SimulationService {
         adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
         adjustCreditLineOrder.setAmount(decreaseCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
+        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.DEBT_INTEREST_RATE));
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
 
@@ -316,7 +315,7 @@ public class SimulationServiceImpl implements SimulationService {
         adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
         adjustCreditLineOrder.setAmount(increaseCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.CREDIT_LINE_INTEREST_RATE));
+        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.DEBT_INTEREST_RATE));
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
 

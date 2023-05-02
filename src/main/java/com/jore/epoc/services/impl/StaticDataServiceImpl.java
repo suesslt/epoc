@@ -31,7 +31,6 @@ import com.jore.view.FieldModel;
 import jakarta.persistence.EntityManager;
 import lombok.extern.log4j.Log4j2;
 
-// TODO Write test cases
 @Log4j2
 @Component
 public class StaticDataServiceImpl implements StaticDataService {

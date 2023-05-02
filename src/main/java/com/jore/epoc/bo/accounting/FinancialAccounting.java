@@ -87,7 +87,7 @@ public class FinancialAccounting extends BusinessObject {
     }
 
     public Money getLongTermDebt() {
-        return nullToZero(getAccount(LONG_TERM_DEBT).getBalance()).negate();
+        return nullToZero(getAccount(LONG_TERM_DEBT).getBalance());
     }
 
     public Money getOwnersCapital() {
@@ -112,6 +112,14 @@ public class FinancialAccounting extends BusinessObject {
         result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_ROHWAREN));
         result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_PRODUKTE));
         return result;
+    }
+
+    public Money getProductBalance() {
+        return nullToZero(getAccount(PRODUKTE).getBalance());
+    }
+
+    public Money getRawMaterialBalance() {
+        return nullToZero(getAccount(ROHWAREN).getBalance());
     }
 
     public Money getRealEstateBalance() {
