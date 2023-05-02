@@ -5,8 +5,8 @@ import org.hibernate.annotations.Type;
 
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
-import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
+import com.jore.epoc.bo.message.MessageLevel;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;

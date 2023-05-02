@@ -15,6 +15,7 @@ import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.BookingRecord;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
+import com.jore.epoc.bo.message.Message;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.user.User;

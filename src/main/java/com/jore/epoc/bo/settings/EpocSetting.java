@@ -1,8 +1,9 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.settings;
 
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class EpocSetting extends BusinessObject {
@@ -34,6 +35,8 @@ public class EpocSetting extends BusinessObject {
     private String settingFormat;
     private String valueText;
     private String description;
+    @ManyToOne(optional = false)
+    private EpocSettings settings;
 
     public String getDescription() {
         return description;
@@ -61,6 +64,10 @@ public class EpocSetting extends BusinessObject {
 
     public void setSettingKey(String settingKey) {
         this.settingKey = settingKey;
+    }
+
+    public void setSettings(EpocSettings settings) {
+        this.settings = settings;
     }
 
     public void setValueText(String valueText) {

@@ -15,14 +15,16 @@ import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.formatter.MoneyDecimalDigits;
 import com.jore.datatypes.formatter.MoneyFormatter;
 import com.jore.datatypes.percent.Percent;
-import com.jore.epoc.bo.EpocSetting;
 import com.jore.epoc.bo.Market;
+import com.jore.epoc.bo.settings.EpocSetting;
+import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.dto.EpocSettingDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.mapper.MarketMapper;
 import com.jore.epoc.mapper.SettingMapper;
 import com.jore.epoc.repositories.MarketRepository;
 import com.jore.epoc.repositories.SettingRepository;
+import com.jore.epoc.repositories.SettingsRepository;
 import com.jore.epoc.services.StaticDataService;
 import com.jore.excel.ExcelReader;
 import com.jore.excel.ExcelWorkbook;
@@ -36,6 +38,8 @@ import lombok.extern.log4j.Log4j2;
 public class StaticDataServiceImpl implements StaticDataService {
     @Autowired
     MarketRepository marketRepository;
+    @Autowired
+    SettingsRepository settingsRepository;
     @Autowired
     SettingRepository settingRepository;
     @Autowired
@@ -73,6 +77,32 @@ public class StaticDataServiceImpl implements StaticDataService {
 
     @Override
     @Transactional
+    public void loadEpocSettings(String xlsFileName) {
+        try {
+            EpocSettings epocSettings = new EpocSettings();
+            epocSettings.setTemplate(true);
+            Resource resource = new ClassPathResource(xlsFileName);
+            InputStream inputStream = resource.getInputStream();
+            ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
+            List<EpocSettingDto> settings = new ExcelReader<EpocSettingDto>(workbook, new FieldModel<>(EpocSettingDto.class)).read();
+            for (EpocSettingDto epocSettingDto : settings) {
+                EpocSetting setting = new EpocSetting();
+                setting.setDescription(epocSettingDto.getDescription());
+                setting.setSettingFormat(epocSettingDto.getSettingFormat());
+                setting.setSettingKey(epocSettingDto.getSettingKey());
+                setting.setValueText(epocSettingDto.getValueText());
+                epocSettings.addSetting(setting);
+            }
+            settingsRepository.save(epocSettings);
+            workbook.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e);
+        }
+    }
+
+    @Override
+    @Transactional
     public void loadMarkets(String xlsFileName) {
         try {
             Resource resource = new ClassPathResource(xlsFileName);
@@ -88,7 +118,6 @@ public class StaticDataServiceImpl implements StaticDataService {
         }
     }
 
-    @Override
     @Transactional
     public void loadSettings(String xlsFileName) {
         try {

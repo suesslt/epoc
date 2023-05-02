@@ -1,7 +1,8 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.message;
 
 import java.time.YearMonth;
 
+import com.jore.epoc.bo.Company;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;

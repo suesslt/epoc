@@ -14,6 +14,7 @@ import org.hibernate.annotations.Type;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.orders.SimulationOrder;
+import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.SimulationStep;
 import com.jore.epoc.bo.user.User;
@@ -37,6 +38,8 @@ public class Simulation extends BusinessObject {
     private boolean isFinished = false;
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent interestRate;
+    @ManyToOne(optional = true)
+    private EpocSettings settings;
     @ManyToOne(optional = false)
     private User owner;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulation", orphanRemoval = true)
@@ -205,6 +208,10 @@ public class Simulation extends BusinessObject {
 
     public void setProductionCost(Money productionCost) {
         this.productionCost = productionCost;
+    }
+
+    public void setSettings(EpocSettings settings) {
+        this.settings = settings;
     }
 
     public void setStartMonth(YearMonth startMonth) {

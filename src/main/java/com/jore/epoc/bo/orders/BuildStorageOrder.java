@@ -3,9 +3,9 @@ package com.jore.epoc.bo.orders;
 import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.MessageLevel;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
+import com.jore.epoc.bo.message.MessageLevel;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;

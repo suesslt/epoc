@@ -1,6 +1,6 @@
 package com.jore.epoc.mapper;
 
-import com.jore.epoc.bo.EpocSetting;
+import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.dto.EpocSettingDto;
 
 public interface SettingMapper {

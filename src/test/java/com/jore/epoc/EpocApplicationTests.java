@@ -69,7 +69,7 @@ class EpocApplicationTests {
         userManagementService.login("epocadmin", "badpw");
         userManagementService.deleteLogin("admin");
         staticDataService.loadMarkets("markets.xlsx");
-        staticDataService.loadSettings("EpocSettings.xlsx");
+        staticDataService.loadEpocSettings("EpocSettings.xlsx");
         userManagementService.logout(); // TODO Uh, this is not good. But will fix definitely when implementing security...
         userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();

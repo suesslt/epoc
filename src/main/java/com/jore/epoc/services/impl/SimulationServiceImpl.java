@@ -16,7 +16,6 @@ import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.DistributionInMarket;
-import com.jore.epoc.bo.EpocSetting;
 import com.jore.epoc.bo.Factory;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
@@ -30,6 +29,8 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.settings.EpocSetting;
+import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.SimulationStep;
 import com.jore.epoc.bo.user.User;
@@ -56,6 +57,7 @@ import com.jore.epoc.repositories.CompanySimulationStepRepository;
 import com.jore.epoc.repositories.LoginRepository;
 import com.jore.epoc.repositories.MarketRepository;
 import com.jore.epoc.repositories.MarketSimulationRepository;
+import com.jore.epoc.repositories.SettingsRepository;
 import com.jore.epoc.repositories.SimulationRepository;
 import com.jore.epoc.repositories.SimulationStepRepository;
 import com.jore.epoc.services.SimulationService;
@@ -83,6 +85,8 @@ public class SimulationServiceImpl implements SimulationService {
     private StaticDataService staticDataService;
     @Autowired
     private MarketSimulationRepository marketSimulationRepository;
+    @Autowired
+    private SettingsRepository settingsRepository;
 
     @Override
     @Transactional
@@ -131,8 +135,10 @@ public class SimulationServiceImpl implements SimulationService {
         if (!user.isPresent()) {
             throw new IllegalStateException("User not found: " + userLogin);
         }
+        Optional<EpocSettings> settings = settingsRepository.findByIsTemplate(true);
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
+            simulation.setSettings(settings.get());
             simulation.setOwner(user.get());
             simulation.setIsStarted(false);
             simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.DEFAULT_SIMULATION_START_MONTH));
