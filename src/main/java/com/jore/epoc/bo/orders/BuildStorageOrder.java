@@ -54,11 +54,11 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         this.capacity = capacity;
     }
 
-    public void setConstructionCosts(Money constructionCosts) {
+    public void setConstructionCost(Money constructionCosts) {
         this.constructionCosts = constructionCosts;
     }
 
-    public void setConstructionCostsPerUnit(Money constructionCostsPerUnit) {
+    public void setConstructionCostPerUnit(Money constructionCostsPerUnit) {
         this.constructionCostsPerUnit = constructionCostsPerUnit;
     }
 

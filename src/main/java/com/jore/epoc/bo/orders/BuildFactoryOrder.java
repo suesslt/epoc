@@ -47,11 +47,11 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         return 4;
     }
 
-    public void setConstructionCosts(Money constructionCosts) {
+    public void setConstructionCost(Money constructionCosts) {
         this.constructionCosts = constructionCosts;
     }
 
-    public void setConstructionCostsPerLine(Money constructionCostsPerLine) {
+    public void setConstructionCostPerLine(Money constructionCostsPerLine) {
         this.constructionCostsPerLine = constructionCostsPerLine;
     }
 

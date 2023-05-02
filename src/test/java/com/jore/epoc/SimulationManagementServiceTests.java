@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.services.SimulationService;
+import com.jore.epoc.services.StaticDataService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,8 @@ import jakarta.transaction.Transactional;
 class SimulationManagementServiceTests {
     @Autowired
     public SimulationService simulationManagementService;
+    @Autowired
+    private StaticDataService staticDataService;
     @Autowired
     private EntityManager entityManager;
 
@@ -29,6 +32,7 @@ class SimulationManagementServiceTests {
         login.setPassword("g00dPa&word");
         login.setAdmin(false);
         entityManager.persist(login);
+        staticDataService.loadEpocSettings("EpocSettings.xlsx");
     }
 
     @Test

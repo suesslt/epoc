@@ -17,7 +17,7 @@ public class DemandCurve {
     }
 
     public static DemandCurve create(String currency, double higherPrice, String higherPricePercent, double lowerPrice, String lowerPricePercent) {
-        return new DemandCurve(Money.of(currency, higherPrice), Percent.of(higherPricePercent), Money.of(currency, lowerPrice), Percent.of(lowerPricePercent));
+        return new DemandCurve(Money.of(currency, higherPrice), Percent.parse(higherPricePercent), Money.of(currency, lowerPrice), Percent.parse(lowerPricePercent));
     }
 
     private final Percent lowerPricePercent;

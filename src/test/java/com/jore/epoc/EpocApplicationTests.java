@@ -54,7 +54,7 @@ class EpocApplicationTests {
     @Autowired
     private EntityManager entityManager;
     @Autowired
-    private StaticDataService staticDataService;;
+    private StaticDataService staticDataService;
     private SendMailService sendMailService = new StubSendMailServiceImpl();
 
     @Test

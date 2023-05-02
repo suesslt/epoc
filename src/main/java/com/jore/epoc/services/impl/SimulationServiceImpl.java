@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
-import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.Factory;
@@ -29,7 +27,6 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
-import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.SimulationStep;
@@ -61,7 +58,6 @@ import com.jore.epoc.repositories.SettingsRepository;
 import com.jore.epoc.repositories.SimulationRepository;
 import com.jore.epoc.repositories.SimulationStepRepository;
 import com.jore.epoc.services.SimulationService;
-import com.jore.epoc.services.StaticDataService;
 import com.jore.util.Util;
 
 import lombok.extern.log4j.Log4j2;
@@ -82,8 +78,6 @@ public class SimulationServiceImpl implements SimulationService {
     @Autowired
     private MarketRepository marketRepository;
     @Autowired
-    private StaticDataService staticDataService;
-    @Autowired
     private MarketSimulationRepository marketSimulationRepository;
     @Autowired
     private SettingsRepository settingsRepository;
@@ -95,11 +89,11 @@ public class SimulationServiceImpl implements SimulationService {
         BuildFactoryOrder buildFactoryOrder = new BuildFactoryOrder();
         buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
         buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
-        buildFactoryOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.FACTORY_CONSTRUCTION_MONTHS));
-        buildFactoryOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.FACTORY_FIXED_COST));
-        buildFactoryOrder.setConstructionCostsPerLine((Money) staticDataService.getSetting(EpocSetting.FACTORY_COST_PER_PRODUCTION_LINE));
-        buildFactoryOrder.setMonthlyCapacityPerProductionLine((Integer) staticDataService.getSetting(EpocSetting.MONTHLY_CAPACITY_PER_PRODUCTION_LINE));
-        buildFactoryOrder.setProductionLineLaborCost((Money) staticDataService.getSetting(EpocSetting.LABOR_COST_PER_PRODUCTION_LINE));
+        buildFactoryOrder.setTimeToBuild(companySimulationStep.getCompany().getSimulation().getSettings().getTimeToBuild());
+        buildFactoryOrder.setConstructionCost(companySimulationStep.getCompany().getSimulation().getSettings().getFactoryConstructionCost());
+        buildFactoryOrder.setConstructionCostPerLine(companySimulationStep.getCompany().getSimulation().getSettings().getFactoryConstructionCostsPerLine());
+        buildFactoryOrder.setMonthlyCapacityPerProductionLine(companySimulationStep.getCompany().getSimulation().getSettings().getMonthlyCapacityPerProductionLine());
+        buildFactoryOrder.setProductionLineLaborCost(companySimulationStep.getCompany().getSimulation().getSettings().getProductionLineLaborCost());
         companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
     }
 
@@ -110,10 +104,10 @@ public class SimulationServiceImpl implements SimulationService {
         BuildStorageOrder buildStorageOrder = new BuildStorageOrder();
         buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
         buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
-        buildStorageOrder.setTimeToBuild((Integer) staticDataService.getSetting(EpocSetting.STORAGE_CONSTRUCTION_MONTHS));
-        buildStorageOrder.setConstructionCosts((Money) staticDataService.getSetting(EpocSetting.STORAGE_FIXED_COST));
-        buildStorageOrder.setConstructionCostsPerUnit((Money) staticDataService.getSetting(EpocSetting.STORAGE_VARIABLE_COST_PER_SLOT));
-        buildStorageOrder.setInventoryManagementCost((Money) staticDataService.getSetting(EpocSetting.INVENTORY_MANAGEMENT_COST));
+        buildStorageOrder.setTimeToBuild(companySimulationStep.getCompany().getSimulation().getSettings().getStorageConstructionMonths());
+        buildStorageOrder.setConstructionCost(companySimulationStep.getCompany().getSimulation().getSettings().getStorageFixedCost());
+        buildStorageOrder.setConstructionCostPerUnit(companySimulationStep.getCompany().getSimulation().getSettings().getStorageCostPerUnit());
+        buildStorageOrder.setInventoryManagementCost(companySimulationStep.getCompany().getSimulation().getSettings().getInventoryManagementCost());
         companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
     }
 
@@ -124,7 +118,7 @@ public class SimulationServiceImpl implements SimulationService {
         BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
         buyRawMaterialOrder.setExecutionMonth(buyRawMaterialDto.getExecutionMonth());
         buyRawMaterialOrder.setAmount(buyRawMaterialDto.getAmount());
-        buyRawMaterialOrder.setUnitPrice((Money) staticDataService.getSetting(EpocSetting.RAW_MATERIAL_PURCHASE_PRICE));
+        buyRawMaterialOrder.setUnitPrice(companySimulationStep.getCompany().getSimulation().getSettings().getRawMaterialUnitPrice());
         companySimulationStep.getCompany().addSimulationOrder(buyRawMaterialOrder);
     }
 
@@ -135,18 +129,18 @@ public class SimulationServiceImpl implements SimulationService {
         if (!user.isPresent()) {
             throw new IllegalStateException("User not found: " + userLogin);
         }
-        Optional<EpocSettings> settings = settingsRepository.findByIsTemplate(true);
+        EpocSettings settings = settingsRepository.findByIsTemplate(true).get();
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
-            simulation.setSettings(settings.get());
+            simulation.setSettings(settings);
             simulation.setOwner(user.get());
             simulation.setIsStarted(false);
-            simulation.setStartMonth((YearMonth) staticDataService.getSetting(EpocSetting.DEFAULT_SIMULATION_START_MONTH));
-            simulation.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.DEBT_INTEREST_RATE));
-            simulation.setBuildingMaintenanceCost((Money) staticDataService.getSetting(EpocSetting.MAINTENANCE_COST_PER_BUILDING));
-            simulation.setHeadquarterCost((Money) staticDataService.getSetting(EpocSetting.HEADQUARTER_COST));
-            simulation.setDepreciationRate((Percent) staticDataService.getSetting(EpocSetting.DEPRECIATION_RATE));
-            simulation.setProductionCost((Money) staticDataService.getSetting(EpocSetting.PRODUCTION_COST));
+            simulation.setStartMonth(settings.getSimulationStartMonth());
+            simulation.setInterestRate(settings.getDebtInterestRate());
+            simulation.setBuildingMaintenanceCost(settings.getMaintentanceCostPerBuilding());
+            simulation.setHeadquarterCost(settings.getHeadquarterCost());
+            simulation.setDepreciationRate(settings.getDepreciationRate());
+            simulation.setProductionCost(settings.getProductionCostPerProduct());
             simulationRepository.save(simulation);
         }
     }
@@ -164,7 +158,7 @@ public class SimulationServiceImpl implements SimulationService {
         adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
         adjustCreditLineOrder.setAmount(decreaseCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.DEBT_INTEREST_RATE));
+        adjustCreditLineOrder.setInterestRate(companySimulationStep.getCompany().getSimulation().getSettings().getDebtInterestRate());
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
 
@@ -180,11 +174,11 @@ public class SimulationServiceImpl implements SimulationService {
             MarketSimulation thisMarketSimulation = new MarketSimulation();
             thisMarketSimulation.setMarket(market);
             thisMarketSimulation.setStartMonth(companySimulationStep.getSimulationStep().getSimulationMonth());
-            thisMarketSimulation.setHigherPercent((Percent) staticDataService.getSetting(EpocSetting.DEMAND_HIGHER_PERCENT));
-            thisMarketSimulation.setHigherPrice((Money) staticDataService.getSetting(EpocSetting.DEMAND_HIGHER_PRICE));
-            thisMarketSimulation.setLowerPercent((Percent) staticDataService.getSetting(EpocSetting.DEMAND_LOWER_PERCENT));
-            thisMarketSimulation.setLowerPrice((Money) staticDataService.getSetting(EpocSetting.DEMAND_LOWER_PRICE));
-            thisMarketSimulation.setProductLifecycleDuration((Integer) staticDataService.getSetting(EpocSetting.PRODUCT_LIFECYCLE_DURATION));
+            thisMarketSimulation.setHigherPercent(companySimulationStep.getCompany().getSimulation().getSettings().getDemandHigherPercent());
+            thisMarketSimulation.setHigherPrice(companySimulationStep.getCompany().getSimulation().getSettings().getDemandHigherPrice());
+            thisMarketSimulation.setLowerPercent(companySimulationStep.getCompany().getSimulation().getSettings().getDemandLowerPercent());
+            thisMarketSimulation.setLowerPrice(companySimulationStep.getCompany().getSimulation().getSettings().getDemandLowerPrice());
+            thisMarketSimulation.setProductLifecycleDuration(companySimulationStep.getCompany().getSimulation().getSettings().getProductLifecycleDuration());
             simulation.addMarketSimulation(thisMarketSimulation);
             marketSimulation = Optional.of(thisMarketSimulation);
         }
@@ -321,7 +315,7 @@ public class SimulationServiceImpl implements SimulationService {
         adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
         adjustCreditLineOrder.setAmount(increaseCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate((Percent) staticDataService.getSetting(EpocSetting.DEBT_INTEREST_RATE));
+        adjustCreditLineOrder.setInterestRate(companySimulationStep.getCompany().getSimulation().getSettings().getDebtInterestRate());
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
     }
 
@@ -350,7 +344,7 @@ public class SimulationServiceImpl implements SimulationService {
                 company.setId(companyDto.getId());
                 company.setName(companyDto.getName());
                 company.setFinancialAccounting(new FinancialAccounting());
-                company.setBaseCurrency((Currency) staticDataService.getSetting(EpocSetting.BASE_CURRENCY));
+                company.setBaseCurrency(simulation.getSettings().getBaseCurrency());
                 simulation.addCompany(company);
                 companyRepository.save(company);
                 for (LoginDto loginDto : companyDto.getUsers()) {
@@ -361,7 +355,7 @@ public class SimulationServiceImpl implements SimulationService {
                         login.get().setEmail(loginDto.getEmail());
                         login.get().setName(loginDto.getName());
                         login.get().setLogin(loginDto.getEmail());
-                        login.get().setPassword(Util.createPassword((Integer) staticDataService.getSetting(EpocSetting.PASSWORD_LENGTH)));
+                        login.get().setPassword(Util.createPassword(simulation.getSettings().getPasswordLength()));
                     }
                     UserInCompanyRole userInCompany = company.addLogin(login.get());
                     userInCompany.setIsInvitationRequired(true);

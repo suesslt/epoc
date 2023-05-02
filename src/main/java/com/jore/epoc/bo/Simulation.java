@@ -154,6 +154,10 @@ public class Simulation extends BusinessObject {
         return productionCost;
     }
 
+    public EpocSettings getSettings() {
+        return settings;
+    }
+
     public Integer getSoldProducts() {
         return marketSimulations.stream().mapToInt(marketSimulation -> marketSimulation.getSoldProducts()).sum();
     }

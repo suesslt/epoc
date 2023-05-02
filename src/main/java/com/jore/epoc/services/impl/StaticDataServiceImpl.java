@@ -59,7 +59,7 @@ public class StaticDataServiceImpl implements StaticDataService {
                 result = Integer.parseInt(setting.get().getValueText());
                 break;
             case "Percent":
-                result = Percent.of(setting.get().getValueText());
+                result = Percent.parse(setting.get().getValueText());
                 break;
             case "YearMonth":
                 result = YearMonth.parse(setting.get().getValueText());

@@ -30,15 +30,15 @@ public class CompanyBuilder {
     }
 
     // System parameters
-    private Percent interestRate = Percent.of("5%");
+    private Percent interestRate = Percent.parse("5%");
     private Currency baseCurrency = Currency.getInstance(CHF);
     private Money constructionCostsPerUnit = Money.of(CHF, 100);
     private Money constructionCosts = Money.of(CHF, 1000000);
     private Money rawMaterialUnitPrice = Money.of(CHF, 300);
     private Money factoryConstructionCosts = Money.of(CHF, 1000000);
-    private Percent demandCurveLowerPercent = Percent.of("80%");
+    private Percent demandCurveLowerPercent = Percent.parse("80%");
     private Money demandCurveLowerPrice = Money.of(CHF, 500);
-    private Percent demandCurveHigherPercent = Percent.of("20%");
+    private Percent demandCurveHigherPercent = Percent.parse("20%");
     private Money demandCurveHigherPrice = Money.of(CHF, 1200);
     private int productLifecycleDuration = 100;
     private Integer timeToBuildStorage = 0;
@@ -49,7 +49,7 @@ public class CompanyBuilder {
     private Money marketDistributionCost = Money.of(CHF, 2000000);
     private int marketLaborForce = 1000000;
     private Money buildingMaintenanceCost = Money.of(CHF, 10000);
-    private Percent depreciationRate = Percent.of("15%");
+    private Percent depreciationRate = Percent.parse("15%");
     private Money headquarterCost = Money.of(CHF, 1500000);
     private Money inventoryManagementCost = Money.of(CHF, 500000);
     private Money marketEntryCost = Money.of(CHF, 400000);
@@ -102,8 +102,8 @@ public class CompanyBuilder {
     public CompanyBuilder buildFactory(YearMonth executionMonth) {
         BuildFactoryOrder order = new BuildFactoryOrder();
         order.setExecutionMonth(executionMonth);
-        order.setConstructionCosts(factoryConstructionCosts);
-        order.setConstructionCostsPerLine(productionLineConstructionCosts);
+        order.setConstructionCost(factoryConstructionCosts);
+        order.setConstructionCostPerLine(productionLineConstructionCosts);
         order.setProductionLines(productionLines);
         order.setTimeToBuild(timeToBuildFactory);
         order.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
@@ -116,8 +116,8 @@ public class CompanyBuilder {
         BuildStorageOrder order = new BuildStorageOrder();
         order.setExecutionMonth(executionMonth);
         order.setCapacity(storageCapacity);
-        order.setConstructionCostsPerUnit(constructionCostsPerUnit);
-        order.setConstructionCosts(constructionCosts);
+        order.setConstructionCostPerUnit(constructionCostsPerUnit);
+        order.setConstructionCost(constructionCosts);
         order.setTimeToBuild(timeToBuildStorage);
         order.setInventoryManagementCost(inventoryManagementCost);
         orders.add(order);

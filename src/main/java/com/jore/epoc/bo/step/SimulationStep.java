@@ -44,7 +44,7 @@ public class SimulationStep extends BusinessObject {
         return simulation;
     }
 
-    public final YearMonth getSimulationMonth() {
+    public YearMonth getSimulationMonth() {
         return simulationMonth;
     }
 
