@@ -35,10 +35,10 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         if (getCompany().getAccounting().checkFunds(factoryCosts)) {
             addFactory();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", FinancialAccounting.REAL_ESTATE, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines)));
-            addMessage(String.format("Factory created for total cost of %s in %s.", factoryCosts, getExecutionMonth()), MessageLevel.INFORMATION);
+            addMessage(MessageLevel.INFORMATION, "FactoryCreated", factoryCosts, getExecutionMonth());
             setExecuted(true);
         } else {
-            addMessage(String.format("Could not create factory due to insufficent funds in %s. Required were %s, available %s.", getExecutionMonth(), factoryCosts, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
+            addMessage(MessageLevel.WARNING, "NoFactoryDueToFunds", getExecutionMonth(), factoryCosts, getCompany().getAccounting().getBankBalance());
         }
     }
 

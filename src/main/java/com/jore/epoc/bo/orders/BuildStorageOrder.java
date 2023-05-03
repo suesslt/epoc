@@ -34,10 +34,10 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
         if (getCompany().getAccounting().checkFunds(storageCosts)) {
             addStorage();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.REAL_ESTATE, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity)));
-            addMessage(String.format("Build Storage for capacity of %s units in %s.", capacity, getExecutionMonth()), MessageLevel.INFORMATION);
+            addMessage(MessageLevel.INFORMATION, "StorageBuilt", capacity, getExecutionMonth());
             setExecuted(true);
         } else {
-            addMessage(String.format("Could not create storage due to insufficent funds in %s. Required were %s, available %s.", getExecutionMonth(), storageCosts, getCompany().getAccounting().getBankBalance()), MessageLevel.WARNING);
+            addMessage(MessageLevel.WARNING, "NoStorageDueToFunds", getExecutionMonth(), storageCosts, getCompany().getAccounting().getBankBalance());
         }
     }
 

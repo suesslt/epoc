@@ -13,9 +13,7 @@ import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Entity
 // TODO Check if subclasses can be stored in one table
 public abstract class AbstractSimulationOrder extends BusinessObject implements SimulationOrder {
@@ -56,12 +54,11 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
         this.executionMonth = executionMonth;
     }
 
-    protected void addMessage(String messageText, MessageLevel level) {
-        log.debug(messageText);
+    protected void addMessage(MessageLevel level, String key, Object... parms) {
         Message message = new Message();
         message.setRelevantMonth(getExecutionMonth());
         message.setLevel(level);
-        message.setMessage(messageText);
+        message.setMessage(key, parms);
         company.addMessage(message);
     }
 

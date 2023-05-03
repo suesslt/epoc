@@ -40,8 +40,8 @@ public class Message extends BusinessObject {
         this.level = level;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessage(String key, Object... param) {
+        this.message = Messages.getMessage(key, param);
     }
 
     public void setRelevantMonth(YearMonth relevantMonth) {

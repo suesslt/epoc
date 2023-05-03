@@ -32,10 +32,10 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
         if (getCompany().getAccounting().checkFunds(marketEntryCost)) {
             addDistributionInMarket();
             book(getExecutionMonth().atDay(1), "Entry into market", FinancialAccounting.SERVICES, FinancialAccounting.BANK, marketEntryCost);
-            addMessage(String.format("Successfully set up entry into market %s.", marketSimulation.getMarket().getName()), MessageLevel.INFORMATION);
+            addMessage(MessageLevel.INFORMATION, "MarketEntrySuccess", marketSimulation.getMarket().getName());
             setExecuted(true);
         } else {
-            addMessage(String.format("Could not enter market %s due to insufficient funding", marketSimulation.getMarket().getName()), MessageLevel.WARNING);
+            addMessage(MessageLevel.WARNING, "NoMarketDueToFunding", marketSimulation.getMarket().getName());
         }
     }
 

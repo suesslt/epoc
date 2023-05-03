@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.YearMonth;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.jore.datatypes.money.Money;
@@ -14,6 +15,7 @@ import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
+import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
@@ -22,6 +24,11 @@ import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 
 class OrderTests {
+    @BeforeAll
+    public static void loadRessource() {
+        Messages.load("ApplicationMessages");
+    }
+
     @Test
     public void testBuildFactoryOrderInsufficientFunds() {
         Company company = new Company();

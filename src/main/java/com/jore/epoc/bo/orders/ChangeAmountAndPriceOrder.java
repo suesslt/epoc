@@ -27,7 +27,7 @@ public class ChangeAmountAndPriceOrder extends AbstractSimulationOrder {
         DistributionInMarket distributionInMarket = getCompany().getDistributionInMarkets().stream().filter(distribution -> distribution.getMarketSimulation().getMarket().equals(market)).findFirst().get();
         distributionInMarket.setIntentedProductSale(intentedSales);
         distributionInMarket.setOfferedPrice(offeredPrice);
-        addMessage("Changed Intented Product Sales and Offered Price", MessageLevel.INFORMATION);
+        addMessage(MessageLevel.INFORMATION, "AmountAndPriceChangd");
     }
 
     @Override
