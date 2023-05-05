@@ -141,6 +141,7 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.setHeadquarterCost(settings.getHeadquarterCost());
             simulation.setDepreciationRate(settings.getDepreciationRate());
             simulation.setProductionCost(settings.getProductionCostPerProduct());
+            simulation.setPassiveSteps(settings.getPassiveSteps());
             simulationRepository.save(simulation);
         }
     }
@@ -195,6 +196,7 @@ public class SimulationServiceImpl implements SimulationService {
     public void finishMoveFor(Integer companySimulationStepId) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
+        companySimulationStep.getSimulationStep().getSimulation().simulatePassiveSteps(); // TODO test
     }
 
     @Override

@@ -54,6 +54,7 @@ public class CompanyBuilder {
     private Money inventoryManagementCost = Money.of(CHF, 500000);
     private Money marketEntryCost = Money.of(CHF, 400000);
     private Money productionCost = Money.of(CHF, 30);
+    private Integer simulationPassiveSteps = 2;
     // To be set in application
     private Money initialOfferedPrice = Money.of(CHF, 800);
     private int initialIntendedSale = 1000;
@@ -225,5 +226,6 @@ public class CompanyBuilder {
         simulation.setDepreciationRate(depreciationRate);
         simulation.setHeadquarterCost(headquarterCost);
         simulation.setProductionCost(productionCost);
+        simulation.setPassiveSteps(simulationPassiveSteps);
     }
 }

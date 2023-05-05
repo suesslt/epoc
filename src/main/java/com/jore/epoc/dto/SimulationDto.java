@@ -15,7 +15,9 @@ public class SimulationDto implements DataTransferObject {
     private Integer id;
     private String name;
     @Builder.Default
-    private List<CompanyDto> companies = new ArrayList<CompanyDto>();
+    private List<CompanyDto> companies = new ArrayList<>();
+    @Builder.Default
+    private List<SettingDto> settings = new ArrayList<>();
     private boolean isStarted;
     private YearMonth startMonth;
     private Integer nrOfSteps;
@@ -23,5 +25,9 @@ public class SimulationDto implements DataTransferObject {
 
     public void addCompany(CompanyDto companyDto) {
         companies.add(companyDto);
+    }
+
+    public void addSetting(SettingDto settingDto) {
+        settings.add(settingDto);
     }
 }

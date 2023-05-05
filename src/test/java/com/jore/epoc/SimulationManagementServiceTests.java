@@ -32,7 +32,7 @@ class SimulationManagementServiceTests {
         login.setPassword("g00dPa&word");
         login.setAdmin(false);
         entityManager.persist(login);
-        staticDataService.loadEpocSettings("EpocSettings.xlsx");
+        staticDataService.loadSettings("EpocSettings.xlsx");
     }
 
     @Test

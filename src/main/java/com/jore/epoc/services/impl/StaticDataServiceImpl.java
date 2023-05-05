@@ -21,7 +21,6 @@ import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.dto.EpocSettingDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.mapper.MarketMapper;
-import com.jore.epoc.mapper.SettingMapper;
 import com.jore.epoc.repositories.MarketRepository;
 import com.jore.epoc.repositories.SettingRepository;
 import com.jore.epoc.repositories.SettingsRepository;
@@ -77,7 +76,24 @@ public class StaticDataServiceImpl implements StaticDataService {
 
     @Override
     @Transactional
-    public void loadEpocSettings(String xlsFileName) {
+    public void loadMarkets(String xlsFileName) {
+        try {
+            Resource resource = new ClassPathResource(xlsFileName);
+            InputStream inputStream = resource.getInputStream();
+            ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
+            List<MarketDto> markets = new ExcelReader<MarketDto>(workbook, new FieldModel<>(MarketDto.class)).read();
+            markets.forEach(market -> updateMarketByName(market));
+            workbook.close();
+            log.info(workbook);
+        } catch (Exception e) {
+            log.error(e);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void loadSettings(String xlsFileName) {
         try {
             EpocSettings epocSettings = new EpocSettings();
             epocSettings.setTemplate(true);
@@ -101,39 +117,6 @@ public class StaticDataServiceImpl implements StaticDataService {
         }
     }
 
-    @Override
-    @Transactional
-    public void loadMarkets(String xlsFileName) {
-        try {
-            Resource resource = new ClassPathResource(xlsFileName);
-            InputStream inputStream = resource.getInputStream();
-            ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
-            List<MarketDto> markets = new ExcelReader<MarketDto>(workbook, new FieldModel<>(MarketDto.class)).read();
-            markets.forEach(market -> updateMarketByName(market));
-            workbook.close();
-            log.info(workbook);
-        } catch (Exception e) {
-            log.error(e);
-            e.printStackTrace();
-        }
-    }
-
-    @Transactional
-    public void loadSettings(String xlsFileName) {
-        try {
-            Resource resource = new ClassPathResource(xlsFileName);
-            InputStream inputStream = resource.getInputStream();
-            ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
-            List<EpocSettingDto> settings = new ExcelReader<EpocSettingDto>(workbook, new FieldModel<>(EpocSettingDto.class)).read();
-            settings.forEach(settingDto -> updateSettingByKey(settingDto));
-            workbook.close();
-            log.info(workbook);
-        } catch (Exception e) {
-            log.error(e);
-            e.printStackTrace();
-        }
-    }
-
     private MarketDto updateMarketByName(MarketDto marketDto) {
         Optional<Market> market = marketRepository.findByName(marketDto.getName());
         if (market.isPresent()) {
@@ -144,17 +127,5 @@ public class StaticDataServiceImpl implements StaticDataService {
         marketRepository.save(market.get());
         log.info(market);
         return marketDto;
-    }
-
-    private EpocSettingDto updateSettingByKey(EpocSettingDto settingDto) {
-        Optional<EpocSetting> setting = settingRepository.findBySettingKey(settingDto.getSettingKey());
-        if (setting.isPresent()) {
-            SettingMapper.INSTANCE.updateSettingFromSettingDto(setting.get(), settingDto);
-        } else {
-            setting = Optional.of(SettingMapper.INSTANCE.settingDtoToSetting(settingDto));
-        }
-        settingRepository.save(setting.get());
-        log.info(settingDto);
-        return settingDto;
     }
 }

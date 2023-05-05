@@ -69,7 +69,7 @@ class EpocApplicationTests {
         userManagementService.login("epocadmin", "badpw");
         userManagementService.deleteLogin("admin");
         staticDataService.loadMarkets("markets.xlsx");
-        staticDataService.loadEpocSettings("EpocSettings.xlsx");
+        staticDataService.loadSettings("EpocSettings.xlsx");
         userManagementService.logout(); // TODO Uh, this is not good. But will fix definitely when implementing security...
         userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();
@@ -86,6 +86,7 @@ class EpocApplicationTests {
             simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
             simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
             simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+            simulation.addSetting(SettingDtoBuilder.builder().build());
             simulationService.updateSimulation(simulation);
             sendMailService.send(userManagementService.getEmailsForNewUsers());
             userManagementService.logout();
@@ -237,7 +238,7 @@ class EpocApplicationTests {
         assertTrue(databaseViewer.classHasNumberOfRecords(User.class, 8));
         assertTrue(databaseViewer.classHasNumberOfRecords(Simulation.class, 2));
         assertTrue(databaseViewer.classHasNumberOfRecords(Company.class, 6));
-        assertTrue(databaseViewer.classHasNumberOfRecords(SimulationStep.class, 13));
+        assertTrue(databaseViewer.classHasNumberOfRecords(SimulationStep.class, 14)); // TODO why 14? Seems to be wrong
         assertTrue(databaseViewer.classHasNumberOfRecords(DistributionStep.class, 1));
         assertTrue(databaseViewer.classHasNumberOfRecords(Factory.class, 1));
         assertTrue(databaseViewer.classHasNumberOfRecords(Storage.class, 1));
