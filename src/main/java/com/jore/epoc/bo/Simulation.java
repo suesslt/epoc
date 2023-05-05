@@ -157,6 +157,10 @@ public class Simulation extends BusinessObject {
         return settings;
     }
 
+    public List<SimulationStep> getSimulationSteps() {
+        return Collections.unmodifiableList(simulationSteps);
+    }
+
     public Integer getSoldProducts() {
         return marketSimulations.stream().mapToInt(marketSimulation -> marketSimulation.getSoldProducts()).sum();
     }

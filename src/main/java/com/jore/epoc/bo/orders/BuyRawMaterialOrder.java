@@ -28,7 +28,7 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
         Money cost = unitPrice.multiply(amount);
         if (storageCapacity >= amount && getCompany().getAccounting().checkFunds(cost)) {
             Storage.distributeRawMaterialAccrossStorages(getCompany().getStorages(), amount, getExecutionMonth(), unitPrice);
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Buy of raw material", FinancialAccounting.MATERIALAUFWAND, FinancialAccounting.BANK, cost, FinancialAccounting.ROHWAREN, FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, cost);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Buy of raw material", FinancialAccounting.MATERIALAUFWAND, FinancialAccounting.BANK, cost, FinancialAccounting.RAW_MATERIALS, FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, cost);
             addMessage(MessageLevel.INFORMATION, "RawMaterialBought", amount, getExecutionMonth());
             setExecuted(true);
         } else {

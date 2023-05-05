@@ -21,12 +21,12 @@ import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
 
-public class CompanyBuilder {
+public class SimulationBuilder {
     private static final String CHF = "CHF";
     private static int ID = 0;
 
-    public static CompanyBuilder builder() {
-        return new CompanyBuilder();
+    public static SimulationBuilder builder() {
+        return new SimulationBuilder();
     }
 
     // System parameters
@@ -67,7 +67,7 @@ public class CompanyBuilder {
     private List<AbstractSimulationOrder> orders = new ArrayList<>();
     private Simulation simulation;
 
-    public CompanyBuilder baseCurrency(Currency baseCurrency) {
+    public SimulationBuilder baseCurrency(Currency baseCurrency) {
         this.baseCurrency = baseCurrency;
         return this;
     }
@@ -100,7 +100,7 @@ public class CompanyBuilder {
         return result;
     }
 
-    public CompanyBuilder buildFactory(YearMonth executionMonth) {
+    public SimulationBuilder buildFactory(YearMonth executionMonth) {
         BuildFactoryOrder order = new BuildFactoryOrder();
         order.setExecutionMonth(executionMonth);
         order.setConstructionCost(factoryConstructionCosts);
@@ -113,7 +113,7 @@ public class CompanyBuilder {
         return this;
     }
 
-    public CompanyBuilder buildStorage(YearMonth executionMonth, int storageCapacity) {
+    public SimulationBuilder buildStorage(YearMonth executionMonth, int storageCapacity) {
         BuildStorageOrder order = new BuildStorageOrder();
         order.setExecutionMonth(executionMonth);
         order.setCapacity(storageCapacity);
@@ -125,7 +125,7 @@ public class CompanyBuilder {
         return this;
     }
 
-    public CompanyBuilder buyRawMaterial(YearMonth executionMonth, int amount) {
+    public SimulationBuilder buyRawMaterial(YearMonth executionMonth, int amount) {
         BuyRawMaterialOrder order = new BuyRawMaterialOrder();
         order.setExecutionMonth(executionMonth);
         order.setAmount(amount);
@@ -134,7 +134,7 @@ public class CompanyBuilder {
         return this;
     }
 
-    public CompanyBuilder changeAmountAndPriceOrder(YearMonth executionMonth, int amount, Money price) {
+    public SimulationBuilder changeAmountAndPriceOrder(YearMonth executionMonth, int amount, Money price) {
         ChangeAmountAndPriceOrder order = new ChangeAmountAndPriceOrder();
         order.setExecutionMonth(executionMonth);
         order.setIntentedSales(amount);
@@ -143,7 +143,7 @@ public class CompanyBuilder {
         return this;
     }
 
-    public CompanyBuilder enterMarket(YearMonth executionMonth) {
+    public SimulationBuilder enterMarket(YearMonth executionMonth) {
         EnterMarketOrder order = new EnterMarketOrder();
         order.setExecutionMonth(executionMonth);
         order.setOfferedPrice(initialOfferedPrice);
@@ -153,7 +153,7 @@ public class CompanyBuilder {
         return this;
     }
 
-    public CompanyBuilder increaseCreditLine(YearMonth executionMonth, Money increaseAmount) {
+    public SimulationBuilder increaseCreditLine(YearMonth executionMonth, Money increaseAmount) {
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(executionMonth);
         order.setAmount(increaseAmount);
@@ -163,32 +163,37 @@ public class CompanyBuilder {
         return this;
     }
 
-    public CompanyBuilder laborForce(int laborForce) {
+    public SimulationBuilder laborForce(int laborForce) {
         this.marketLaborForce = laborForce;
         return this;
     }
 
-    public CompanyBuilder name(String name) {
+    public SimulationBuilder name(String name) {
         this.name = name;
         return this;
     }
 
-    public CompanyBuilder numberOfSimulationSteps(Integer numberOfSimulationSteps) {
+    public SimulationBuilder numberOfSimulationSteps(Integer numberOfSimulationSteps) {
         this.numberOfSimulationSteps = numberOfSimulationSteps;
         return this;
     }
 
-    public CompanyBuilder simulation(Simulation simulation) {
+    public SimulationBuilder passiveSteps(int passiveSteps) {
+        this.simulationPassiveSteps = passiveSteps;
+        return this;
+    }
+
+    public SimulationBuilder simulation(Simulation simulation) {
         this.simulation = simulation;
         return this;
     }
 
-    public CompanyBuilder simulationName(String simulationName) {
+    public SimulationBuilder simulationName(String simulationName) {
         this.simulationName = simulationName;
         return this;
     }
 
-    public CompanyBuilder simulationStart(YearMonth simulationStart) {
+    public SimulationBuilder simulationStart(YearMonth simulationStart) {
         this.simulationStart = simulationStart;
         return this;
     }

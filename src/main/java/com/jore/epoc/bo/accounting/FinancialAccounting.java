@@ -20,11 +20,11 @@ import lombok.extern.log4j.Log4j2;
 public class FinancialAccounting extends BusinessObject {
     private static final int INFINITY_MULTIPLIER = 6;
     public static final String BANK = "1020";
-    public static final String ROHWAREN = "1210";
-    public static final String PRODUKTE = "1260";
+    public static final String RAW_MATERIALS = "1210";
+    public static final String PRODUCTS = "1260";
     public static final String REAL_ESTATE = "1600";
     public static final String LONG_TERM_DEBT = "2100";
-    public static final String PRODUKTE_ERLOESE = "3000";
+    public static final String PRODUCT_REVENUES = "3000";
     public static final String MATERIALAUFWAND = "4000";
     public static final String SERVICES = "4400";
     public static final String BESTANDESAENDERUNGEN_ROHWAREN = "4501";
@@ -42,10 +42,10 @@ public class FinancialAccounting extends BusinessObject {
         addAccount(new Account(AccountType.BALANCE_SHEET, BANK, "Bank"));
         addAccount(new Account(AccountType.BALANCE_SHEET, LONG_TERM_DEBT, "Bankverbindlichkeiten"));
         addAccount(new Account(AccountType.BALANCE_SHEET, REAL_ESTATE, "Liegenschaften"));
-        addAccount(new Account(AccountType.BALANCE_SHEET, ROHWAREN, "Rohmaterialvorrat"));
-        addAccount(new Account(AccountType.BALANCE_SHEET, PRODUKTE, "Fertigprodukte"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, RAW_MATERIALS, "Rohmaterialvorrat"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, PRODUCTS, "Fertigprodukte"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, SERVICES, "Bezogene Dienstleistungen"));
-        addAccount(new Account(AccountType.INCOME_STATEMENT, PRODUKTE_ERLOESE, "Produktionsertrag"));
+        addAccount(new Account(AccountType.INCOME_STATEMENT, PRODUCT_REVENUES, "Produktionsertrag"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, INTEREST, "Zinsaufwand"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, RAUMAUFWAND, "Gebäudeunterhalt"));
         addAccount(new Account(AccountType.INCOME_STATEMENT, DEPRECIATION, "Abschreibung"));
@@ -94,15 +94,15 @@ public class FinancialAccounting extends BusinessObject {
         Money result = null;
         result = Money.add(result, getBalanceForAccount(BANK));
         result = Money.add(result, getBalanceForAccount(REAL_ESTATE));
-        result = Money.add(result, getBalanceForAccount(ROHWAREN));
-        result = Money.add(result, getBalanceForAccount(PRODUKTE));
+        result = Money.add(result, getBalanceForAccount(RAW_MATERIALS));
+        result = Money.add(result, getBalanceForAccount(PRODUCTS));
         result = Money.add(result, getBalanceForAccount(LONG_TERM_DEBT));
         return result;
     }
 
     public Money getPnL() {
         Money result = null;
-        result = Money.add(result, getBalanceForAccount(PRODUKTE_ERLOESE));
+        result = Money.add(result, getBalanceForAccount(PRODUCT_REVENUES));
         result = Money.add(result, getBalanceForAccount(SERVICES));
         result = Money.add(result, getBalanceForAccount(INTEREST));
         result = Money.add(result, getBalanceForAccount(RAUMAUFWAND));
@@ -115,15 +115,19 @@ public class FinancialAccounting extends BusinessObject {
     }
 
     public Money getProductBalance() {
-        return nullToZero(getAccount(PRODUKTE).getBalance());
+        return nullToZero(getAccount(PRODUCTS).getBalance());
     }
 
     public Money getRawMaterialBalance() {
-        return nullToZero(getAccount(ROHWAREN).getBalance());
+        return nullToZero(getAccount(RAW_MATERIALS).getBalance());
     }
 
     public Money getRealEstateBalance() {
         return nullToZero(getAccount(REAL_ESTATE).getBalance());
+    }
+
+    public Money getRevenues() {
+        return nullToZero(getAccount(PRODUCT_REVENUES).getBalance());
     }
 
     public Money getSalaries() {

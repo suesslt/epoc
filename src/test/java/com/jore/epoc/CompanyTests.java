@@ -26,7 +26,7 @@ class CompanyTests {
 
     @Test
     public void testChargeWorkforceCost() {
-        CompanyBuilder builder = CompanyBuilder.builder().increaseCreditLine(FIRST_MONTH, Money.of(CHF, 3100000));
+        SimulationBuilder builder = SimulationBuilder.builder().increaseCreditLine(FIRST_MONTH, Money.of(CHF, 3100000));
         builder.enterMarket(FIRST_MONTH);
         builder.buildFactory(FIRST_MONTH);
         builder.buildStorage(FIRST_MONTH, 1000);

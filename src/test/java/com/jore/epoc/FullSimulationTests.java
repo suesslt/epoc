@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 class FullSimulationTests {
     @Test
     public void testAlongExcel() {
-        CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 13000000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
@@ -54,7 +54,7 @@ class FullSimulationTests {
 
     @Test
     public void testOneCompanyThreeSteps() {
-        CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(3);
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(3);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 3110000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
@@ -75,7 +75,7 @@ class FullSimulationTests {
 
     @Test
     public void testOneCompanyTwelveSteps() {
-        CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
@@ -106,8 +106,35 @@ class FullSimulationTests {
     }
 
     @Test
+    public void testTenYearsInYearSteps() {
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Ten Year Company").simulationName("Full simulation for ten years").numberOfSimulationSteps(120).passiveSteps(11);
+        companyBuilder.increaseCreditLine(YearMonth.of(2020, 3), Money.of("CHF", 100000000l));
+        companyBuilder.buildStorage(YearMonth.of(2020, 6), 10000);
+        companyBuilder.buyRawMaterial(YearMonth.of(2020, 9), 10000);
+        companyBuilder.buildFactory(YearMonth.of(2020, 12));
+        companyBuilder.enterMarket(YearMonth.of(2021, 3));
+        companyBuilder.increaseCreditLine(YearMonth.of(2021, 6), Money.of("CHF", 100000000l));
+        companyBuilder.buyRawMaterial(YearMonth.of(2022, 8), 10000);
+        Company company = companyBuilder.build();
+        Optional<SimulationStep> activeSimulationStep = company.getSimulation().getActiveSimulationStep();
+        int activeStepCounter = 0;
+        while (activeSimulationStep.isPresent()) {
+            activeStepCounter++;
+            CompanySimulationStep companySimulationStep = activeSimulationStep.get().getCompanySimulationStepFor(company);
+            companySimulationStep.finish();
+            companySimulationStep.getCompany().getSimulation().simulatePassiveSteps();
+            activeSimulationStep = company.getSimulation().getActiveSimulationStep();
+        }
+        log.info(company.getAccounting().toString());
+        assertEquals(Money.of("CHF", 16000000), company.getAccounting().getRevenues());
+        assertEquals(10, activeStepCounter);
+        assertEquals(120, company.getCompanySimulationSteps().size());
+        assertEquals(120, company.getSimulation().getSimulationSteps().size());
+    }
+
+    @Test
     public void testTwoCompaniesEquallyTwelveSteps() {
-        CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
@@ -124,7 +151,7 @@ class FullSimulationTests {
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 11), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 12), 1000);
         Company companyA = companyBuilder.build();
-        companyBuilder = CompanyBuilder.builder().simulation(companyA.getSimulation()).name("B Company");
+        companyBuilder = SimulationBuilder.builder().simulation(companyA.getSimulation()).name("B Company");
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
@@ -160,7 +187,7 @@ class FullSimulationTests {
 
     @Test
     public void testTwoCompaniesFierceCompetitionTwelveSteps() {
-        CompanyBuilder companyBuilder = CompanyBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12).laborForce(10000);
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Company").simulationName("Full simulation").numberOfSimulationSteps(12).laborForce(10000);
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
@@ -177,7 +204,7 @@ class FullSimulationTests {
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 11), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 12), 1000);
         Company companyA = companyBuilder.build();
-        companyBuilder = CompanyBuilder.builder().simulation(companyA.getSimulation()).name("B Company");
+        companyBuilder = SimulationBuilder.builder().simulation(companyA.getSimulation()).name("B Company");
         companyBuilder = companyBuilder.increaseCreditLine(YearMonth.of(2020, 1), Money.of("CHF", 33600000));
         companyBuilder = companyBuilder.buildStorage(YearMonth.of(2020, 1), 1000);
         companyBuilder = companyBuilder.buyRawMaterial(YearMonth.of(2020, 1), 1000);
