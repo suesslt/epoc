@@ -60,6 +60,7 @@ class UserManagementServiceTests {
     @Test
     @Transactional
     public void testCreateUser() {
+        userManagementService.login("admin", "g00dPa&word");
         LoginDto loginDto = userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         User storedLogin = entityManager.find(User.class, loginDto.getId());
         assertEquals("user", storedLogin.getLogin());

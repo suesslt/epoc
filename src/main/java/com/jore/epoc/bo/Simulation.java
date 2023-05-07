@@ -36,7 +36,7 @@ public class Simulation extends BusinessObject {
     private Integer nrOfMonths;
     private boolean isStarted = false;
     private boolean isFinished = false;
-    private Integer passiveSteps;
+    //    private Integer passiveSteps;
     @Type(com.jore.datatypes.hibernate.PercentUserType.class)
     private Percent interestRate;
     @ManyToOne(optional = true)
@@ -83,7 +83,9 @@ public class Simulation extends BusinessObject {
         log.info(String.format("Finished company step for company '%s' (%d) in simulation '%s' (%d).", companySimulationStep.getCompany().getName(), companySimulationStep.getCompany().getId(), name, getId()));
         companySimulationStep.setOpen(false);
         if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {
+            log.info(String.format("All company steps finished for simulation '%s' (%d) and month '%s'. Starting to simulate...", name, getId(), companySimulationStep.getSimulationStep().getSimulationMonth()));
             simulate(companySimulationStep.getSimulationStep());
+            simulatePassiveSteps();
         }
     }
 
@@ -213,10 +215,6 @@ public class Simulation extends BusinessObject {
         this.owner = owner;
     }
 
-    public void setPassiveSteps(Integer passiveSteps) {
-        this.passiveSteps = passiveSteps;
-    }
-
     public void setProductionCost(Money productionCost) {
         this.productionCost = productionCost;
     }
@@ -227,16 +225,6 @@ public class Simulation extends BusinessObject {
 
     public void setStartMonth(YearMonth startMonth) {
         this.startMonth = startMonth;
-    }
-
-    public void simulatePassiveSteps() {
-        Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
-        for (int i = 0; i < passiveSteps && activeSimulationStep.isPresent(); i++) {
-            for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
-                finishCompanyStep(companySimulationStep);
-            }
-            activeSimulationStep = getActiveSimulationStep();
-        }
     }
 
     private SimulationStep createSimulationStep(YearMonth month) {
@@ -261,7 +249,6 @@ public class Simulation extends BusinessObject {
     }
 
     private void simulate(SimulationStep simulationStep) {
-        log.info(String.format("All company steps finished for simulation '%s' (%d) and month '%s'. Starting to simulate...", name, getId(), simulationStep.getSimulationMonth()));
         for (CompanySimulationStep companySimulationStep : simulationStep.getCompanySimulationSteps()) {
             Company company = companySimulationStep.getCompany();
             for (SimulationOrder simulationOrder : company.getOrdersForExecutionIn(simulationStep.getSimulationMonth())) {
@@ -278,5 +265,19 @@ public class Simulation extends BusinessObject {
         }
         simulationStep.setOpen(false);
         setSimulationToFinishedIfThisWasTheLastStep(simulationStep);
+    }
+
+    private void simulatePassiveSteps() {
+        Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
+        for (int i = 0; i < settings.getPassiveSteps() && activeSimulationStep.isPresent(); i++) {
+            for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
+                companySimulationStep.setOpen(false);
+                if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {
+                    log.debug("Passive simulation of month " + companySimulationStep.getSimulationStep().getSimulationMonth());
+                    simulate(companySimulationStep.getSimulationStep());
+                }
+            }
+            activeSimulationStep = getActiveSimulationStep();
+        }
     }
 }

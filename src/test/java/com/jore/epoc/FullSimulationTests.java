@@ -39,7 +39,6 @@ class FullSimulationTests {
         while (activeSimulationStep.isPresent()) {
             CompanySimulationStep companySimulationStep = activeSimulationStep.get().getCompanySimulationStepFor(company);
             companySimulationStep.finish();
-            companySimulationStep.getCompany().getSimulation().simulatePassiveSteps();
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
@@ -122,7 +121,6 @@ class FullSimulationTests {
             activeStepCounter++;
             CompanySimulationStep companySimulationStep = activeSimulationStep.get().getCompanySimulationStepFor(company);
             companySimulationStep.finish();
-            companySimulationStep.getCompany().getSimulation().simulatePassiveSteps();
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());

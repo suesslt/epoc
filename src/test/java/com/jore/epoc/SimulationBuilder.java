@@ -20,6 +20,8 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.settings.EpocSetting;
+import com.jore.epoc.bo.settings.EpocSettings;
 
 public class SimulationBuilder {
     private static final String CHF = "CHF";
@@ -47,7 +49,7 @@ public class SimulationBuilder {
     private Money factoryLaborCost = Money.of(CHF, 500000);
     private String marketName = "Switzerland";
     private Money marketDistributionCost = Money.of(CHF, 2000000);
-    private int marketLaborForce = 1000000;
+    private int marketSize = 1000000;
     private Money buildingMaintenanceCost = Money.of(CHF, 10000);
     private Percent depreciationRate = Percent.parse("15%");
     private Money headquarterCost = Money.of(CHF, 1500000);
@@ -158,8 +160,13 @@ public class SimulationBuilder {
         return this;
     }
 
-    public SimulationBuilder laborForce(int laborForce) {
-        this.marketLaborForce = laborForce;
+    public SimulationBuilder laborForce(int marketSize) {
+        this.marketSize = marketSize;
+        return this;
+    }
+
+    public SimulationBuilder marketSize(int marketSize) {
+        this.marketSize = marketSize;
         return this;
     }
 
@@ -192,7 +199,7 @@ public class SimulationBuilder {
         Market market = new Market();
         market.setId(ID++);
         market.setName(marketName);
-        market.setLaborForce(marketLaborForce);
+        market.setMarketSize(marketSize);
         market.setDistributionCost(marketDistributionCost);
         market.setCostToEnterMarket(marketEntryCost);
         return market;
@@ -211,7 +218,11 @@ public class SimulationBuilder {
     }
 
     private void createSimulation() {
+        EpocSettings settings = new EpocSettings();
         simulation = new Simulation();
+        EpocSetting setting = SettingBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText(simulationPassiveSteps.toString()).build();
+        settings.addSetting(setting);
+        simulation.setSettings(settings);
         simulation.setId(ID++);
         simulation.setName(simulationName);
         simulation.setStartMonth(simulationStart);
@@ -221,6 +232,6 @@ public class SimulationBuilder {
         simulation.setDepreciationRate(depreciationRate);
         simulation.setHeadquarterCost(headquarterCost);
         simulation.setProductionCost(productionCost);
-        simulation.setPassiveSteps(simulationPassiveSteps);
+        //        simulation.setPassiveSteps(simulationPassiveSteps);
     }
 }

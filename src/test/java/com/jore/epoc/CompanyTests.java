@@ -25,8 +25,14 @@ class CompanyTests {
     private static final Currency CHF = Currency.getInstance("CHF");
 
     @Test
+    /**
+     * Headquarter cost p.a. : 1'500'000
+     * Production line cost p.a. : 5'000'000 per line
+     * Inventory mgmt cost p.a. : 500'000 per 1000 Units
+     */
     public void testChargeWorkforceCost() {
-        SimulationBuilder builder = SimulationBuilder.builder().increaseCreditLine(FIRST_MONTH, Money.of(CHF, 3100000));
+        SimulationBuilder builder = SimulationBuilder.builder().numberOfSimulationSteps(1).simulationName("Test Charge Workforce Cost");
+        builder.increaseCreditLine(FIRST_MONTH, Money.of(CHF, 3100000));
         builder.enterMarket(FIRST_MONTH);
         builder.buildFactory(FIRST_MONTH);
         builder.buildStorage(FIRST_MONTH, 1000);

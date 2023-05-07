@@ -25,7 +25,7 @@ public interface MarketMapper {
             market.setAgeTo54Male(marketDto.getAgeTo54Male());
             market.setAgeTo64Female(marketDto.getAgeTo64Female());
             market.setAgeTo64Male(marketDto.getAgeTo64Male());
-            market.setLaborForce(marketDto.getLaborForce());
+            market.setMarketSize(marketDto.getMarketSize());
             market.setGdp(marketDto.getGdp());
             market.setGdpGrowth(marketDto.getGdpGrowth());
             market.setGdpPpp(marketDto.getGdpPpp());

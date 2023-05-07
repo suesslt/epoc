@@ -21,6 +21,7 @@ import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.bo.settings.EpocSettings;
+import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.DistributionStep;
 import com.jore.epoc.bo.step.SimulationStep;
 import com.jore.epoc.bo.user.User;
@@ -47,7 +48,7 @@ import jakarta.persistence.EntityManager;
 
 @SpringBootTest
 class EpocApplicationTests {
-    private static final int NR_OF_SIM_STEPS = 3;
+    private static final int NR_OF_SIM_STEPS = 120;
     private static final String MAX = "max.mara@bluewin.ch";
     private static final String RETO = "reto.straumann@bluewin.ch";
     private static final String FELIX = "felix.haeppy@bluewin.ch";
@@ -109,6 +110,8 @@ class EpocApplicationTests {
         assertEquals(1, (long) entityManager.createQuery("select count(*) from " + EpocSettings.class.getName() + " where isTemplate = true").getSingleResult());
         assertEquals("0", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = true and settingKey = 'SET0027'").getSingleResult());
         assertEquals("11", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = false and settingKey = 'SET0027'").getSingleResult());
+        assertEquals(0, (long) entityManager.createQuery("select count(*) from " + SimulationStep.class.getName()).getSingleResult());
+        assertEquals(2, (long) entityManager.createQuery("select count(*) from " + Simulation.class.getName()).getSingleResult());
         //
         // Step 1 for Company A
         //
@@ -120,6 +123,35 @@ class EpocApplicationTests {
         simulationService.buildFactory(companySimulationStep1A.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStep1A.get().getId());
         userManagementService.logout();
+        assertEquals(2, (long) entityManager.createQuery("select count(*) from " + Simulation.class.getName()).getSingleResult());
+        assertEquals(1, (long) entityManager.createQuery("select count(*) from " + SimulationStep.class.getName()).getSingleResult());
+        //
+        // Step 1 for Company B
+        //
+        userManagementService.login(MAX, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulationB1 = simulationService.getOpenSimulationsForUser(RETO);
+        Optional<CompanySimulationStepDto> companySimulationStepB1 = simulationService.getCurrentCompanySimulationStep(simulationB1.get(0).getCompanyId());
+        simulationService.increaseCreditLine(companySimulationStepB1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.buildStorage(companySimulationStepB1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.buildFactory(companySimulationStepB1.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.finishMoveFor(companySimulationStepB1.get().getId());
+        userManagementService.logout();
+        //
+        // Step 1 for Company C
+        //
+        userManagementService.login(MAX, getPasswordForUser(FELIX));
+        List<OpenUserSimulationDto> simulationC1 = simulationService.getOpenSimulationsForUser(FELIX);
+        Optional<CompanySimulationStepDto> companySimulationStepC1 = simulationService.getCurrentCompanySimulationStep(simulationC1.get(0).getCompanyId());
+        simulationService.increaseCreditLine(companySimulationStepC1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.buildStorage(companySimulationStepC1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.buildFactory(companySimulationStepC1.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.finishMoveFor(companySimulationStepC1.get().getId());
+        userManagementService.logout();
+        //
+        // Checks after first full step
+        //
+        assertEquals(13, (long) entityManager.createQuery("select count(*) from " + SimulationStep.class.getName()).getSingleResult());
+        assertEquals(39, (long) entityManager.createQuery("select count(*) from " + CompanySimulationStep.class.getName()).getSingleResult());
     }
 
     //    @Test
@@ -135,7 +167,6 @@ class EpocApplicationTests {
         userManagementService.deleteLogin("admin");
         staticDataService.loadMarkets("markets.xlsx");
         staticDataService.loadSettings("EpocSettings.xlsx");
-        userManagementService.logout(); // TODO Uh, this is not good. But will fix definitely when implementing security...
         userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();
         //

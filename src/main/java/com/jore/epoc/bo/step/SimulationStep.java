@@ -63,4 +63,9 @@ public class SimulationStep extends BusinessObject {
     public void setSimulationMonth(YearMonth simulationMonth) {
         this.simulationMonth = simulationMonth;
     }
+
+    @Override
+    public String toString() {
+        return "SimulationStep [simulationMonth=" + simulationMonth + ", isOpen=" + isOpen + "]";
+    }
 }

@@ -15,7 +15,7 @@ public class MarketDto implements DataTransferObject {
     private Money gdpPpp;
     private Money gdp;
     private Percent gdpGrowth;
-    private int laborForce;
+    private int marketSize;
     private Percent unemployment;
     private BigDecimal lifeExpectancy;
     private Money costToEnterMarket;
