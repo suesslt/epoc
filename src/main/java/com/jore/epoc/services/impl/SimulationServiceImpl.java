@@ -365,6 +365,7 @@ public class SimulationServiceImpl implements SimulationService {
                 }
             }
         } else {
+            // TODO write test case
             log.warn(String.format("Tried to update simulation (%d) which is started.", simulation.getId()));
         }
     }

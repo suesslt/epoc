@@ -18,14 +18,9 @@ public class CompanyDto implements DataTransferObject {
     private final List<CreditLineDto> creditLines = new ArrayList<>();
     private final List<FactoryDto> factories = new ArrayList<>();
     private final List<StorageDto> storages = new ArrayList<>();
-    private final List<DistributionInMarketDto> distributionInMarkets = new ArrayList<>();
 
     public void addCreditLine(CreditLineDto creditLine) {
         creditLines.add(creditLine);
-    }
-
-    public void addDistributionInMarket(DistributionInMarketDto distributionInMarket) {
-        distributionInMarkets.add(distributionInMarket);
     }
 
     public void addFactory(FactoryDto factoryDto) {

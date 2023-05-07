@@ -130,7 +130,7 @@ class OrderTests {
         assertEquals(YearMonth.of(2023, 1), order.getExecutionMonth());
         assertFalse(order.isExecuted());
         assertEquals(Money.of("CHF", 29999), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 0), accounting.getBalanceForAccount(FinancialAccounting.ROHWAREN));
+        assertEquals(Money.of("CHF", 0), accounting.getBalanceForAccount(FinancialAccounting.RAW_MATERIALS));
     }
 
     @Test
@@ -153,7 +153,7 @@ class OrderTests {
         assertEquals(YearMonth.of(2023, 1), order.getExecutionMonth());
         assertFalse(order.isExecuted());
         assertEquals(Money.of("CHF", 30001), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 0), accounting.getBalanceForAccount(FinancialAccounting.ROHWAREN));
+        assertEquals(Money.of("CHF", 0), accounting.getBalanceForAccount(FinancialAccounting.RAW_MATERIALS));
     }
 
     @Test
@@ -176,7 +176,7 @@ class OrderTests {
         assertEquals(YearMonth.of(2023, 1), order.getExecutionMonth());
         assertTrue(order.isExecuted());
         assertEquals(Money.of("CHF", 1), accounting.getBalanceForAccount(FinancialAccounting.BANK));
-        assertEquals(Money.of("CHF", 30000), accounting.getBalanceForAccount(FinancialAccounting.ROHWAREN));
+        assertEquals(Money.of("CHF", 30000), accounting.getBalanceForAccount(FinancialAccounting.RAW_MATERIALS));
     }
 
     @Test

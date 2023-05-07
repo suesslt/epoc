@@ -41,6 +41,7 @@ public class CompanySimulationStep extends BusinessObject {
         return simulationStep;
     }
 
+    // TODO write test case
     public List<MonthlySale> getSoldProductsPerMonth() {
         List<MonthlySale> result = new ArrayList<>();
         for (DistributionStep distributionStep : distributionSteps) {

@@ -58,6 +58,10 @@ class EpocApplicationTests {
     private SendMailService sendMailService = new StubSendMailServiceImpl();
 
     @Test
+    public void testFullGameForTenYearsWithOneYearSteps() {
+    }
+
+    @Test
     public void testShortSimulationAndOpeningOfNew() {
         userManagementService.createInitialUser("admin", "g00dPa&word");
         //

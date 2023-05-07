@@ -6,16 +6,11 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 import com.jore.Assert;
-import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 
 // TODO do not take amount out of money!
 public class DemandCurve {
-    public static DemandCurve create(Currency demandCurveCurrency, BigDecimal demandCurveHigherPrice, Percent demandCurveHigherPricePercent, BigDecimal demandCurveLowerPrice, Percent demandCurveLowerPricePercent) {
-        return new DemandCurve(Money.of(demandCurveCurrency, demandCurveHigherPrice), demandCurveHigherPricePercent, Money.of(demandCurveCurrency, demandCurveLowerPrice), demandCurveLowerPricePercent);
-    }
-
     public static DemandCurve create(String currency, double higherPrice, String higherPricePercent, double lowerPrice, String lowerPricePercent) {
         return new DemandCurve(Money.of(currency, higherPrice), Percent.parse(higherPricePercent), Money.of(currency, lowerPrice), Percent.parse(lowerPricePercent));
     }

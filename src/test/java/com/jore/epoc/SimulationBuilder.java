@@ -67,11 +67,6 @@ public class SimulationBuilder {
     private List<AbstractSimulationOrder> orders = new ArrayList<>();
     private Simulation simulation;
 
-    public SimulationBuilder baseCurrency(Currency baseCurrency) {
-        this.baseCurrency = baseCurrency;
-        return this;
-    }
-
     public Company build() {
         Company result = new Company();
         result.setId(ID++);
@@ -190,11 +185,6 @@ public class SimulationBuilder {
 
     public SimulationBuilder simulationName(String simulationName) {
         this.simulationName = simulationName;
-        return this;
-    }
-
-    public SimulationBuilder simulationStart(YearMonth simulationStart) {
-        this.simulationStart = simulationStart;
         return this;
     }
 

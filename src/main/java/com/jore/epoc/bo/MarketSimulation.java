@@ -79,26 +79,6 @@ public class MarketSimulation extends BusinessObject {
         return demandCurve.getDemandForPrice(offeredPrice).applyTo(marketSize);
     }
 
-    public List<DistributionInMarket> getDistributionInMarkets() {
-        return distributionInMarkets;
-    }
-
-    public Percent getHigherPercent() {
-        return higherPercent;
-    }
-
-    public Money getHigherPrice() {
-        return higherPrice;
-    }
-
-    public Percent getLowerPercent() {
-        return lowerPercent;
-    }
-
-    public Money getLowerPrice() {
-        return lowerPrice;
-    }
-
     public Market getMarket() {
         return market;
     }

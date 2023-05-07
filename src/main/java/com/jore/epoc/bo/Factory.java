@@ -25,24 +25,8 @@ public class Factory extends BusinessObject {
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money productionLineLaborCost;
 
-    public Company getCompany() {
-        return company;
-    }
-
-    public int getMonthlyCapacityPerProductionLine() {
-        return monthlyCapacityPerProductionLine;
-    }
-
     public Money getProductionCost() {
         return productionLineLaborCost.multiply(productionLines);
-    }
-
-    public int getProductionLines() {
-        return productionLines;
-    }
-
-    public YearMonth getProductionStartMonth() {
-        return productionStartMonth;
     }
 
     public int produce(int maximumToProduce, YearMonth productionMonth) {

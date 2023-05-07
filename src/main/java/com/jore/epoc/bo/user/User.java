@@ -51,10 +51,6 @@ public class User extends BusinessObject {
         return password;
     }
 
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
     }

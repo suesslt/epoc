@@ -166,10 +166,6 @@ public class Company extends BusinessObject {
         return simulation;
     }
 
-    public List<AbstractSimulationOrder> getSimulationOrders() {
-        return Collections.unmodifiableList(simulationOrders);
-    }
-
     public Integer getSoldProducts() {
         return distributionInMarkets.stream().mapToInt(distribution -> distribution.getSoldProducts()).sum();
     }

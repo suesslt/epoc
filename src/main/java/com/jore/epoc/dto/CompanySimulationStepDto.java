@@ -18,8 +18,8 @@ public class CompanySimulationStepDto implements DataTransferObject {
     private List<FactoryDto> factories = new ArrayList<>();
     private CreditLineDto creditLine;
     private List<StorageDto> storages = new ArrayList<>();
-    private List<DistributionInMarketDto> distributionInMarkets = new ArrayList<>();
     private List<MarketDto> markets = new ArrayList<>();
+    private List<DistributionInMarketDto> distributionInMarkets = new ArrayList<>();
     private YearMonth simulationMonth;
 
     public void addDistributionInMarket(DistributionInMarketDto distributionInMarketDto) {

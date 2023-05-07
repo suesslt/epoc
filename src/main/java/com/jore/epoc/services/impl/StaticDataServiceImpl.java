@@ -1,7 +1,6 @@
 package com.jore.epoc.services.impl;
 
 import java.io.InputStream;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,10 +10,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jore.datatypes.currency.Currency;
-import com.jore.datatypes.formatter.MoneyDecimalDigits;
-import com.jore.datatypes.formatter.MoneyFormatter;
-import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.bo.settings.EpocSettings;
@@ -43,36 +38,6 @@ public class StaticDataServiceImpl implements StaticDataService {
     SettingRepository settingRepository;
     @Autowired
     EntityManager entityManager;
-
-    @Override
-    @Transactional
-    public Object getSetting(String key) {
-        Object result = null;
-        Optional<EpocSetting> setting = settingRepository.findBySettingKey(key);
-        if (setting.isPresent()) {
-            switch (setting.get().getSettingFormat()) {
-            case "Money":
-                result = new MoneyFormatter(MoneyDecimalDigits.DEFAULT_FRACTION_DIGITS).parse(setting.get().getValueText());
-                break;
-            case "Integer":
-                result = Integer.parseInt(setting.get().getValueText());
-                break;
-            case "Percent":
-                result = Percent.parse(setting.get().getValueText());
-                break;
-            case "YearMonth":
-                result = YearMonth.parse(setting.get().getValueText());
-                break;
-            case "Currency":
-                result = Currency.getInstance(setting.get().getValueText());
-                break;
-            default:
-                log.warn("Invalid setting format: " + setting.get().getSettingFormat());
-                break;
-            }
-        }
-        return result;
-    }
 
     @Override
     @Transactional

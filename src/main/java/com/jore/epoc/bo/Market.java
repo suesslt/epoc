@@ -65,8 +65,7 @@ public class Market extends BusinessObject {
     private int[] ageTableFemale;
 
     public int calculateMarketPotential(YearMonth startMonth, YearMonth simulationMonth, Integer productLifecycleDuration) {
-        ProductLifecycle productLifecycle = new ProductLifecycle();
-        productLifecycle.setProductLifecycleDuration(productLifecycleDuration);
+        ProductLifecycle productLifecycle = new ProductLifecycle(productLifecycleDuration);
         double percentageSold = productLifecycle.getPercentageSoldForMonths(Util.monthDiff(simulationMonth, startMonth));
         int marketSizeForConsumption = getMarketSizeForConsumption();
         return (int) (marketSizeForConsumption * percentageSold);
