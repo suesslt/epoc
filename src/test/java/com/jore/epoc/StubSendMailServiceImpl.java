@@ -14,6 +14,10 @@ import lombok.extern.log4j.Log4j2;
 public class StubSendMailServiceImpl implements SendMailService {
     private Map<String, String> passwords = new HashMap<>();
 
+    public void clear() {
+        passwords.clear();
+    }
+
     public String getPassword(String user) {
         return passwords.get(user);
     }

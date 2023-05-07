@@ -12,6 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
@@ -47,6 +49,7 @@ import com.jore.util.DatabaseViewer;
 import jakarta.persistence.EntityManager;
 
 @SpringBootTest
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class EpocApplicationTests {
     private static final int NR_OF_SIM_STEPS = 120;
     private static final String MAX = "max.mara@bluewin.ch";
@@ -65,6 +68,7 @@ class EpocApplicationTests {
     @Test
     public void testFullGameForTenYearsWithOneYearSteps() {
         DatabaseViewer databaseViewer = new DatabaseViewer(entityManager);
+        ((StubSendMailServiceImpl) sendMailService).clear();
         //
         // Create the system user
         //
@@ -116,20 +120,20 @@ class EpocApplicationTests {
         // Step 1 for Company A
         //
         userManagementService.login(MAX, getPasswordForUser(MAX));
-        List<OpenUserSimulationDto> simulationA1 = simulationService.getOpenSimulationsForUser(MAX);
-        Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulationA1.get(0).getCompanyId());
-        simulationService.increaseCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
-        simulationService.buildStorage(companySimulationStep1A.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
-        simulationService.buildFactory(companySimulationStep1A.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
-        simulationService.finishMoveFor(companySimulationStep1A.get().getId());
+        List<OpenUserSimulationDto> simulationA1 = simulationService.getOpenSimulationsForUser();
+        Optional<CompanySimulationStepDto> companySimulationStepA1 = simulationService.getCurrentCompanySimulationStep(simulationA1.get(0).getCompanyId());
+        simulationService.increaseCreditLine(companySimulationStepA1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        simulationService.buildStorage(companySimulationStepA1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        simulationService.buildFactory(companySimulationStepA1.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        simulationService.finishMoveFor(companySimulationStepA1.get().getId());
         userManagementService.logout();
         assertEquals(2, (long) entityManager.createQuery("select count(*) from " + Simulation.class.getName()).getSingleResult());
         assertEquals(1, (long) entityManager.createQuery("select count(*) from " + SimulationStep.class.getName()).getSingleResult());
         //
         // Step 1 for Company B
         //
-        userManagementService.login(MAX, getPasswordForUser(RETO));
-        List<OpenUserSimulationDto> simulationB1 = simulationService.getOpenSimulationsForUser(RETO);
+        userManagementService.login(RETO, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulationB1 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepB1 = simulationService.getCurrentCompanySimulationStep(simulationB1.get(0).getCompanyId());
         simulationService.increaseCreditLine(companySimulationStepB1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
         simulationService.buildStorage(companySimulationStepB1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
@@ -139,8 +143,8 @@ class EpocApplicationTests {
         //
         // Step 1 for Company C
         //
-        userManagementService.login(MAX, getPasswordForUser(FELIX));
-        List<OpenUserSimulationDto> simulationC1 = simulationService.getOpenSimulationsForUser(FELIX);
+        userManagementService.login(FELIX, getPasswordForUser(FELIX));
+        List<OpenUserSimulationDto> simulationC1 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepC1 = simulationService.getCurrentCompanySimulationStep(simulationC1.get(0).getCompanyId());
         simulationService.increaseCreditLine(companySimulationStepC1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.buildStorage(companySimulationStepC1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
@@ -150,12 +154,23 @@ class EpocApplicationTests {
         //
         // Checks after first full step
         //
+        assertTrue(simulationService.getCompletedSimulationsForUser(MAX).isEmpty());
         assertEquals(13, (long) entityManager.createQuery("select count(*) from " + SimulationStep.class.getName()).getSingleResult());
         assertEquals(39, (long) entityManager.createQuery("select count(*) from " + CompanySimulationStep.class.getName()).getSingleResult());
+        //
+        // Step 2 for Company A
+        //
+        userManagementService.login(MAX, getPasswordForUser(MAX));
+        List<OpenUserSimulationDto> simulationA2 = simulationService.getOpenSimulationsForUser();
+        Optional<CompanySimulationStepDto> companySimulationStepA2 = simulationService.getCurrentCompanySimulationStep(simulationA2.get(0).getCompanyId());
+        assertEquals(3, companySimulationStepA2.get().getMessages().size());
+        simulationService.finishMoveFor(companySimulationStepA2.get().getId());
+        userManagementService.logout();
     }
 
-    //    @Test
+    @Test
     public void testShortSimulationAndOpeningOfNew() {
+        ((StubSendMailServiceImpl) sendMailService).clear();
         userManagementService.createInitialAdmin("admin", "g00dPa&word");
         //
         // Create user for simulation and delete ad min
@@ -178,11 +193,10 @@ class EpocApplicationTests {
             SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner().get();
             simulation.setName("This is my first real simulation!");
             simulation.setStartMonth(YearMonth.of(2023, 1));
-            simulation.setNrOfMonths(NR_OF_SIM_STEPS);
+            simulation.setNrOfMonths(3);
             simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
             simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
             simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
-            simulation.addSetting(SettingDtoBuilder.builder().build());
             simulationService.updateSimulation(simulation);
             sendMailService.send(userManagementService.getEmailsForNewUsers());
             userManagementService.logout();
@@ -191,7 +205,7 @@ class EpocApplicationTests {
         // Step 1 for Company A
         //
         userManagementService.login(MAX, getPasswordForUser(MAX));
-        List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser(MAX);
+        List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
         simulationService.increaseCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
         simulationService.buildStorage(companySimulationStep1A.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
@@ -201,16 +215,16 @@ class EpocApplicationTests {
         //
         // Step 1 for Company B
         //
-        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
-        List<OpenUserSimulationDto> simulations1B = simulationService.getOpenSimulationsForUser(RETO);
+        userManagementService.login(RETO, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulations1B = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep1B = simulationService.getCurrentCompanySimulationStep(simulations1B.get(0).getCompanyId());
         simulationService.finishMoveFor(companySimulationStep1B.get().getId());
         userManagementService.logout();
         //
         // Step 1 for Company C
         //
-        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
-        List<OpenUserSimulationDto> simulations1C = simulationService.getOpenSimulationsForUser(FELIX);
+        userManagementService.login(FELIX, getPasswordForUser(FELIX));
+        List<OpenUserSimulationDto> simulations1C = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep1C = simulationService.getCurrentCompanySimulationStep(simulations1C.get(0).getCompanyId());
         simulationService.finishMoveFor(companySimulationStep1C.get().getId());
         userManagementService.logout();
@@ -218,24 +232,26 @@ class EpocApplicationTests {
         // Step 2 for Company A
         //
         userManagementService.login(MAX, getPasswordForUser(MAX));
-        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX);
+        List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
         simulationService.buyRawMaterial(companySimulationStep2A.get().getId(), BuyRawMaterialDto.builder().amount(10000).executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
+        simulationService.enterMarket(companySimulationStep2A.get().getId(),
+                EnterMarketDto.builder().marketId(companySimulationStep2A.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of("CHF", 50)).executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStep2A.get().getId());
         userManagementService.logout();
         //
         // Step 2 for Company B
         //
-        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
-        List<OpenUserSimulationDto> simulations2B = simulationService.getOpenSimulationsForUser(RETO);
+        userManagementService.login(RETO, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulations2B = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep2B = simulationService.getCurrentCompanySimulationStep(simulations2B.get(0).getCompanyId());
         simulationService.finishMoveFor(companySimulationStep2B.get().getId());
         userManagementService.logout();
         //
         // Step 2 for Company C
         //
-        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
-        List<OpenUserSimulationDto> simulations2C = simulationService.getOpenSimulationsForUser(FELIX);
+        userManagementService.login(FELIX, getPasswordForUser(FELIX));
+        List<OpenUserSimulationDto> simulations2C = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep2C = simulationService.getCurrentCompanySimulationStep(simulations2C.get(0).getCompanyId());
         simulationService.finishMoveFor(companySimulationStep2C.get().getId());
         userManagementService.logout();
@@ -243,48 +259,49 @@ class EpocApplicationTests {
         // Step 3 for Company A
         //
         userManagementService.login(MAX, getPasswordForUser(MAX));
-        List<OpenUserSimulationDto> simulations3A = simulationService.getOpenSimulationsForUser(MAX);
+        List<OpenUserSimulationDto> simulations3A = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep3A = simulationService.getCurrentCompanySimulationStep(simulations3A.get(0).getCompanyId());
-        simulationService.enterMarket(companySimulationStep3A.get().getId(),
-                EnterMarketDto.builder().marketId(companySimulationStep3A.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of("CHF", 50)).executionMonth(companySimulationStep3A.get().getSimulationMonth()).build());
+        //        simulationService.enterMarket(companySimulationStep3A.get().getId(),
+        //                EnterMarketDto.builder().marketId(companySimulationStep3A.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of("CHF", 50)).executionMonth(companySimulationStep3A.get().getSimulationMonth()).build());
         simulationService.setIntentedSalesAndPrice(companySimulationStep3A.get().getId(), companySimulationStep3A.get().getMarkets().get(0).getId(), 1000, Money.of("CHF", 50), companySimulationStep1A.get().getSimulationMonth());
         simulationService.finishMoveFor(companySimulationStep3A.get().getId());
         userManagementService.logout();
         //
         // Step 3 for Company B
         //
-        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
-        List<OpenUserSimulationDto> simulations3B = simulationService.getOpenSimulationsForUser(RETO);
+        userManagementService.login(RETO, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulations3B = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep3B = simulationService.getCurrentCompanySimulationStep(simulations3B.get(0).getCompanyId());
         simulationService.finishMoveFor(companySimulationStep3B.get().getId());
         userManagementService.logout();
         //
         // Repeat getting Step 3 for Company B
         //
-        userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
-        List<OpenUserSimulationDto> simulations3BR = simulationService.getOpenSimulationsForUser(RETO);
+        userManagementService.login(RETO, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulations3BR = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep3BR = simulationService.getCurrentCompanySimulationStep(simulations3BR.get(0).getCompanyId());
         assertEquals(companySimulationStep3B.get().getId(), companySimulationStep3BR.get().getId());
         userManagementService.logout();
         //
         // Step 3 for Company C
         //
-        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
-        List<OpenUserSimulationDto> simulations3C = simulationService.getOpenSimulationsForUser(FELIX);
+        userManagementService.login(FELIX, getPasswordForUser(FELIX));
+        List<OpenUserSimulationDto> simulations3C = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep3C = simulationService.getCurrentCompanySimulationStep(simulations3C.get(0).getCompanyId());
+        // TODO error happens here as orders are processed here, also for Company A
         simulationService.finishMoveFor(companySimulationStep3C.get().getId());
         userManagementService.logout();
         //
         // Step 4 for Company A
         //
         userManagementService.login(MAX, getPasswordForUser(MAX));
-        List<OpenUserSimulationDto> simulations4A = simulationService.getOpenSimulationsForUser(MAX);
+        List<OpenUserSimulationDto> simulations4A = simulationService.getOpenSimulationsForUser();
         assertTrue(simulations4A.isEmpty());
         userManagementService.logout();
         //
         // Get simulation statistics
         //
-        userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
+        userManagementService.login(FELIX, getPasswordForUser(FELIX));
         List<CompletedUserSimulationDto> completedSimulations = simulationService.getCompletedSimulationsForUser(FELIX);
         SimulationStatisticsDto simulationStatisticsDto = simulationService.getSimulationStatistics(completedSimulations.get(0).getSimulationId());
         assertEquals(0, simulationStatisticsDto.getTotalSoldProducts());
@@ -311,19 +328,19 @@ class EpocApplicationTests {
             // Step for Company One
             //
             userManagementService.login(MAX, getPasswordForUser(MAX));
-            simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser(MAX).get(0).getCompanyId()).get().getId());
+            simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser().get(0).getCompanyId()).get().getId());
             userManagementService.logout();
             //
             // Step for Company Two
             //
             userManagementService.login(RETO, ((StubSendMailServiceImpl) sendMailService).getPassword(RETO));
-            simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser(RETO).get(0).getCompanyId()).get().getId());
+            simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser().get(0).getCompanyId()).get().getId());
             userManagementService.logout();
             //
             // Step for Company Three
             //
             userManagementService.login(FELIX, ((StubSendMailServiceImpl) sendMailService).getPassword(FELIX));
-            simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser(FELIX).get(0).getCompanyId()).get().getId());
+            simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser().get(0).getCompanyId()).get().getId());
             userManagementService.logout();
         }
         //
@@ -335,7 +352,7 @@ class EpocApplicationTests {
         assertEquals(2, databaseViewer.getNumberOfRecords(Simulation.class));
         assertEquals(6, databaseViewer.getNumberOfRecords(Company.class));
         assertEquals(14, databaseViewer.getNumberOfRecords(SimulationStep.class)); // TODO why 14? Seems to be wrong
-        assertEquals(1, databaseViewer.getNumberOfRecords(DistributionStep.class));
+        assertEquals(2, databaseViewer.getNumberOfRecords(DistributionStep.class));
         assertEquals(1, databaseViewer.getNumberOfRecords(Factory.class));
         assertEquals(1, databaseViewer.getNumberOfRecords(Storage.class));
         assertEquals(1, databaseViewer.getNumberOfRecords(DistributionInMarket.class));

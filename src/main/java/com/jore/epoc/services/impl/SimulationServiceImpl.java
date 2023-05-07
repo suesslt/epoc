@@ -20,6 +20,7 @@ import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
+import com.jore.epoc.bo.message.Message;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
@@ -45,6 +46,7 @@ import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.FactoryDto;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.MarketDto;
+import com.jore.epoc.dto.MessageDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.SettingDto;
 import com.jore.epoc.dto.SimulationDto;
@@ -257,6 +259,13 @@ public class SimulationServiceImpl implements SimulationService {
                 marketDto.setId(market.getId());
                 companySimulationStepDto.addMarket(marketDto);
             }
+            for (Message message : company.getMessages()) {
+                MessageDto messageDto = new MessageDto();
+                messageDto.setLevel(message.getLevel());
+                messageDto.setMessage(message.getMessage());
+                messageDto.setRelevantMonth(message.getRelevantMonth());
+                companySimulationStepDto.addMessage(messageDto);
+            }
             result = Optional.of(companySimulationStepDto);
         }
         return result;
@@ -276,9 +285,10 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public List<OpenUserSimulationDto> getOpenSimulationsForUser(String user) {
+    public List<OpenUserSimulationDto> getOpenSimulationsForUser() {
+        checkUserPermission();
         List<OpenUserSimulationDto> result = new ArrayList<>();
-        User login = loginRepository.findByLogin(user).get();
+        User login = loginRepository.findByLogin(getLoggedInUser().getLogin()).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -384,7 +394,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     private void checkUserPermission() {
         if (UserManagementServiceImpl.loggedInUser == null) {
-            throw new IllegalStateException("No user looged in");
+            throw new IllegalStateException("No user logged in");
         }
     }
 

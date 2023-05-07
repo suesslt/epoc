@@ -39,7 +39,7 @@ public interface SimulationService {
 
     Optional<SimulationDto> getNextAvailableSimulationForOwner();
 
-    List<OpenUserSimulationDto> getOpenSimulationsForUser(String user);
+    List<OpenUserSimulationDto> getOpenSimulationsForUser();
 
     SimulationStatisticsDto getSimulationStatistics(Integer simulationId);
 

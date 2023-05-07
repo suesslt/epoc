@@ -7,13 +7,14 @@ import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
 public class DistributionStep extends BusinessObject {
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private DistributionInMarket distributionInMarket;
     @ManyToOne(optional = false)
     private CompanySimulationStep companySimulationStep;
