@@ -33,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
 public class Simulation extends BusinessObject {
     private String name;
     private YearMonth startMonth;
-    private Integer nrOfSteps;
+    private Integer nrOfMonths;
     private boolean isStarted = false;
     private boolean isFinished = false;
     private Integer passiveSteps;
@@ -102,7 +102,7 @@ public class Simulation extends BusinessObject {
             if (simulationStep.get().isOpen()) {
                 result = simulationStep;
             } else {
-                if (simulationStep.get().getSimulationMonth().isBefore(Objects.requireNonNull(startMonth).plusMonths(Objects.requireNonNull(nrOfSteps) - 1))) {
+                if (simulationStep.get().getSimulationMonth().isBefore(Objects.requireNonNull(startMonth).plusMonths(Objects.requireNonNull(nrOfMonths) - 1))) {
                     result = Optional.of(createSimulationStep(simulationStep.get().getSimulationMonth().plusMonths(1)));
                 } else {
                     log.info(String.format("Simulation '%s' (%d) has finished.", name, getId()));
@@ -141,8 +141,8 @@ public class Simulation extends BusinessObject {
         return name;
     }
 
-    public Integer getNrOfSteps() {
-        return nrOfSteps;
+    public Integer getNrOfMonths() {
+        return nrOfMonths;
     }
 
     public User getOwner() {
@@ -205,8 +205,8 @@ public class Simulation extends BusinessObject {
         this.name = name;
     }
 
-    public void setNrOfSteps(Integer nrOfSteps) {
-        this.nrOfSteps = nrOfSteps;
+    public void setNrOfMonths(Integer nrOfSteps) {
+        this.nrOfMonths = nrOfSteps;
     }
 
     public void setOwner(User owner) {
@@ -255,7 +255,7 @@ public class Simulation extends BusinessObject {
     }
 
     private void setSimulationToFinishedIfThisWasTheLastStep(SimulationStep simulationStep) {
-        if (!simulationStep.getSimulationMonth().isBefore(Objects.requireNonNull(startMonth, "Start month must not be null.").plusMonths(Objects.requireNonNull(nrOfSteps, "Number of steps must not be null") - 1))) {
+        if (!simulationStep.getSimulationMonth().isBefore(Objects.requireNonNull(startMonth, "Start month must not be null.").plusMonths(Objects.requireNonNull(nrOfMonths, "Number of steps must not be null") - 1))) {
             isFinished = true;
         }
     }

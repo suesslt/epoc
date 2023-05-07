@@ -51,6 +51,15 @@ public class EpocSettings extends BusinessObject {
         settings.put(setting.getSettingKey(), setting);
     }
 
+    public EpocSettings copyWithoutId() {
+        EpocSettings result = new EpocSettings();
+        result.setTemplate(isTemplate);
+        for (EpocSetting setting : settings.values()) {
+            result.addSetting(setting.copyWithoutId());
+        }
+        return result;
+    }
+
     public Currency getBaseCurrency() {
         return settings.get(BASE_CURRENCY).asCurrency();
     }
@@ -125,6 +134,10 @@ public class EpocSettings extends BusinessObject {
 
     public Money getRawMaterialUnitPrice() {
         return settings.get(RAW_MATERIAL_PURCHASE_PRICE).asMoney();
+    }
+
+    public EpocSetting getSettingByKey(String settingKey) {
+        return settings.get(settingKey);
     }
 
     public YearMonth getSimulationStartMonth() {

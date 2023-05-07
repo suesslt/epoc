@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.YearMonth;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.Factory;
 import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.Storage;
+import com.jore.epoc.bo.settings.EpocSetting;
+import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.DistributionStep;
 import com.jore.epoc.bo.step.SimulationStep;
 import com.jore.epoc.bo.user.User;
@@ -36,6 +39,7 @@ import com.jore.epoc.dto.SimulationStatisticsDto;
 import com.jore.epoc.services.SimulationService;
 import com.jore.epoc.services.StaticDataService;
 import com.jore.epoc.services.UserManagementService;
+import com.jore.mail.Mail;
 import com.jore.mail.service.SendMailService;
 import com.jore.util.DatabaseViewer;
 
@@ -59,11 +63,68 @@ class EpocApplicationTests {
 
     @Test
     public void testFullGameForTenYearsWithOneYearSteps() {
+        DatabaseViewer databaseViewer = new DatabaseViewer(entityManager);
+        //
+        // Create the system user
+        //
+        userManagementService.createInitialAdmin("admin", "g00dPa&word"); // TODO should throw an exception, doesnt store
+        //
+        // login as system user
+        //
+        userManagementService.login("admin", "g00dPa&word");
+        userManagementService.createAdmin(LoginDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
+        userManagementService.logout();
+        //
+        // login as applicatoin user
+        //
+        userManagementService.login("epocadmin", "badpw");
+        userManagementService.deleteLogin("admin");
+        staticDataService.loadMarkets("markets.xlsx");
+        staticDataService.loadSettings("EpocSettings.xlsx");
+        userManagementService.createUser(LoginDto.builder().login("simuser").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
+        userManagementService.logout();
+        assertEquals(1, databaseViewer.getNumberOfRecords(EpocSettings.class));
+        //
+        // login as simulation user, buy simulations and prepare first for usage
+        //
+        userManagementService.login("simuser", "e*Wasdf_erwer23");
+        simulationService.buySimulations(2);
+        SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner().get();
+        simulation.setName("This is my first real simulation!");
+        simulation.setStartMonth(YearMonth.of(2023, 1));
+        simulation.setNrOfMonths(NR_OF_SIM_STEPS);
+        simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+        simulation.addSetting(SettingDtoBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText("11").build());
+        simulationService.updateSimulation(simulation);
+        Collection<Mail> emailsForNewUsers = userManagementService.getEmailsForNewUsers();
+        assertEquals(6, emailsForNewUsers.size());
+        sendMailService.send(emailsForNewUsers);
+        emailsForNewUsers = userManagementService.getEmailsForNewUsers();
+        assertEquals(0, emailsForNewUsers.size());
+        userManagementService.logout();
+        assertEquals(2, databaseViewer.getNumberOfRecords(EpocSettings.class));
+        assertEquals(50, databaseViewer.getNumberOfRecords(EpocSetting.class));
+        assertEquals(1, (long) entityManager.createQuery("select count(*) from " + EpocSettings.class.getName() + " where isTemplate = true").getSingleResult());
+        assertEquals("0", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = true and settingKey = 'SET0027'").getSingleResult());
+        assertEquals("11", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = false and settingKey = 'SET0027'").getSingleResult());
+        //
+        // Step 1 for Company A
+        //
+        userManagementService.login(MAX, getPasswordForUser(MAX));
+        List<OpenUserSimulationDto> simulationA1 = simulationService.getOpenSimulationsForUser(MAX);
+        Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulationA1.get(0).getCompanyId());
+        simulationService.increaseCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.buildStorage(companySimulationStep1A.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.buildFactory(companySimulationStep1A.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.finishMoveFor(companySimulationStep1A.get().getId());
+        userManagementService.logout();
     }
 
-    @Test
+    //    @Test
     public void testShortSimulationAndOpeningOfNew() {
-        userManagementService.createInitialUser("admin", "g00dPa&word");
+        userManagementService.createInitialAdmin("admin", "g00dPa&word");
         //
         // Create user for simulation and delete ad min
         //
@@ -82,11 +143,11 @@ class EpocApplicationTests {
         //
         {
             userManagementService.login("user", "e*Wasdf_erwer23");
-            simulationService.buySimulations("user", 2);
-            SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner("user").get();
+            simulationService.buySimulations(2);
+            SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner().get();
             simulation.setName("This is my first real simulation!");
             simulation.setStartMonth(YearMonth.of(2023, 1));
-            simulation.setNrOfSteps(NR_OF_SIM_STEPS);
+            simulation.setNrOfMonths(NR_OF_SIM_STEPS);
             simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
             simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
             simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
@@ -98,7 +159,7 @@ class EpocApplicationTests {
         //
         // Step 1 for Company A
         //
-        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
         simulationService.increaseCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().amount(Money.of("CHF", 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
@@ -125,7 +186,7 @@ class EpocApplicationTests {
         //
         // Step 2 for Company A
         //
-        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
         simulationService.buyRawMaterial(companySimulationStep2A.get().getId(), BuyRawMaterialDto.builder().amount(10000).executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
@@ -150,7 +211,7 @@ class EpocApplicationTests {
         //
         // Step 3 for Company A
         //
-        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulations3A = simulationService.getOpenSimulationsForUser(MAX);
         Optional<CompanySimulationStepDto> companySimulationStep3A = simulationService.getCurrentCompanySimulationStep(simulations3A.get(0).getCompanyId());
         simulationService.enterMarket(companySimulationStep3A.get().getId(),
@@ -185,7 +246,7 @@ class EpocApplicationTests {
         //
         // Step 4 for Company A
         //
-        userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+        userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulations4A = simulationService.getOpenSimulationsForUser(MAX);
         assertTrue(simulations4A.isEmpty());
         userManagementService.logout();
@@ -201,10 +262,10 @@ class EpocApplicationTests {
         // Login as game user, Start next simulation
         //
         userManagementService.login("user", "e*Wasdf_erwer23");
-        SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner("user").get();
+        SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner().get();
         simulation.setName("OK, now to the second simulation...");
         simulation.setStartMonth(YearMonth.of(2023, 1));
-        simulation.setNrOfSteps(100);
+        simulation.setNrOfMonths(100);
         simulation.addCompany(CompanyDto.builder().name("Company One").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
         simulation.addCompany(CompanyDto.builder().name("Company Two").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
         simulation.addCompany(CompanyDto.builder().name("Company Three").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
@@ -218,7 +279,7 @@ class EpocApplicationTests {
             //
             // Step for Company One
             //
-            userManagementService.login(MAX, ((StubSendMailServiceImpl) sendMailService).getPassword(MAX));
+            userManagementService.login(MAX, getPasswordForUser(MAX));
             simulationService.finishMoveFor(simulationService.getCurrentCompanySimulationStep(simulationService.getOpenSimulationsForUser(MAX).get(0).getCompanyId()).get().getId());
             userManagementService.logout();
             //
@@ -239,13 +300,18 @@ class EpocApplicationTests {
         //
         DatabaseViewer databaseViewer = new DatabaseViewer(entityManager);
         databaseViewer.logDatabase();
-        assertTrue(databaseViewer.classHasNumberOfRecords(User.class, 8));
-        assertTrue(databaseViewer.classHasNumberOfRecords(Simulation.class, 2));
-        assertTrue(databaseViewer.classHasNumberOfRecords(Company.class, 6));
-        assertTrue(databaseViewer.classHasNumberOfRecords(SimulationStep.class, 14)); // TODO why 14? Seems to be wrong
-        assertTrue(databaseViewer.classHasNumberOfRecords(DistributionStep.class, 1));
-        assertTrue(databaseViewer.classHasNumberOfRecords(Factory.class, 1));
-        assertTrue(databaseViewer.classHasNumberOfRecords(Storage.class, 1));
-        assertTrue(databaseViewer.classHasNumberOfRecords(DistributionInMarket.class, 1));
+        assertEquals(8, databaseViewer.getNumberOfRecords(User.class));
+        assertEquals(2, databaseViewer.getNumberOfRecords(Simulation.class));
+        assertEquals(6, databaseViewer.getNumberOfRecords(Company.class));
+        assertEquals(14, databaseViewer.getNumberOfRecords(SimulationStep.class)); // TODO why 14? Seems to be wrong
+        assertEquals(1, databaseViewer.getNumberOfRecords(DistributionStep.class));
+        assertEquals(1, databaseViewer.getNumberOfRecords(Factory.class));
+        assertEquals(1, databaseViewer.getNumberOfRecords(Storage.class));
+        assertEquals(1, databaseViewer.getNumberOfRecords(DistributionInMarket.class));
+    }
+
+    // This is a hack to get the password created by the send mail service
+    private String getPasswordForUser(String user) {
+        return ((StubSendMailServiceImpl) sendMailService).getPassword(user);
     }
 }

@@ -23,7 +23,7 @@ public interface SimulationService {
 
     void buyRawMaterial(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto);
 
-    void buySimulations(String user, int nrOfSimulations);
+    void buySimulations(int nrOfSimulations);
 
     Integer countAvailableSimulations(String user);
 
@@ -37,7 +37,7 @@ public interface SimulationService {
 
     Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId);
 
-    Optional<SimulationDto> getNextAvailableSimulationForOwner(String user);
+    Optional<SimulationDto> getNextAvailableSimulationForOwner();
 
     List<OpenUserSimulationDto> getOpenSimulationsForUser(String user);
 

@@ -1,6 +1,7 @@
 package com.jore.epoc.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,25 +18,28 @@ import com.jore.epoc.repositories.UserInCompanyRoleRepository;
 import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.Mail;
 
+import lombok.extern.log4j.Log4j2;
+
 /*
  * TODO Avoid duplicate users
  * TODO add roles for users with multiples companies (and simulations)
  */
+@Log4j2
 @Component
 public class UserManagementServiceImpl implements UserManagementService {
     private static final String ADMIN_EPOC_CH = "admin@epoc.ch";
+    static User loggedInUser = null;
     @Autowired
     LoginRepository loginRepository;
     @Autowired
     UserInCompanyRoleRepository userInCompanyRoleRepository;
-    User userLoggedIn = null;
 
     @Override
     public LoginDto createAdmin(LoginDto adminDto) {
-        if (userLoggedIn == null) {
+        if (loggedInUser == null) {
             throw new IllegalStateException("No admin currently logged in.");
         }
-        if (!userLoggedIn.isAdmin()) {
+        if (!loggedInUser.isAdmin()) {
             throw new IllegalStateException("Current logged in user is not an admin.");
         }
         User login = LoginMapper.INSTANCE.loginDtoToLogin(adminDto);
@@ -45,7 +49,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     @Transactional
-    public void createInitialUser(String user, String password) {
+    public void createInitialAdmin(String user, String password) {
         User login = new User();
         login.setLogin("admin");
         login.setPassword("g00dPa&word");
@@ -55,6 +59,12 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public LoginDto createUser(LoginDto userDto) {
+        if (loggedInUser == null) {
+            throw new IllegalStateException("No admin currently logged in.");
+        }
+        if (!loggedInUser.isAdmin()) {
+            throw new IllegalStateException("Current logged in user is not an admin.");
+        }
         User login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
         login.setAdmin(true);
         return LoginMapper.INSTANCE.loginToLoginDto(loginRepository.save(login));
@@ -63,15 +73,15 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     @Transactional
     public boolean deleteLogin(String login) {
-        if (userLoggedIn == null) {
+        if (loggedInUser == null) {
             throw new IllegalStateException("No admin currently logged in.");
         }
-        if (!userLoggedIn.isAdmin()) {
+        if (!loggedInUser.isAdmin()) {
             throw new IllegalStateException("Current logged in user is not an admin.");
         }
         boolean result = false;
-        if (userLoggedIn != null) {
-            if (!userLoggedIn.getLogin().equals(login)) {
+        if (loggedInUser != null) {
+            if (!loggedInUser.getLogin().equals(login)) {
                 loginRepository.deleteByLogin(login);
                 result = true;
             }
@@ -80,7 +90,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
-    public Iterable<Mail> getEmailsForNewUsers() {
+    public Collection<Mail> getEmailsForNewUsers() {
         List<Mail> result = new ArrayList<>();
         Iterable<UserInCompanyRole> findByIsInvitationRequired = userInCompanyRoleRepository.findByIsInvitationRequired(true);
         for (UserInCompanyRole userInCompany : findByIsInvitationRequired) {
@@ -102,7 +112,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         logout();
         Optional<User> result = loginRepository.findByLoginAndPassword(login, password);
         if (result.isPresent()) {
-            userLoggedIn = result.get();
+            loggedInUser = result.get();
+            log.info("Login user " + login + ".");
+        } else {
+            log.warn("Could not login user " + login + ".");
         }
         return result.isPresent();
     }
@@ -110,9 +123,9 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public boolean logout() {
         boolean result = false;
-        if (userLoggedIn != null) {
+        if (loggedInUser != null) {
             result = true;
-            userLoggedIn = null;
+            loggedInUser = null;
         }
         return result;
     }

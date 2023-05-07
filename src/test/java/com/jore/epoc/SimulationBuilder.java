@@ -215,7 +215,7 @@ public class SimulationBuilder {
         simulation.setId(ID++);
         simulation.setName(simulationName);
         simulation.setStartMonth(simulationStart);
-        simulation.setNrOfSteps(numberOfSimulationSteps);
+        simulation.setNrOfMonths(numberOfSimulationSteps);
         simulation.setInterestRate(interestRate);
         simulation.setBuildingMaintenanceCost(buildingMaintenanceCost);
         simulation.setDepreciationRate(depreciationRate);

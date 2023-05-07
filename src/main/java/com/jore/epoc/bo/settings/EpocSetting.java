@@ -39,8 +39,13 @@ public class EpocSetting extends BusinessObject {
         return YearMonth.parse(valueText);
     }
 
-    public String getDescription() {
-        return description;
+    public EpocSetting copyWithoutId() {
+        EpocSetting result = new EpocSetting();
+        result.setSettingKey(settingKey);
+        result.setSettingFormat(settingFormat);
+        result.setValueText(valueText);
+        result.setDescription(description);
+        return result;
     }
 
     public String getSettingFormat() {

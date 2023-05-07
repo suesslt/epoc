@@ -12,14 +12,14 @@ public interface SimulationMapper {
             result.setIsFinished(simulationDto.isFinished());
             result.setName(simulationDto.getName());
             result.setIsStarted(simulationDto.isStarted());
-            result.setNrOfSteps(simulationDto.getNrOfSteps());
+            result.setNrOfMonths(simulationDto.getNrOfMonths());
             result.setStartMonth(simulationDto.getStartMonth());
             return result;
         }
 
         @Override
         public SimulationDto simulationToSimulationDto(Simulation simulation) {
-            return SimulationDto.builder().id(simulation.getId()).isFinished(simulation.isFinished()).name(simulation.getName()).isStarted(simulation.isStarted()).nrOfSteps(simulation.getNrOfSteps()).startMonth(simulation.getStartMonth()).build();
+            return SimulationDto.builder().id(simulation.getId()).isFinished(simulation.isFinished()).name(simulation.getName()).isStarted(simulation.isStarted()).nrOfMonths(simulation.getNrOfMonths()).startMonth(simulation.getStartMonth()).build();
         }
     };
 

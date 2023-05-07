@@ -27,6 +27,7 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.SimulationStep;
@@ -45,6 +46,7 @@ import com.jore.epoc.dto.FactoryDto;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
+import com.jore.epoc.dto.SettingDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.SimulationStatisticsDto;
 import com.jore.epoc.dto.StorageDto;
@@ -124,16 +126,13 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void buySimulations(String userLogin, int nrOfSimulations) {
-        Optional<User> user = loginRepository.findByLogin(userLogin);
-        if (!user.isPresent()) {
-            throw new IllegalStateException("User not found: " + userLogin);
-        }
+    public void buySimulations(int nrOfSimulations) {
+        checkUserPermission();
         EpocSettings settings = settingsRepository.findByIsTemplate(true).get();
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
             simulation.setSettings(settings);
-            simulation.setOwner(user.get());
+            simulation.setOwner(getLoggedInUser());
             simulation.setIsStarted(false);
             simulation.setStartMonth(settings.getSimulationStartMonth());
             simulation.setInterestRate(settings.getDebtInterestRate());
@@ -266,9 +265,10 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public Optional<SimulationDto> getNextAvailableSimulationForOwner(String owner) {
+    public Optional<SimulationDto> getNextAvailableSimulationForOwner() {
+        checkUserPermission();
         Optional<SimulationDto> result = Optional.empty();
-        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerLogin(false, owner).stream().findFirst();
+        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerLogin(false, getLoggedInUser().getLogin()).stream().findFirst();
         if (simulation.isPresent()) {
             result = Optional.of(SimulationMapper.INSTANCE.simulationToSimulationDto(simulation.get()));
         }
@@ -339,8 +339,8 @@ public class SimulationServiceImpl implements SimulationService {
         Simulation simulation = simulationRepository.findById(simulationDto.getId()).get();
         if (!simulation.isStarted()) {
             simulation.setName(simulationDto.getName());
-            simulation.setStartMonth(simulationDto.getStartMonth());
-            simulation.setNrOfSteps(simulationDto.getNrOfSteps());
+            simulation.setStartMonth(simulationDto.getStartMonth()); // TODO Consider usting setting as default
+            simulation.setNrOfMonths(simulationDto.getNrOfMonths());
             for (CompanyDto companyDto : simulationDto.getCompanies()) {
                 Company company = new Company();
                 company.setId(companyDto.getId());
@@ -364,9 +364,32 @@ public class SimulationServiceImpl implements SimulationService {
                     loginRepository.save(login.get());
                 }
             }
+            if (!simulationDto.getSettings().isEmpty()) {
+                EpocSettings simulationSettings = simulation.getSettings();
+                if (simulationSettings.isTemplate()) {
+                    simulationSettings = simulationSettings.copyWithoutId();
+                    simulationSettings.setTemplate(false);
+                    simulation.setSettings(simulationSettings);
+                }
+                for (SettingDto settingDto : simulationDto.getSettings()) {
+                    EpocSetting setting = simulationSettings.getSettingByKey(settingDto.getSettingKey());
+                    setting.setValueText(settingDto.getValueText());
+                }
+                settingsRepository.save(simulationSettings);
+            }
         } else {
             // TODO write test case
             log.warn(String.format("Tried to update simulation (%d) which is started.", simulation.getId()));
         }
+    }
+
+    private void checkUserPermission() {
+        if (UserManagementServiceImpl.loggedInUser == null) {
+            throw new IllegalStateException("No user looged in");
+        }
+    }
+
+    private User getLoggedInUser() {
+        return UserManagementServiceImpl.loggedInUser;
     }
 }

@@ -191,7 +191,7 @@ class MarketSimulationTests {
         result.setName("Test Simulation");
         result.setIsStarted(true);
         result.setIsFinished(false);
-        result.setNrOfSteps(nrOfSteps);
+        result.setNrOfMonths(nrOfSteps);
         result.setStartMonth(startMonth);
         result.setInterestRate(interestRate);
         result.setBuildingMaintenanceCost(Money.of("CHF", 30000));

@@ -31,7 +31,7 @@ class SimulationTests {
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
-        simulation.setNrOfSteps(12);
+        simulation.setNrOfMonths(12);
         Optional<SimulationStep> activeSimulationStep = simulation.getActiveSimulationStep();
         assertTrue(activeSimulationStep.isPresent());
         assertEquals(42, activeSimulationStep.get().getSimulation().getId());
@@ -46,7 +46,7 @@ class SimulationTests {
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
-        simulation.setNrOfSteps(12);
+        simulation.setNrOfMonths(12);
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 12), false));
         assertFalse(simulation.getActiveSimulationStep().isPresent());
     }
@@ -59,7 +59,7 @@ class SimulationTests {
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
-        simulation.setNrOfSteps(12);
+        simulation.setNrOfMonths(12);
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 1), false));
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 2), false));
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 3), false));
@@ -78,7 +78,7 @@ class SimulationTests {
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
         simulation.setStartMonth(YearMonth.of(2000, 1));
-        simulation.setNrOfSteps(12);
+        simulation.setNrOfMonths(12);
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 1), false));
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 2), false));
         simulation.addSimulationStep(createSimulationStep(YearMonth.of(2000, 3), false));

@@ -38,7 +38,7 @@ class SimulationManagementServiceTests {
     @Test
     @Transactional
     void testBuySimulations() {
-        simulationManagementService.buySimulations("User", 10);
+        simulationManagementService.buySimulations(10);
         assertEquals(10, simulationManagementService.countAvailableSimulations("User"));
     }
 }
