@@ -16,7 +16,7 @@ import jakarta.persistence.ManyToOne;
 public class DistributionStep extends BusinessObject {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private DistributionInMarket distributionInMarket;
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private CompanySimulationStep companySimulationStep;
     private int soldProducts;
     private int intentedProductSale;

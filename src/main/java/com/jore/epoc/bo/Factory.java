@@ -33,6 +33,15 @@ public class Factory extends BusinessObject {
         Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
         Assert.notNull("Production start month must not be null", productionStartMonth);
         Assert.notNull("Production line labour costs must not be null", productionLineLaborCost);
+        // TODO Preparation for daily production
+        //        LocalDate current = productionMonth.atDay(1);
+        //        LocalDate last = productionMonth.atEndOfMonth();
+        //        while (!current.isAfter(last)) {
+        //            if (current.getDayOfWeek().equals(DayOfWeek.SATURDAY) || current.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+        //            } else {
+        //            }
+        //            current = current.plusDays(1);
+        //        }
         int result = isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine) : 0;
         result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
         if (result > 0) {
