@@ -55,6 +55,10 @@ public class Company extends BusinessObject {
     private List<AbstractSimulationOrder> simulationOrders = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
+    // Factors
+    private double qualityFactor = 1.0d;
+    private double marketingFactor = 1.0d;
+    private double productivityFactor = 1.0d;
 
     public void addCompanySimulationStep(CompanySimulationStep companySimulationStep) {
         companySimulationStep.setCompany(this);
@@ -145,6 +149,10 @@ public class Company extends BusinessObject {
         return Collections.unmodifiableList(factories);
     }
 
+    public double getMarketingFactor() {
+        return marketingFactor;
+    }
+
     public List<Message> getMessages() {
         return Collections.unmodifiableList(messages);
     }
@@ -160,6 +168,10 @@ public class Company extends BusinessObject {
                 return o1.getSortOrder() - o2.getSortOrder();
             }
         }).collect(Collectors.toList());
+    }
+
+    public double getQualityFactor() {
+        return qualityFactor;
     }
 
     public Simulation getSimulation() {
@@ -181,7 +193,7 @@ public class Company extends BusinessObject {
         if (rawMaterialInStorage > 0) {
             Iterator<Factory> factoryIterator = factories.iterator();
             while (factoryIterator.hasNext() && rawMaterialInStorage > 0) {
-                int amountProduced = factoryIterator.next().produce(rawMaterialInStorage, productionMonth);
+                int amountProduced = factoryIterator.next().produce(rawMaterialInStorage, productionMonth, getProductivityFactor());
                 rawMaterialInStorage -= amountProduced;
                 totalAmountProduced += amountProduced;
             }
@@ -220,11 +232,27 @@ public class Company extends BusinessObject {
         this.accounting = accounting;
     }
 
+    public void setMarketingFactor(double marketingFactor) {
+        this.marketingFactor = marketingFactor;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
+    public void setQualityFactor(double qualityFactor) {
+        this.qualityFactor = qualityFactor;
+    }
+
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
+    }
+
+    public double getProductivityFactor() {
+        return productivityFactor;
+    }
+
+    public void setProductivityFactor(double productivityFactor) {
+        this.productivityFactor = productivityFactor;
     }
 }

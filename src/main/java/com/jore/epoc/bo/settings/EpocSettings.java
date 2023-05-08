@@ -41,6 +41,9 @@ public class EpocSettings extends BusinessObject {
     public static final String HEADQUARTER_COST = "SET0025";
     public static final String PRODUCTION_COST = "SET0026";
     public static final String PASSIVE_STEPS = "SET0027";
+    public static final String PRICE_PER_POINT_QUALITY = "SET0028";
+    public static final String PRICE_PER_MARKETING_CAMPAIGN = "SET0029";
+    public static final String PRICE_PER_PRODUCTIVITY_POINT = "SET0030";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "settings", orphanRemoval = true)
     @MapKey(name = "settingKey")
     private Map<String, EpocSetting> settings = new HashMap<>();
@@ -118,6 +121,18 @@ public class EpocSettings extends BusinessObject {
 
     public Integer getPasswordLength() {
         return settings.get(PASSWORD_LENGTH).asInteger();
+    }
+
+    public Money getPricePerMarketingCampaign() {
+        return settings.get(PRICE_PER_MARKETING_CAMPAIGN).asMoney();
+    }
+
+    public Money getPricePerPercentPointProductivity() {
+        return settings.get(PRICE_PER_PRODUCTIVITY_POINT).asMoney();
+    }
+
+    public Money getPricePerPercentPointQuality() {
+        return settings.get(PRICE_PER_POINT_QUALITY).asMoney();
     }
 
     public Money getProductionCostPerProduct() {

@@ -20,7 +20,9 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
-import com.jore.epoc.bo.settings.EpocSetting;
+import com.jore.epoc.bo.orders.IncreaseProductivityOrder;
+import com.jore.epoc.bo.orders.IncreaseQualityOrder;
+import com.jore.epoc.bo.orders.MarketingCampaignOrder;
 import com.jore.epoc.bo.settings.EpocSettings;
 
 public class SimulationBuilder {
@@ -57,6 +59,9 @@ public class SimulationBuilder {
     private Money marketEntryCost = Money.of(CHF, 400000);
     private Money productionCost = Money.of(CHF, 30);
     private Integer simulationPassiveSteps = 2;
+    private Money pricePerPointQuality = Money.of("CHF", 200000);
+    private Money pricePerMarketingCampaign = Money.of("CHF", 500000);
+    private Money pricePerProductivityPoint = Money.of("CHF", 500000);
     // To be set in application
     private Money initialOfferedPrice = Money.of(CHF, 800);
     private int initialIntendedSale = 1000;
@@ -160,8 +165,32 @@ public class SimulationBuilder {
         return this;
     }
 
+    public SimulationBuilder increaseProductivity(YearMonth executionMonth, Money increaseProductivityAmount) {
+        IncreaseProductivityOrder order = new IncreaseProductivityOrder();
+        order.setExecutionMonth(executionMonth);
+        order.setAmount(increaseProductivityAmount);
+        orders.add(order);
+        return this;
+    }
+
+    public SimulationBuilder increaseQuality(YearMonth executionMonth, Money increaseQualityAmount) {
+        IncreaseQualityOrder order = new IncreaseQualityOrder();
+        order.setExecutionMonth(executionMonth);
+        order.setAmount(increaseQualityAmount);
+        orders.add(order);
+        return this;
+    }
+
     public SimulationBuilder laborForce(int marketSize) {
         this.marketSize = marketSize;
+        return this;
+    }
+
+    public SimulationBuilder marketingCampaign(YearMonth executionMonth, Money marketingCampaignAmount) {
+        MarketingCampaignOrder order = new MarketingCampaignOrder();
+        order.setExecutionMonth(executionMonth);
+        order.setAmount(marketingCampaignAmount);
+        orders.add(order);
         return this;
     }
 
@@ -220,8 +249,10 @@ public class SimulationBuilder {
     private void createSimulation() {
         EpocSettings settings = new EpocSettings();
         simulation = new Simulation();
-        EpocSetting setting = SettingBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText(simulationPassiveSteps.toString()).build();
-        settings.addSetting(setting);
+        settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText(simulationPassiveSteps.toString()).build());
+        settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PRICE_PER_POINT_QUALITY).valueText(pricePerPointQuality.toString()).build());
+        settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PRICE_PER_MARKETING_CAMPAIGN).valueText(pricePerMarketingCampaign.toString()).build());
+        settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PRICE_PER_PRODUCTIVITY_POINT).valueText(pricePerProductivityPoint.toString()).build());
         simulation.setSettings(settings);
         simulation.setId(ID++);
         simulation.setName(simulationName);
@@ -232,6 +263,5 @@ public class SimulationBuilder {
         simulation.setDepreciationRate(depreciationRate);
         simulation.setHeadquarterCost(headquarterCost);
         simulation.setProductionCost(productionCost);
-        //        simulation.setPassiveSteps(simulationPassiveSteps);
     }
 }

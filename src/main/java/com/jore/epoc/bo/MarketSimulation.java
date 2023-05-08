@@ -21,8 +21,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity
-//@Log4j2
 /**
  * marketSize = Nr of potential sales in market
  * productsSold = Nr of Products already sold
@@ -47,6 +45,7 @@ import jakarta.persistence.OneToMany;
  * Der Begriff des Marktanteils muss eingeführt werden
  *
  */
+@Entity
 public class MarketSimulation extends BusinessObject {
     @ManyToOne(optional = false)
     private Market market;
@@ -74,9 +73,9 @@ public class MarketSimulation extends BusinessObject {
         distributionInMarkets.add(distributionInMarket);
     }
 
-    public int calculateMarketPotentialForProductPrice(int marketSize, Money offeredPrice) {
+    public int calculateMarketPotentialForProductPrice(int marketSize, Money offeredPrice, double qualityFactor) {
         DemandCurve demandCurve = new DemandCurve(higherPrice, higherPercent, lowerPrice, lowerPercent);
-        return demandCurve.getDemandForPrice(offeredPrice).applyTo(marketSize);
+        return demandCurve.getDemandForPrice(offeredPrice.divide(qualityFactor)).applyTo(marketSize);
     }
 
     public Market getMarket() {
@@ -141,14 +140,14 @@ public class MarketSimulation extends BusinessObject {
         int availableMarketSize = marketSize - productsSold;
         for (DistributionInMarket distributionInMarket : distributionInMarkets) {
             addDistributionStep(distributionInMarket, simulationMonth);
-            int marketPotentialForProduct = calculateMarketPotentialForProductPrice(marketSize, distributionInMarket.getOfferedPrice(simulationMonth));
+            int marketPotentialForProduct = calculateMarketPotentialForProductPrice(marketSize, distributionInMarket.getOfferedPrice(simulationMonth), distributionInMarket.getCompany().getQualityFactor());
             distributionInMarket.setMarketPotentialForProduct(simulationMonth, marketPotentialForProduct);
         }
         int totalMarketPotential = distributionInMarkets.stream().mapToInt(distribution -> distribution.getMarketPotentialForProduct(simulationMonth)).sum();
         for (DistributionInMarket distributionInMarket : distributionInMarkets) {
             int marketPotentialForProduct = distributionInMarket.getMarketPotentialForProduct(simulationMonth);
             int availableMarketPotentialForProduct = (int) Math.round((double) marketPotentialForProduct / (double) totalMarketPotential * availableMarketSize);
-            double percentageSold = new ProductLifecycle(productLifecycleDuration).getPercentageSoldForMonths(Util.monthDiff(simulationMonth, startMonth));
+            double percentageSold = new ProductLifecycle(productLifecycleDuration / distributionInMarket.getCompany().getMarketingFactor()).getPercentageSoldForMonths(Util.monthDiff(simulationMonth, startMonth));
             int maximumToSell = (int) (availableMarketPotentialForProduct * percentageSold);
             distributionInMarket.getCompany().sellMaximumOf(distributionInMarket, simulationMonth, maximumToSell, distributionInMarket.getOfferedPrice(simulationMonth));
         }

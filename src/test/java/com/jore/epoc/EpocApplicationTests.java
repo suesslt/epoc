@@ -110,7 +110,7 @@ class EpocApplicationTests {
         assertEquals(0, emailsForNewUsers.size());
         userManagementService.logout();
         assertEquals(2, databaseViewer.getNumberOfRecords(EpocSettings.class));
-        assertEquals(50, databaseViewer.getNumberOfRecords(EpocSetting.class));
+        assertEquals(56, databaseViewer.getNumberOfRecords(EpocSetting.class));
         assertEquals(1, (long) entityManager.createQuery("select count(*) from " + EpocSettings.class.getName() + " where isTemplate = true").getSingleResult());
         assertEquals("0", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = true and settingKey = 'SET0027'").getSingleResult());
         assertEquals("11", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = false and settingKey = 'SET0027'").getSingleResult());

@@ -29,7 +29,7 @@ public class Factory extends BusinessObject {
         return productionLineLaborCost.multiply(productionLines);
     }
 
-    public int produce(int maximumToProduce, YearMonth productionMonth) {
+    public int produce(int maximumToProduce, YearMonth productionMonth, double productivityFactor) {
         Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
         Assert.notNull("Production start month must not be null", productionStartMonth);
         Assert.notNull("Production line labour costs must not be null", productionLineLaborCost);
@@ -42,7 +42,7 @@ public class Factory extends BusinessObject {
         //            }
         //            current = current.plusDays(1);
         //        }
-        int result = isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine) : 0;
+        int result = (int) (isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine * productivityFactor) : 0);
         result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
         if (result > 0) {
         }
