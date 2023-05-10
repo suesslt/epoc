@@ -263,6 +263,9 @@ public class Simulation extends BusinessObject {
         for (MarketSimulation marketSimulation : simulationStep.getSimulation().getMarketSimulations()) {
             marketSimulation.simulateMarket(simulationStep.getSimulationMonth());
         }
+        for (CompanySimulationStep companySimulationStep : simulationStep.getCompanySimulationSteps()) {
+            companySimulationStep.getCompany().discountFactors();
+        }
         simulationStep.setOpen(false);
         setSimulationToFinishedIfThisWasTheLastStep(simulationStep);
     }

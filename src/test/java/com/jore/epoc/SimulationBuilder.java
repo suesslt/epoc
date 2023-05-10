@@ -34,15 +34,15 @@ public class SimulationBuilder {
     }
 
     // System parameters
-    private Percent interestRate = Percent.parse("5%");
+    private Percent interestRate = Percent.of("5%");
     private Currency baseCurrency = Currency.getInstance(CHF);
     private Money constructionCostsPerUnit = Money.of(CHF, 100);
     private Money constructionCosts = Money.of(CHF, 1000000);
     private Money rawMaterialUnitPrice = Money.of(CHF, 300);
     private Money factoryConstructionCosts = Money.of(CHF, 1000000);
-    private Percent demandCurveLowerPercent = Percent.parse("80%");
+    private Percent demandCurveLowerPercent = Percent.of("80%");
     private Money demandCurveLowerPrice = Money.of(CHF, 500);
-    private Percent demandCurveHigherPercent = Percent.parse("20%");
+    private Percent demandCurveHigherPercent = Percent.of("20%");
     private Money demandCurveHigherPrice = Money.of(CHF, 1200);
     private int productLifecycleDuration = 100;
     private Integer timeToBuildStorage = 0;
@@ -53,7 +53,7 @@ public class SimulationBuilder {
     private Money marketDistributionCost = Money.of(CHF, 2000000);
     private int marketSize = 1000000;
     private Money buildingMaintenanceCost = Money.of(CHF, 10000);
-    private Percent depreciationRate = Percent.parse("15%");
+    private Percent depreciationRate = Percent.of("15%");
     private Money headquarterCost = Money.of(CHF, 1500000);
     private Money inventoryManagementCost = Money.of(CHF, 500000);
     private Money marketEntryCost = Money.of(CHF, 400000);
@@ -62,6 +62,7 @@ public class SimulationBuilder {
     private Money pricePerPointQuality = Money.of("CHF", 200000);
     private Money pricePerMarketingCampaign = Money.of("CHF", 500000);
     private Money pricePerProductivityPoint = Money.of("CHF", 500000);
+    private Percent factorDiscountRate = Percent.of("10%");
     // To be set in application
     private Money initialOfferedPrice = Money.of(CHF, 800);
     private int initialIntendedSale = 1000;
@@ -253,6 +254,7 @@ public class SimulationBuilder {
         settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PRICE_PER_POINT_QUALITY).valueText(pricePerPointQuality.toString()).build());
         settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PRICE_PER_MARKETING_CAMPAIGN).valueText(pricePerMarketingCampaign.toString()).build());
         settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.PRICE_PER_PRODUCTIVITY_POINT).valueText(pricePerProductivityPoint.toString()).build());
+        settings.addSetting(SettingBuilder.builder().settingKey(EpocSettings.FACTOR_DISCOUNT_RATE).valueText(factorDiscountRate.toString()).build());
         simulation.setSettings(settings);
         simulation.setId(ID++);
         simulation.setName(simulationName);

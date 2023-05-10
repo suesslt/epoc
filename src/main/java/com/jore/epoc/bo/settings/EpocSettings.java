@@ -44,6 +44,7 @@ public class EpocSettings extends BusinessObject {
     public static final String PRICE_PER_POINT_QUALITY = "SET0028";
     public static final String PRICE_PER_MARKETING_CAMPAIGN = "SET0029";
     public static final String PRICE_PER_PRODUCTIVITY_POINT = "SET0030";
+    public static final String FACTOR_DISCOUNT_RATE = "SET0031";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "settings", orphanRemoval = true)
     @MapKey(name = "settingKey")
     private Map<String, EpocSetting> settings = new HashMap<>();
@@ -89,6 +90,10 @@ public class EpocSettings extends BusinessObject {
 
     public Percent getDepreciationRate() {
         return settings.get(DEPRECIATION_RATE).asPercent();
+    }
+
+    public Percent getFactorDiscountRate() {
+        return settings.get(FACTOR_DISCOUNT_RATE).asPercent();
     }
 
     public Money getFactoryConstructionCost() {

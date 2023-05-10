@@ -133,6 +133,12 @@ public class Company extends BusinessObject {
                 new DebitCreditAmount(FinancialAccounting.SALARIES, FinancialAccounting.BANK, workforceCost)));
     }
 
+    public void discountFactors() {
+        qualityFactor = new PercentDiscountFactor().setDiscountRate(getSimulation().getSettings().getFactorDiscountRate()).discount(qualityFactor);
+        marketingFactor = new PercentDiscountFactor().setDiscountRate(getSimulation().getSettings().getFactorDiscountRate()).discount(marketingFactor);
+        productivityFactor = new PercentDiscountFactor().setDiscountRate(getSimulation().getSettings().getFactorDiscountRate()).discount(productivityFactor);
+    }
+
     public FinancialAccounting getAccounting() {
         return accounting;
     }
@@ -168,6 +174,10 @@ public class Company extends BusinessObject {
                 return o1.getSortOrder() - o2.getSortOrder();
             }
         }).collect(Collectors.toList());
+    }
+
+    public double getProductivityFactor() {
+        return productivityFactor;
     }
 
     public double getQualityFactor() {
@@ -240,19 +250,15 @@ public class Company extends BusinessObject {
         this.name = name;
     }
 
+    public void setProductivityFactor(double productivityFactor) {
+        this.productivityFactor = productivityFactor;
+    }
+
     public void setQualityFactor(double qualityFactor) {
         this.qualityFactor = qualityFactor;
     }
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
-    }
-
-    public double getProductivityFactor() {
-        return productivityFactor;
-    }
-
-    public void setProductivityFactor(double productivityFactor) {
-        this.productivityFactor = productivityFactor;
     }
 }

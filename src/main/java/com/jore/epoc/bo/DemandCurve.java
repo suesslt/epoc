@@ -12,7 +12,7 @@ import com.jore.datatypes.percent.Percent;
 // TODO do not take amount out of money!
 public class DemandCurve {
     public static DemandCurve create(String currency, double higherPrice, String higherPricePercent, double lowerPrice, String lowerPricePercent) {
-        return new DemandCurve(Money.of(currency, higherPrice), Percent.parse(higherPricePercent), Money.of(currency, lowerPrice), Percent.parse(lowerPricePercent));
+        return new DemandCurve(Money.of(currency, higherPrice), Percent.of(higherPricePercent), Money.of(currency, lowerPrice), Percent.of(lowerPricePercent));
     }
 
     private final Percent lowerPricePercent;

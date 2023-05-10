@@ -32,7 +32,7 @@ public class EpocSetting extends BusinessObject {
     }
 
     public Percent asPercent() {
-        return Percent.parse(valueText);
+        return Percent.of(valueText);
     }
 
     public YearMonth asYearMonth() {
