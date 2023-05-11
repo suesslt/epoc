@@ -106,7 +106,7 @@ class FullSimulationTests {
 
     @Test
     public void testTenYearsInYearSteps() {
-        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Ten Year Company").simulationName("Full simulation for ten years").numberOfSimulationSteps(120).passiveSteps(11);
+        SimulationBuilder companyBuilder = SimulationBuilder.builder().name("A Ten Year Company").simulationName("Full simulation for ten years").numberOfSimulationSteps(120).passiveSteps(12);
         companyBuilder.increaseCreditLine(YearMonth.of(2020, 3), Money.of("CHF", 100000000l));
         companyBuilder.buildStorage(YearMonth.of(2020, 6), 10000);
         companyBuilder.buyRawMaterial(YearMonth.of(2020, 9), 10000);

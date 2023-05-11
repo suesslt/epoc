@@ -58,7 +58,7 @@ public class SimulationBuilder {
     private Money inventoryManagementCost = Money.of(CHF, 500000);
     private Money marketEntryCost = Money.of(CHF, 400000);
     private Money productionCost = Money.of(CHF, 30);
-    private Integer simulationPassiveSteps = 2;
+    private Integer simulationPassiveSteps = 3;
     private Money pricePerPointQuality = Money.of("CHF", 200000);
     private Money pricePerMarketingCampaign = Money.of("CHF", 500000);
     private Money pricePerProductivityPoint = Money.of("CHF", 500000);

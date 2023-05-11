@@ -272,7 +272,7 @@ public class Simulation extends BusinessObject {
 
     private void simulatePassiveSteps() {
         Optional<SimulationStep> activeSimulationStep = getActiveSimulationStep();
-        for (int i = 0; i < settings.getPassiveSteps() && activeSimulationStep.isPresent(); i++) {
+        for (int i = 0; i < (settings.getPassiveSteps() - 1) && activeSimulationStep.isPresent(); i++) {
             for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
                 companySimulationStep.setOpen(false);
                 if (companySimulationStep.getSimulationStep().areAllCompanyStepsFinished()) {

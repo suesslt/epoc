@@ -101,7 +101,7 @@ class EpocApplicationTests {
         simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
         simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
         simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
-        simulation.addSetting(SettingDtoBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText("11").build());
+        simulation.addSetting(SettingDtoBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText("12").build());
         simulationService.updateSimulation(simulation);
         Collection<Mail> emailsForNewUsers = userManagementService.getEmailsForNewUsers();
         assertEquals(6, emailsForNewUsers.size());
@@ -112,8 +112,8 @@ class EpocApplicationTests {
         assertEquals(2, databaseViewer.getNumberOfRecords(EpocSettings.class));
         assertEquals(58, databaseViewer.getNumberOfRecords(EpocSetting.class));
         assertEquals(1, (long) entityManager.createQuery("select count(*) from " + EpocSettings.class.getName() + " where isTemplate = true").getSingleResult());
-        assertEquals("0", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = true and settingKey = 'SET0027'").getSingleResult());
-        assertEquals("11", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = false and settingKey = 'SET0027'").getSingleResult());
+        assertEquals("1", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = true and settingKey = 'SET0027'").getSingleResult());
+        assertEquals("12", entityManager.createQuery("select valueText from " + EpocSetting.class.getName() + " where settings.isTemplate = false and settingKey = 'SET0027'").getSingleResult());
         assertEquals(0, (long) entityManager.createQuery("select count(*) from " + SimulationStep.class.getName()).getSingleResult());
         assertEquals(2, (long) entityManager.createQuery("select count(*) from " + Simulation.class.getName()).getSingleResult());
         //
