@@ -28,6 +28,9 @@ import com.jore.epoc.bo.orders.BuyRawMaterialOrder;
 import com.jore.epoc.bo.orders.ChangeAmountAndPriceOrder;
 import com.jore.epoc.bo.orders.CreditEventDirection;
 import com.jore.epoc.bo.orders.EnterMarketOrder;
+import com.jore.epoc.bo.orders.IncreaseProductivityOrder;
+import com.jore.epoc.bo.orders.IncreaseQualityOrder;
+import com.jore.epoc.bo.orders.MarketingCampaignOrder;
 import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
@@ -224,6 +227,7 @@ public class SimulationServiceImpl implements SimulationService {
         }).collect(Collectors.toList());
     }
 
+    // TODO simplify for user by only providing simulation id - delete this service
     @Override
     @Transactional
     public Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId) {
@@ -328,6 +332,36 @@ public class SimulationServiceImpl implements SimulationService {
         adjustCreditLineOrder.setAmount(increaseCreditLineDto.getAmount());
         adjustCreditLineOrder.setInterestRate(companySimulationStep.getCompany().getSimulation().getSettings().getDebtInterestRate());
         companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
+    }
+
+    @Override
+    @Transactional
+    public void increaseProductivity(Integer companySimulationStepId, Money increaseProductivityAmount, YearMonth executionMonth) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        IncreaseProductivityOrder increaseProductivityOrder = new IncreaseProductivityOrder();
+        increaseProductivityOrder.setExecutionMonth(executionMonth);
+        increaseProductivityOrder.setAmount(increaseProductivityAmount);
+        companySimulationStep.getCompany().addSimulationOrder(increaseProductivityOrder);
+    }
+
+    @Override
+    @Transactional
+    public void increaseQuality(Integer companySimulationStepId, Money increaseQualityAmount, YearMonth executionMonth) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        IncreaseQualityOrder increaseQualityOrder = new IncreaseQualityOrder();
+        increaseQualityOrder.setExecutionMonth(executionMonth);
+        increaseQualityOrder.setAmount(increaseQualityAmount);
+        companySimulationStep.getCompany().addSimulationOrder(increaseQualityOrder);
+    }
+
+    @Override
+    @Transactional
+    public void runMarketingCampaign(Integer companySimulationStepId, Money campaignAmount, YearMonth executionMonth) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+        MarketingCampaignOrder marketingCampaignOrder = new MarketingCampaignOrder();
+        marketingCampaignOrder.setExecutionMonth(executionMonth);
+        marketingCampaignOrder.setAmount(campaignAmount);
+        companySimulationStep.getCompany().addSimulationOrder(marketingCampaignOrder);
     }
 
     @Override

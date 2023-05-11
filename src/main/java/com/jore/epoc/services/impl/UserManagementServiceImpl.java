@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.bo.user.UserInCompanyRole;
 import com.jore.epoc.dto.LoginDto;
@@ -100,8 +101,8 @@ public class UserManagementServiceImpl implements UserManagementService {
             mail.setSender(ADMIN_EPOC_CH);
             mail.addToRecipient(userInCompany.getUser().getEmail());
             mail.addCcRecipient(userInCompany.getCompany().getSimulation().getOwner().getEmail());
-            mail.setMessageBody("Please login and use password: " + userInCompany.getUser().getPassword());
-            mail.setSubject("Your simulation '" + userInCompany.getCompany().getSimulation().getName() + "' is ready");
+            mail.setMessageBody(Messages.getMessage("mailSimulationReadyBody", userInCompany.getUser().getPassword()));
+            mail.setSubject(Messages.getMessage("mailSimulationReadySubject", userInCompany.getCompany().getSimulation().getName()));
             result.add(mail);
         }
         return result;

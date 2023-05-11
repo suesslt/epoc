@@ -30,7 +30,8 @@ public class StubSendMailServiceImpl implements SendMailService {
     @Override
     public void send(Iterable<Mail> mails) {
         for (Mail mail : mails) {
-            passwords.put(mail.getToRecipients().get(0), mail.getMessageBody().substring(31));
+            String password = mail.getMessageBody().substring(31, 43);
+            passwords.put(mail.getToRecipients().get(0), password);
             log.info(mail);
         }
     }

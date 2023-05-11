@@ -45,6 +45,12 @@ public interface SimulationService {
 
     void increaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto increaseCreditLineDto);
 
+    void increaseProductivity(Integer companySimulationStepId, Money increaseProductivityAmount, YearMonth executionMonth);
+
+    void increaseQuality(Integer companySimulationStepId, Money increaseQualityAmount, YearMonth executionMonth);
+
+    void runMarketingCampaign(Integer companySimulationStepId, Money campaignAmount, YearMonth executionMonth);
+
     void setIntentedSalesAndPrice(Integer companySimulationStepId, Integer marketId, Integer intentedSales, Money price, YearMonth executionMonth);
 
     void updateSimulation(SimulationDto simulationDto);
