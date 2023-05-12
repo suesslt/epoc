@@ -1,6 +1,7 @@
 package com.jore.epoc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.YearMonth;
@@ -35,6 +36,7 @@ import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.EnterMarketDto;
+import com.jore.epoc.dto.IncreaseProductivityDto;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.SimulationDto;
@@ -47,6 +49,7 @@ import com.jore.mail.service.SendMailService;
 import com.jore.util.DatabaseViewer;
 
 import jakarta.persistence.EntityManager;
+import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -94,6 +97,7 @@ class EpocApplicationTests {
         // login as simulation user, buy simulations and prepare first for usage
         //
         userManagementService.login("simuser", "e*Wasdf_erwer23");
+        assertThrows(ConstraintViolationException.class, () -> simulationService.buySimulations(0));
         simulationService.buySimulations(2);
         SimulationDto simulation = simulationService.getNextAvailableSimulationForOwner().get();
         simulation.setName("This is my first real simulation!");
@@ -123,11 +127,12 @@ class EpocApplicationTests {
         userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulationA1 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepA1 = simulationService.getCurrentCompanySimulationStep(simulationA1.get(0).getCompanyId());
-        simulationService.increaseCreditLine(companySimulationStepA1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
-        simulationService.buildStorage(companySimulationStepA1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
-        simulationService.buildFactory(companySimulationStepA1.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
-        simulationService.enterMarket(companySimulationStepA1.get().getId(),
-                EnterMarketDto.builder().marketId(companySimulationStepA1.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50)).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        simulationService.increaseCreditLine(AdjustCreditLineDto.builder().companySimulationStepId(companySimulationStepA1.get().getId()).amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        simulationService.buildStorage(BuildStorageDto.builder().companySimulationStepId(companySimulationStepA1.get().getId()).capacity(1000).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        simulationService.buildFactory(BuildFactoryDto.builder().companySimulationStepId(companySimulationStepA1.get().getId()).productionLines(5).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
+        assertThrows(ConstraintViolationException.class, () -> simulationService.buildFactory(BuildFactoryDto.builder().companySimulationStepId(companySimulationStepA1.get().getId()).productionLines(15).executionMonth(companySimulationStepA1.get().getSimulationMonth()).build()));
+        simulationService.enterMarket(EnterMarketDto.builder().companySimulationStepId(companySimulationStepA1.get().getId()).marketId(companySimulationStepA1.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50))
+                .executionMonth(companySimulationStepA1.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStepA1.get().getId());
         userManagementService.logout();
         assertEquals(2, (long) entityManager.createQuery("select count(*) from " + Simulation.class.getName()).getSingleResult());
@@ -138,11 +143,11 @@ class EpocApplicationTests {
         userManagementService.login(RETO, getPasswordForUser(RETO));
         List<OpenUserSimulationDto> simulationB1 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepB1 = simulationService.getCurrentCompanySimulationStep(simulationB1.get(0).getCompanyId());
-        simulationService.increaseCreditLine(companySimulationStepB1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
-        simulationService.buildStorage(companySimulationStepB1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
-        simulationService.buildFactory(companySimulationStepB1.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
-        simulationService.enterMarket(companySimulationStepB1.get().getId(),
-                EnterMarketDto.builder().marketId(companySimulationStepB1.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50)).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.increaseCreditLine(AdjustCreditLineDto.builder().companySimulationStepId(companySimulationStepB1.get().getId()).amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.buildStorage(BuildStorageDto.builder().companySimulationStepId(companySimulationStepB1.get().getId()).capacity(1000).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.buildFactory(BuildFactoryDto.builder().companySimulationStepId(companySimulationStepB1.get().getId()).productionLines(5).executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
+        simulationService.enterMarket(EnterMarketDto.builder().companySimulationStepId(companySimulationStepB1.get().getId()).marketId(companySimulationStepB1.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50))
+                .executionMonth(companySimulationStepB1.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStepB1.get().getId());
         userManagementService.logout();
         //
@@ -151,13 +156,13 @@ class EpocApplicationTests {
         userManagementService.login(FELIX, getPasswordForUser(FELIX));
         List<OpenUserSimulationDto> simulationC1 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepC1 = simulationService.getCurrentCompanySimulationStep(simulationC1.get(0).getCompanyId());
-        simulationService.increaseCreditLine(companySimulationStepC1.get().getId(), AdjustCreditLineDto.builder().amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
-        simulationService.buildStorage(companySimulationStepC1.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
-        simulationService.buildFactory(companySimulationStepC1.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.increaseCreditLine(AdjustCreditLineDto.builder().companySimulationStepId(companySimulationStepC1.get().getId()).amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.buildStorage(BuildStorageDto.builder().companySimulationStepId(companySimulationStepC1.get().getId()).capacity(1000).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.buildFactory(BuildFactoryDto.builder().companySimulationStepId(companySimulationStepC1.get().getId()).productionLines(5).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStepC1.get().getId());
         // After step has finshed - TODO Validate and do not allow
-        simulationService.enterMarket(companySimulationStepC1.get().getId(),
-                EnterMarketDto.builder().marketId(companySimulationStepC1.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        simulationService.enterMarket(EnterMarketDto.builder().companySimulationStepId(companySimulationStepC1.get().getId()).marketId(companySimulationStepC1.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50))
+                .executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         userManagementService.logout();
         //
         // Checks after first full step
@@ -172,8 +177,8 @@ class EpocApplicationTests {
         List<OpenUserSimulationDto> simulationA2 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepA2 = simulationService.getCurrentCompanySimulationStep(simulationA2.get(0).getCompanyId());
         assertEquals(4, companySimulationStepA2.get().getMessages().size());
-        simulationService.buyRawMaterial(companySimulationStepA2.get().getId(), BuyRawMaterialDto.builder().amount(1000).executionMonth(YearMonth.of(2024, 3)).build());
-        simulationService.increaseProductivity(companySimulationStepA2.get().getId(), Money.of(CHF, 10000), companySimulationStepC1.get().getSimulationMonth());
+        simulationService.buyRawMaterial(BuyRawMaterialDto.builder().companySimulationStepId(companySimulationStepA2.get().getId()).amount(1000).executionMonth(YearMonth.of(2024, 3)).build());
+        simulationService.increaseProductivity(IncreaseProductivityDto.builder().companySimulationStepId(companySimulationStepA2.get().getId()).increaseProductivityAmount(Money.of(CHF, 10000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.increaseQuality(companySimulationStepA2.get().getId(), Money.of(CHF, 10000), companySimulationStepC1.get().getSimulationMonth());
         simulationService.runMarketingCampaign(companySimulationStepA2.get().getId(), Money.of(CHF, 10000), companySimulationStepC1.get().getSimulationMonth());
         simulationService.finishMoveFor(companySimulationStepA2.get().getId());
@@ -219,9 +224,9 @@ class EpocApplicationTests {
         userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulations1A = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep1A = simulationService.getCurrentCompanySimulationStep(simulations1A.get(0).getCompanyId());
-        simulationService.increaseCreditLine(companySimulationStep1A.get().getId(), AdjustCreditLineDto.builder().amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
-        simulationService.buildStorage(companySimulationStep1A.get().getId(), BuildStorageDto.builder().capacity(1000).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
-        simulationService.buildFactory(companySimulationStep1A.get().getId(), BuildFactoryDto.builder().productionLines(5).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.increaseCreditLine(AdjustCreditLineDto.builder().companySimulationStepId(companySimulationStep1A.get().getId()).amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.buildStorage(BuildStorageDto.builder().companySimulationStepId(companySimulationStep1A.get().getId()).capacity(1000).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
+        simulationService.buildFactory(BuildFactoryDto.builder().companySimulationStepId(companySimulationStep1A.get().getId()).productionLines(5).executionMonth(companySimulationStep1A.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStep1A.get().getId());
         userManagementService.logout();
         //
@@ -246,9 +251,9 @@ class EpocApplicationTests {
         userManagementService.login(MAX, getPasswordForUser(MAX));
         List<OpenUserSimulationDto> simulations2A = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStep2A = simulationService.getCurrentCompanySimulationStep(simulations2A.get(0).getCompanyId());
-        simulationService.buyRawMaterial(companySimulationStep2A.get().getId(), BuyRawMaterialDto.builder().amount(10000).executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
-        simulationService.enterMarket(companySimulationStep2A.get().getId(),
-                EnterMarketDto.builder().marketId(companySimulationStep2A.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50)).executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
+        simulationService.buyRawMaterial(BuyRawMaterialDto.builder().companySimulationStepId(companySimulationStep2A.get().getId()).amount(1000).executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
+        simulationService.enterMarket(EnterMarketDto.builder().companySimulationStepId(companySimulationStep2A.get().getId()).marketId(companySimulationStep2A.get().getMarkets().get(0).getId()).intentedProductSales(1000).offeredPrice(Money.of(CHF, 50))
+                .executionMonth(companySimulationStep2A.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStep2A.get().getId());
         userManagementService.logout();
         //

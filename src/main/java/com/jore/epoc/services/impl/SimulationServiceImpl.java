@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
@@ -47,6 +48,7 @@ import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.DistributionInMarketDto;
 import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.FactoryDto;
+import com.jore.epoc.dto.IncreaseProductivityDto;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.MessageDto;
@@ -71,6 +73,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
+@Validated
 public class SimulationServiceImpl implements SimulationService {
     @Autowired
     private SimulationRepository simulationRepository;
@@ -91,8 +94,8 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void buildFactory(Integer companySimulationStepId, BuildFactoryDto buildFactoryDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void buildFactory(BuildFactoryDto buildFactoryDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(buildFactoryDto.getCompanySimulationStepId()).get();
         BuildFactoryOrder buildFactoryOrder = new BuildFactoryOrder();
         buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
         buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
@@ -106,8 +109,8 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void buildStorage(Integer companySimulationStepId, BuildStorageDto buildStorageDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void buildStorage(BuildStorageDto buildStorageDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(buildStorageDto.getCompanySimulationStepId()).get();
         BuildStorageOrder buildStorageOrder = new BuildStorageOrder();
         buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
         buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
@@ -120,8 +123,8 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void buyRawMaterial(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void buyRawMaterial(BuyRawMaterialDto buyRawMaterialDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(buyRawMaterialDto.getCompanySimulationStepId()).get();
         BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
         buyRawMaterialOrder.setExecutionMonth(buyRawMaterialDto.getExecutionMonth());
         buyRawMaterialOrder.setAmount(buyRawMaterialDto.getAmount());
@@ -157,8 +160,8 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public void decreaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto decreaseCreditLineDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void decreaseCreditLine(AdjustCreditLineDto decreaseCreditLineDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(decreaseCreditLineDto.getCompanySimulationStepId()).get();
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
@@ -169,8 +172,8 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void enterMarket(Integer companySimulationStepId, EnterMarketDto enterMarketDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void enterMarket(EnterMarketDto enterMarketDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(enterMarketDto.getCompanySimulationStepId()).get();
         EnterMarketOrder enterMarketOrder = new EnterMarketOrder();
         Market market = marketRepository.findById(enterMarketDto.getMarketId()).get();
         Simulation simulation = companySimulationStep.getCompany().getSimulation();
@@ -324,8 +327,8 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void increaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto increaseCreditLineDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void increaseCreditLine(AdjustCreditLineDto increaseCreditLineDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(increaseCreditLineDto.getCompanySimulationStepId()).get();
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
@@ -336,11 +339,11 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void increaseProductivity(Integer companySimulationStepId, Money increaseProductivityAmount, YearMonth executionMonth) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void increaseProductivity(IncreaseProductivityDto increaseProductivityDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(increaseProductivityDto.getCompanySimulationStepId()).get();
         IncreaseProductivityOrder increaseProductivityOrder = new IncreaseProductivityOrder();
-        increaseProductivityOrder.setExecutionMonth(executionMonth);
-        increaseProductivityOrder.setAmount(increaseProductivityAmount);
+        increaseProductivityOrder.setExecutionMonth(increaseProductivityDto.getExecutionMonth());
+        increaseProductivityOrder.setAmount(increaseProductivityDto.getIncreaseProductivityAmount());
         companySimulationStep.getCompany().addSimulationOrder(increaseProductivityOrder);
     }
 

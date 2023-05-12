@@ -12,40 +12,46 @@ import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.EnterMarketDto;
+import com.jore.epoc.dto.IncreaseProductivityDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.SimulationStatisticsDto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public interface SimulationService {
-    void buildFactory(Integer companySimulationStepId, BuildFactoryDto buildFactoryDto);
+    void buildFactory(@Valid BuildFactoryDto buildFactoryDto);
 
-    void buildStorage(Integer companySimulationStepId, BuildStorageDto buildStorageDto);
+    void buildStorage(@Valid BuildStorageDto buildStorageDto);
 
-    void buyRawMaterial(Integer companySimulationStepId, BuyRawMaterialDto buyRawMaterialDto);
+    void buyRawMaterial(@Valid BuyRawMaterialDto buyRawMaterialDto);
 
-    void buySimulations(int nrOfSimulations);
+    void buySimulations(@Min(1) int nrOfSimulations);
 
-    Integer countAvailableSimulations(String user);
+    Integer countAvailableSimulations(@NotEmpty String user); // TODO Consider to delete, only used for test
 
-    void decreaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto decreaseCreditLineDto);
+    void decreaseCreditLine(@Valid AdjustCreditLineDto decreaseCreditLineDto);
 
-    void enterMarket(Integer companySimulationStepId, EnterMarketDto enterMarketDto);
+    void enterMarket(@Valid EnterMarketDto enterMarketDto);
 
-    void finishMoveFor(Integer companySimulationStepId);
+    void finishMoveFor(@NotNull Integer companySimulationStepId);
 
-    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String user);
+    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(@NotEmpty String user);
 
-    Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId);
+    Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(@NotNull Integer companyId);
 
     Optional<SimulationDto> getNextAvailableSimulationForOwner();
 
     List<OpenUserSimulationDto> getOpenSimulationsForUser();
 
-    SimulationStatisticsDto getSimulationStatistics(Integer simulationId);
+    SimulationStatisticsDto getSimulationStatistics(@NotNull Integer simulationId);
 
-    void increaseCreditLine(Integer companySimulationStepId, AdjustCreditLineDto increaseCreditLineDto);
+    void increaseCreditLine(@Valid AdjustCreditLineDto increaseCreditLineDto);
 
-    void increaseProductivity(Integer companySimulationStepId, Money increaseProductivityAmount, YearMonth executionMonth);
+    void increaseProductivity(@Valid IncreaseProductivityDto increaseProductivityDto);
 
     void increaseQuality(Integer companySimulationStepId, Money increaseQualityAmount, YearMonth executionMonth);
 
@@ -53,5 +59,5 @@ public interface SimulationService {
 
     void setIntentedSalesAndPrice(Integer companySimulationStepId, Integer marketId, Integer intentedSales, Money price, YearMonth executionMonth);
 
-    void updateSimulation(SimulationDto simulationDto);
+    void updateSimulation(@Valid SimulationDto simulationDto);
 }
