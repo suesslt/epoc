@@ -32,13 +32,11 @@ public interface SimulationService {
 
     void buySimulations(@Min(1) int nrOfSimulations);
 
-    Integer countAvailableSimulations(@NotEmpty String user); // TODO Consider to delete, only used for test
-
     void decreaseCreditLine(@Valid AdjustCreditLineDto decreaseCreditLineDto);
 
     void enterMarket(@Valid EnterMarketDto enterMarketDto);
 
-    void finishMoveFor(@NotNull Integer companySimulationStepId);
+    void finishMoveFor(@NotNull Integer companyId);
 
     List<CompletedUserSimulationDto> getCompletedSimulationsForUser(@NotEmpty String user);
 

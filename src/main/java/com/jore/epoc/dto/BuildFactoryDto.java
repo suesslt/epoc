@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class BuildFactoryDto implements DataTransferObject {
     @NotNull
-    private Integer companySimulationStepId;
+    private Integer companyId;
     @NotNull
     private YearMonth executionMonth;
     @Min(1)

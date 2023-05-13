@@ -1,16 +1,12 @@
 package com.jore.epoc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.services.SimulationService;
 import com.jore.epoc.services.StaticDataService;
-import com.jore.epoc.services.UserManagementService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -23,8 +19,6 @@ class SimulationManagementServiceTests {
     private StaticDataService staticDataService;
     @Autowired
     private EntityManager entityManager;
-    @Autowired
-    private UserManagementService userManagementService;
 
     @BeforeEach
     @Transactional
@@ -36,13 +30,5 @@ class SimulationManagementServiceTests {
         login.setAdmin(false);
         entityManager.persist(login);
         staticDataService.loadSettings("EpocSettings.xlsx");
-    }
-
-    @Test
-    @Transactional
-    void testBuySimulations() {
-        userManagementService.login("User", "g00dPa&word");
-        simulationManagementService.buySimulations(10);
-        assertEquals(10, simulationManagementService.countAvailableSimulations("User"));
     }
 }

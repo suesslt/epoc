@@ -1,5 +1,6 @@
 package com.jore.epoc.bo;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 
 import org.hibernate.annotations.CompositeType;
@@ -7,12 +8,15 @@ import org.hibernate.annotations.CompositeType;
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
 import com.jore.jpa.BusinessObject;
+import com.jore.util.Util;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 public class Factory extends BusinessObject {
     @ManyToOne(optional = false)
@@ -33,15 +37,17 @@ public class Factory extends BusinessObject {
         Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
         Assert.notNull("Production start month must not be null", productionStartMonth);
         Assert.notNull("Production line labour costs must not be null", productionLineLaborCost);
-        // TODO Preparation for daily production
-        //        LocalDate current = productionMonth.atDay(1);
-        //        LocalDate last = productionMonth.atEndOfMonth();
-        //        while (!current.isAfter(last)) {
-        //            if (current.getDayOfWeek().equals(DayOfWeek.SATURDAY) || current.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-        //            } else {
-        //            }
-        //            current = current.plusDays(1);
-        //        }
+        if (isProductionReady(productionMonth)) {
+            for (LocalDate date : Util.getDaysInMonth(productionMonth)) {
+                if (EpocCalendar.getInstance().isWorkingDay(date)) {
+                    // take raw material from storage
+                    // produce
+                    // put product into storage
+                    log.info(date);
+                }
+            }
+        }
+        // return produced amount
         int result = (int) (isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine * productivityFactor) : 0);
         result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
         if (result > 0) {

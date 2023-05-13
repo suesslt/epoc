@@ -96,41 +96,41 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void buildFactory(BuildFactoryDto buildFactoryDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(buildFactoryDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(buildFactoryDto.getCompanyId()).get();
         BuildFactoryOrder buildFactoryOrder = new BuildFactoryOrder();
         buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
         buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
-        buildFactoryOrder.setTimeToBuild(companySimulationStep.getCompany().getSimulation().getSettings().getTimeToBuild());
-        buildFactoryOrder.setConstructionCost(companySimulationStep.getCompany().getSimulation().getSettings().getFactoryConstructionCost());
-        buildFactoryOrder.setConstructionCostPerLine(companySimulationStep.getCompany().getSimulation().getSettings().getFactoryConstructionCostsPerLine());
-        buildFactoryOrder.setMonthlyCapacityPerProductionLine(companySimulationStep.getCompany().getSimulation().getSettings().getMonthlyCapacityPerProductionLine());
-        buildFactoryOrder.setProductionLineLaborCost(companySimulationStep.getCompany().getSimulation().getSettings().getProductionLineLaborCost());
-        companySimulationStep.getCompany().addSimulationOrder(buildFactoryOrder);
+        buildFactoryOrder.setTimeToBuild(company.getSimulation().getSettings().getTimeToBuild());
+        buildFactoryOrder.setConstructionCost(company.getSimulation().getSettings().getFactoryConstructionCost());
+        buildFactoryOrder.setConstructionCostPerLine(company.getSimulation().getSettings().getFactoryConstructionCostsPerLine());
+        buildFactoryOrder.setMonthlyCapacityPerProductionLine(company.getSimulation().getSettings().getMonthlyCapacityPerProductionLine());
+        buildFactoryOrder.setProductionLineLaborCost(company.getSimulation().getSettings().getProductionLineLaborCost());
+        company.addSimulationOrder(buildFactoryOrder);
     }
 
     @Override
     @Transactional
     public void buildStorage(BuildStorageDto buildStorageDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(buildStorageDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(buildStorageDto.getCompanyId()).get();
         BuildStorageOrder buildStorageOrder = new BuildStorageOrder();
         buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
         buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
-        buildStorageOrder.setTimeToBuild(companySimulationStep.getCompany().getSimulation().getSettings().getStorageConstructionMonths());
-        buildStorageOrder.setConstructionCost(companySimulationStep.getCompany().getSimulation().getSettings().getStorageFixedCost());
-        buildStorageOrder.setConstructionCostPerUnit(companySimulationStep.getCompany().getSimulation().getSettings().getStorageCostPerUnit());
-        buildStorageOrder.setInventoryManagementCost(companySimulationStep.getCompany().getSimulation().getSettings().getInventoryManagementCost());
-        companySimulationStep.getCompany().addSimulationOrder(buildStorageOrder);
+        buildStorageOrder.setTimeToBuild(company.getSimulation().getSettings().getStorageConstructionMonths());
+        buildStorageOrder.setConstructionCost(company.getSimulation().getSettings().getStorageFixedCost());
+        buildStorageOrder.setConstructionCostPerUnit(company.getSimulation().getSettings().getStorageCostPerUnit());
+        buildStorageOrder.setInventoryManagementCost(company.getSimulation().getSettings().getInventoryManagementCost());
+        company.addSimulationOrder(buildStorageOrder);
     }
 
     @Override
     @Transactional
     public void buyRawMaterial(BuyRawMaterialDto buyRawMaterialDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(buyRawMaterialDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(buyRawMaterialDto.getCompanyId()).get();
         BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
         buyRawMaterialOrder.setExecutionMonth(buyRawMaterialDto.getExecutionMonth());
         buyRawMaterialOrder.setAmount(buyRawMaterialDto.getAmount());
-        buyRawMaterialOrder.setUnitPrice(companySimulationStep.getCompany().getSimulation().getSettings().getRawMaterialUnitPrice());
-        companySimulationStep.getCompany().addSimulationOrder(buyRawMaterialOrder);
+        buyRawMaterialOrder.setUnitPrice(company.getSimulation().getSettings().getRawMaterialUnitPrice());
+        company.addSimulationOrder(buyRawMaterialOrder);
     }
 
     @Override
@@ -149,45 +149,39 @@ public class SimulationServiceImpl implements SimulationService {
             simulation.setHeadquarterCost(settings.getHeadquarterCost());
             simulation.setDepreciationRate(settings.getDepreciationRate());
             simulation.setProductionCost(settings.getProductionCostPerProduct());
-            //            simulation.setPassiveSteps(settings.getPassiveSteps());
             simulationRepository.save(simulation);
         }
     }
 
     @Override
-    @Transactional
-    public Integer countAvailableSimulations(String user) {
-        return (int) simulationRepository.findByIsStartedAndOwnerLogin(false, user).size();
-    }
-
-    @Override
     public void decreaseCreditLine(AdjustCreditLineDto decreaseCreditLineDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(decreaseCreditLineDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(decreaseCreditLineDto.getCompanyId()).get();
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
         adjustCreditLineOrder.setAmount(decreaseCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate(companySimulationStep.getCompany().getSimulation().getSettings().getDebtInterestRate());
-        companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
+        adjustCreditLineOrder.setInterestRate(company.getSimulation().getSettings().getDebtInterestRate());
+        company.addSimulationOrder(adjustCreditLineOrder);
     }
 
     @Override
     @Transactional
     public void enterMarket(EnterMarketDto enterMarketDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(enterMarketDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(enterMarketDto.getCompanyId()).get();
+        //        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(enterMarketDto.getCompanySimulationStepId()).get();
         EnterMarketOrder enterMarketOrder = new EnterMarketOrder();
         Market market = marketRepository.findById(enterMarketDto.getMarketId()).get();
-        Simulation simulation = companySimulationStep.getCompany().getSimulation();
+        Simulation simulation = company.getSimulation();
         Optional<MarketSimulation> marketSimulation = marketSimulationRepository.findByMarketAndSimulation(market, simulation);
         if (marketSimulation.isEmpty()) {
             MarketSimulation thisMarketSimulation = new MarketSimulation();
             thisMarketSimulation.setMarket(market);
-            thisMarketSimulation.setStartMonth(companySimulationStep.getSimulationStep().getSimulationMonth());
-            thisMarketSimulation.setHigherPercent(companySimulationStep.getCompany().getSimulation().getSettings().getDemandHigherPercent());
-            thisMarketSimulation.setHigherPrice(companySimulationStep.getCompany().getSimulation().getSettings().getDemandHigherPrice());
-            thisMarketSimulation.setLowerPercent(companySimulationStep.getCompany().getSimulation().getSettings().getDemandLowerPercent());
-            thisMarketSimulation.setLowerPrice(companySimulationStep.getCompany().getSimulation().getSettings().getDemandLowerPrice());
-            thisMarketSimulation.setProductLifecycleDuration(companySimulationStep.getCompany().getSimulation().getSettings().getProductLifecycleDuration());
+            thisMarketSimulation.setStartMonth(enterMarketDto.getExecutionMonth());
+            thisMarketSimulation.setHigherPercent(company.getSimulation().getSettings().getDemandHigherPercent());
+            thisMarketSimulation.setHigherPrice(company.getSimulation().getSettings().getDemandHigherPrice());
+            thisMarketSimulation.setLowerPercent(company.getSimulation().getSettings().getDemandLowerPercent());
+            thisMarketSimulation.setLowerPrice(company.getSimulation().getSettings().getDemandLowerPrice());
+            thisMarketSimulation.setProductLifecycleDuration(company.getSimulation().getSettings().getProductLifecycleDuration());
             simulation.addMarketSimulation(thisMarketSimulation);
             marketSimulation = Optional.of(thisMarketSimulation);
         }
@@ -196,7 +190,7 @@ public class SimulationServiceImpl implements SimulationService {
         enterMarketOrder.setIntentedProductSale(enterMarketDto.getIntentedProductSales());
         enterMarketOrder.setOfferedPrice(enterMarketDto.getOfferedPrice());
         enterMarketOrder.setEnterMarktCost(market.getCostToEnterMarket());
-        companySimulationStep.getCompany().addSimulationOrder(enterMarketOrder);
+        company.addSimulationOrder(enterMarketOrder);
     }
 
     @Override
@@ -329,55 +323,55 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void increaseCreditLine(AdjustCreditLineDto increaseCreditLineDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(increaseCreditLineDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(increaseCreditLineDto.getCompanyId()).get();
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
         adjustCreditLineOrder.setAmount(increaseCreditLineDto.getAmount());
-        adjustCreditLineOrder.setInterestRate(companySimulationStep.getCompany().getSimulation().getSettings().getDebtInterestRate());
-        companySimulationStep.getCompany().addSimulationOrder(adjustCreditLineOrder);
+        adjustCreditLineOrder.setInterestRate(company.getSimulation().getSettings().getDebtInterestRate());
+        company.addSimulationOrder(adjustCreditLineOrder);
     }
 
     @Override
     @Transactional
     public void increaseProductivity(IncreaseProductivityDto increaseProductivityDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(increaseProductivityDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(increaseProductivityDto.getCompanyId()).get();
         IncreaseProductivityOrder increaseProductivityOrder = new IncreaseProductivityOrder();
         increaseProductivityOrder.setExecutionMonth(increaseProductivityDto.getExecutionMonth());
         increaseProductivityOrder.setAmount(increaseProductivityDto.getIncreaseProductivityAmount());
-        companySimulationStep.getCompany().addSimulationOrder(increaseProductivityOrder);
+        company.addSimulationOrder(increaseProductivityOrder);
     }
 
     @Override
     @Transactional
     public void increaseQuality(IncreaseQualityDto increaseQualityDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(increaseQualityDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(increaseQualityDto.getCompanyId()).get();
         IncreaseQualityOrder increaseQualityOrder = new IncreaseQualityOrder();
         increaseQualityOrder.setExecutionMonth(increaseQualityDto.getExecutionMonth());
         increaseQualityOrder.setAmount(increaseQualityDto.getIncreaseQualityAmount());
-        companySimulationStep.getCompany().addSimulationOrder(increaseQualityOrder);
+        company.addSimulationOrder(increaseQualityOrder);
     }
 
     @Override
     @Transactional
     public void runMarketingCampaign(RunMarketingCampaignDto runMarketingCampaignDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(runMarketingCampaignDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(runMarketingCampaignDto.getCompanyId()).get();
         MarketingCampaignOrder marketingCampaignOrder = new MarketingCampaignOrder();
         marketingCampaignOrder.setExecutionMonth(runMarketingCampaignDto.getExecutionMonth());
         marketingCampaignOrder.setAmount(runMarketingCampaignDto.getCampaignAmount());
-        companySimulationStep.getCompany().addSimulationOrder(marketingCampaignOrder);
+        company.addSimulationOrder(marketingCampaignOrder);
     }
 
     @Override
     @Transactional
     public void setIntentedSalesAndPrice(IntendedSalesAndPriceDto intendedSalesAndPriceDto) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(intendedSalesAndPriceDto.getCompanySimulationStepId()).get();
+        Company company = companyRepository.findById(intendedSalesAndPriceDto.getCompanyId()).get();
         ChangeAmountAndPriceOrder changeIntentedAmountAndPriceOrder = new ChangeAmountAndPriceOrder();
         changeIntentedAmountAndPriceOrder.setExecutionMonth(intendedSalesAndPriceDto.getExecutionMonth());
         changeIntentedAmountAndPriceOrder.setIntentedSales(intendedSalesAndPriceDto.getIntentedSales());
         changeIntentedAmountAndPriceOrder.setOfferedPrice(intendedSalesAndPriceDto.getPrice());
         changeIntentedAmountAndPriceOrder.setMarket(marketRepository.findById(intendedSalesAndPriceDto.getMarketId()).get());
-        companySimulationStep.getCompany().addSimulationOrder(changeIntentedAmountAndPriceOrder);
+        company.addSimulationOrder(changeIntentedAmountAndPriceOrder);
     }
 
     @Override

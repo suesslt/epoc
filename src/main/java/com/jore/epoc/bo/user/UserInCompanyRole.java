@@ -6,6 +6,7 @@ import com.jore.jpa.BusinessObject;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
+// TODO User and company combination must be unique
 @Entity
 public class UserInCompanyRole extends BusinessObject {
     @ManyToOne(optional = false)
