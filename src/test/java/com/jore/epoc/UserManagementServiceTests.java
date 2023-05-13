@@ -3,6 +3,7 @@ package com.jore.epoc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import com.jore.epoc.services.UserManagementService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
 class UserManagementServiceTests {
@@ -88,7 +90,7 @@ class UserManagementServiceTests {
     @Test
     @Transactional
     public void testLoginAsSystemAdminNoPassword() {
-        assertFalse(userManagementService.login("administrator", null));
+        assertThrows(ConstraintViolationException.class, () -> userManagementService.login("administrator", null));
     }
 
     @Test
