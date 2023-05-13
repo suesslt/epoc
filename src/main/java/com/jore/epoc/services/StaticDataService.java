@@ -1,7 +1,14 @@
 package com.jore.epoc.services;
 
-public interface StaticDataService {
-    void loadMarkets(String xlsFileName);
+import com.jore.epoc.dto.MarketDto;
 
-    void loadSettings(String xlsFileName);
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
+public interface StaticDataService {
+    void loadMarkets(@NotEmpty String xlsFileName);
+
+    void loadSettings(@NotEmpty String xlsFileName);
+
+    MarketDto saveMarket(@Valid MarketDto marketDto);
 }

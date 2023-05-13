@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.settings.EpocSetting;
@@ -29,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
+@Validated
 public class StaticDataServiceImpl implements StaticDataService {
     @Autowired
     MarketRepository marketRepository;
@@ -43,16 +45,12 @@ public class StaticDataServiceImpl implements StaticDataService {
     @Transactional
     public void loadMarkets(String xlsFileName) {
         try {
-            Resource resource = new ClassPathResource(xlsFileName);
-            InputStream inputStream = resource.getInputStream();
-            ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
+            ExcelWorkbook workbook = new ExcelWorkbook(new ClassPathResource(xlsFileName).getInputStream());
             List<MarketDto> markets = new ExcelReader<MarketDto>(workbook, new FieldModel<>(MarketDto.class)).read();
-            markets.forEach(market -> updateMarketByName(market));
+            markets.forEach(market -> saveMarket(market));
             workbook.close();
-            log.info(workbook);
         } catch (Exception e) {
             log.error(e);
-            e.printStackTrace();
         }
     }
 
@@ -73,16 +71,17 @@ public class StaticDataServiceImpl implements StaticDataService {
                 setting.setSettingKey(epocSettingDto.getSettingKey());
                 setting.setValueText(epocSettingDto.getValueText());
                 epocSettings.addSetting(setting);
+                log.debug(setting);
             }
             settingsRepository.save(epocSettings);
             workbook.close();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e);
         }
     }
 
-    private MarketDto updateMarketByName(MarketDto marketDto) {
+    @Override
+    public MarketDto saveMarket(MarketDto marketDto) {
         Optional<Market> market = marketRepository.findByName(marketDto.getName());
         if (market.isPresent()) {
             MarketMapper.INSTANCE.updateMarketFromMarketDto(market.get(), marketDto);
@@ -90,7 +89,7 @@ public class StaticDataServiceImpl implements StaticDataService {
             market = Optional.of(MarketMapper.INSTANCE.marketDtoToMarket(marketDto));
         }
         marketRepository.save(market.get());
-        log.info(market);
+        log.debug(market);
         return marketDto;
     }
 }

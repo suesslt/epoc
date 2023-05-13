@@ -1,6 +1,5 @@
 package com.jore.epoc.services.impl;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.DistributionInMarket;
 import com.jore.epoc.bo.Factory;
@@ -49,10 +47,13 @@ import com.jore.epoc.dto.DistributionInMarketDto;
 import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.FactoryDto;
 import com.jore.epoc.dto.IncreaseProductivityDto;
+import com.jore.epoc.dto.IncreaseQualityDto;
+import com.jore.epoc.dto.IntendedSalesAndPriceDto;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.MessageDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
+import com.jore.epoc.dto.RunMarketingCampaignDto;
 import com.jore.epoc.dto.SettingDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.SimulationStatisticsDto;
@@ -349,33 +350,33 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void increaseQuality(Integer companySimulationStepId, Money increaseQualityAmount, YearMonth executionMonth) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void increaseQuality(IncreaseQualityDto increaseQualityDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(increaseQualityDto.getCompanySimulationStepId()).get();
         IncreaseQualityOrder increaseQualityOrder = new IncreaseQualityOrder();
-        increaseQualityOrder.setExecutionMonth(executionMonth);
-        increaseQualityOrder.setAmount(increaseQualityAmount);
+        increaseQualityOrder.setExecutionMonth(increaseQualityDto.getExecutionMonth());
+        increaseQualityOrder.setAmount(increaseQualityDto.getIncreaseQualityAmount());
         companySimulationStep.getCompany().addSimulationOrder(increaseQualityOrder);
     }
 
     @Override
     @Transactional
-    public void runMarketingCampaign(Integer companySimulationStepId, Money campaignAmount, YearMonth executionMonth) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void runMarketingCampaign(RunMarketingCampaignDto runMarketingCampaignDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(runMarketingCampaignDto.getCompanySimulationStepId()).get();
         MarketingCampaignOrder marketingCampaignOrder = new MarketingCampaignOrder();
-        marketingCampaignOrder.setExecutionMonth(executionMonth);
-        marketingCampaignOrder.setAmount(campaignAmount);
+        marketingCampaignOrder.setExecutionMonth(runMarketingCampaignDto.getExecutionMonth());
+        marketingCampaignOrder.setAmount(runMarketingCampaignDto.getCampaignAmount());
         companySimulationStep.getCompany().addSimulationOrder(marketingCampaignOrder);
     }
 
     @Override
     @Transactional
-    public void setIntentedSalesAndPrice(Integer companySimulationStepId, Integer marketId, Integer intentedSales, Money price, YearMonth executionMonth) {
-        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
+    public void setIntentedSalesAndPrice(IntendedSalesAndPriceDto intendedSalesAndPriceDto) {
+        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(intendedSalesAndPriceDto.getCompanySimulationStepId()).get();
         ChangeAmountAndPriceOrder changeIntentedAmountAndPriceOrder = new ChangeAmountAndPriceOrder();
-        changeIntentedAmountAndPriceOrder.setExecutionMonth(executionMonth);
-        changeIntentedAmountAndPriceOrder.setIntentedSales(intentedSales);
-        changeIntentedAmountAndPriceOrder.setOfferedPrice(price);
-        changeIntentedAmountAndPriceOrder.setMarket(marketRepository.findById(marketId).get());
+        changeIntentedAmountAndPriceOrder.setExecutionMonth(intendedSalesAndPriceDto.getExecutionMonth());
+        changeIntentedAmountAndPriceOrder.setIntentedSales(intendedSalesAndPriceDto.getIntentedSales());
+        changeIntentedAmountAndPriceOrder.setOfferedPrice(intendedSalesAndPriceDto.getPrice());
+        changeIntentedAmountAndPriceOrder.setMarket(marketRepository.findById(intendedSalesAndPriceDto.getMarketId()).get());
         companySimulationStep.getCompany().addSimulationOrder(changeIntentedAmountAndPriceOrder);
     }
 

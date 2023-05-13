@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.user.User;
@@ -27,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @Component
+@Validated
 public class UserManagementServiceImpl implements UserManagementService {
     private static final String ADMIN_EPOC_CH = "admin@epoc.ch";
     static User loggedInUser = null;

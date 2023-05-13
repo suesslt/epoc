@@ -1,10 +1,8 @@
 package com.jore.epoc.services;
 
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
-import com.jore.datatypes.money.Money;
 import com.jore.epoc.dto.AdjustCreditLineDto;
 import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
@@ -13,7 +11,10 @@ import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.IncreaseProductivityDto;
+import com.jore.epoc.dto.IncreaseQualityDto;
+import com.jore.epoc.dto.IntendedSalesAndPriceDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
+import com.jore.epoc.dto.RunMarketingCampaignDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.SimulationStatisticsDto;
 
@@ -53,11 +54,11 @@ public interface SimulationService {
 
     void increaseProductivity(@Valid IncreaseProductivityDto increaseProductivityDto);
 
-    void increaseQuality(Integer companySimulationStepId, Money increaseQualityAmount, YearMonth executionMonth);
+    void increaseQuality(@Valid IncreaseQualityDto increaseQualityDto);
 
-    void runMarketingCampaign(Integer companySimulationStepId, Money campaignAmount, YearMonth executionMonth);
+    void runMarketingCampaign(@Valid RunMarketingCampaignDto runMarketingCampaignDto);
 
-    void setIntentedSalesAndPrice(Integer companySimulationStepId, Integer marketId, Integer intentedSales, Money price, YearMonth executionMonth);
+    void setIntentedSalesAndPrice(@Valid IntendedSalesAndPriceDto intentendSalesAndPriceDto);
 
     void updateSimulation(@Valid SimulationDto simulationDto);
 }

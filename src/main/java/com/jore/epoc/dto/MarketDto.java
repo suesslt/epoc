@@ -6,19 +6,27 @@ import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.jpa.DataTransferObject;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class MarketDto implements DataTransferObject {
     private Integer id;
+    @NotEmpty
     private String name;
+    @Min(1)
+    private int marketSize;
+    @NotNull
+    private Money costToEnterMarket;
+    @NotNull
+    private Money distributionCost;
     private Money gdpPpp;
     private Money gdp;
     private Percent gdpGrowth;
-    private int marketSize;
     private Percent unemployment;
     private BigDecimal lifeExpectancy;
-    private Money costToEnterMarket;
     private int ageTo14Male;
     private int ageTo14Female;
     private int ageTo24Male;
@@ -30,5 +38,4 @@ public class MarketDto implements DataTransferObject {
     private int age65olderMale;
     private int age65olderFemale;
     private int requiredSalesforce;
-    private Money distributionCost;
 }

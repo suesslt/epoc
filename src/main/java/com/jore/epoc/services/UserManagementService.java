@@ -5,18 +5,21 @@ import java.util.Collection;
 import com.jore.epoc.dto.LoginDto;
 import com.jore.mail.Mail;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
 public interface UserManagementService {
-    LoginDto createAdmin(LoginDto admin);
+    LoginDto createAdmin(@Valid LoginDto admin);
 
-    void createInitialAdmin(String user, String password);
+    void createInitialAdmin(@NotEmpty String user, @NotEmpty String password); // TODO only required for Test Cases
 
-    LoginDto createUser(LoginDto user);
+    LoginDto createUser(@Valid LoginDto user);
 
-    boolean deleteLogin(String login);
+    boolean deleteLogin(@NotEmpty String login);
 
     Collection<Mail> getEmailsForNewUsers();
 
-    boolean login(String login, String password);
+    boolean login(@NotEmpty String login, @NotEmpty String password);
 
     boolean logout();
 }
