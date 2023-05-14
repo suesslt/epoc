@@ -1,5 +1,6 @@
 package com.jore.epoc.services.impl;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -70,6 +71,7 @@ import com.jore.epoc.repositories.SimulationStepRepository;
 import com.jore.epoc.services.SimulationService;
 import com.jore.util.Util;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -97,6 +99,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void buildFactory(BuildFactoryDto buildFactoryDto) {
         Company company = companyRepository.findById(buildFactoryDto.getCompanyId()).get();
+        logicalValidation(company, buildFactoryDto.getExecutionMonth());
         BuildFactoryOrder buildFactoryOrder = new BuildFactoryOrder();
         buildFactoryOrder.setExecutionMonth(buildFactoryDto.getExecutionMonth());
         buildFactoryOrder.setProductionLines(buildFactoryDto.getProductionLines());
@@ -112,6 +115,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void buildStorage(BuildStorageDto buildStorageDto) {
         Company company = companyRepository.findById(buildStorageDto.getCompanyId()).get();
+        logicalValidation(company, buildStorageDto.getExecutionMonth());
         BuildStorageOrder buildStorageOrder = new BuildStorageOrder();
         buildStorageOrder.setExecutionMonth(buildStorageDto.getExecutionMonth());
         buildStorageOrder.setCapacity(buildStorageDto.getCapacity());
@@ -126,6 +130,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void buyRawMaterial(BuyRawMaterialDto buyRawMaterialDto) {
         Company company = companyRepository.findById(buyRawMaterialDto.getCompanyId()).get();
+        logicalValidation(company, buyRawMaterialDto.getExecutionMonth());
         BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
         buyRawMaterialOrder.setExecutionMonth(buyRawMaterialDto.getExecutionMonth());
         buyRawMaterialOrder.setAmount(buyRawMaterialDto.getAmount());
@@ -154,8 +159,10 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
+    @Transactional
     public void decreaseCreditLine(AdjustCreditLineDto decreaseCreditLineDto) {
         Company company = companyRepository.findById(decreaseCreditLineDto.getCompanyId()).get();
+        logicalValidation(company, decreaseCreditLineDto.getExecutionMonth());
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(decreaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.DECREASE);
@@ -168,6 +175,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void enterMarket(EnterMarketDto enterMarketDto) {
         Company company = companyRepository.findById(enterMarketDto.getCompanyId()).get();
+        logicalValidation(company, enterMarketDto.getExecutionMonth());
         EnterMarketOrder enterMarketOrder = new EnterMarketOrder();
         Market market = marketRepository.findById(enterMarketDto.getMarketId()).get();
         Simulation simulation = company.getSimulation();
@@ -322,6 +330,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void increaseCreditLine(AdjustCreditLineDto increaseCreditLineDto) {
         Company company = companyRepository.findById(increaseCreditLineDto.getCompanyId()).get();
+        logicalValidation(company, increaseCreditLineDto.getExecutionMonth());
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
         adjustCreditLineOrder.setExecutionMonth(increaseCreditLineDto.getExecutionMonth());
         adjustCreditLineOrder.setDirection(CreditEventDirection.INCREASE);
@@ -334,6 +343,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void increaseProductivity(IncreaseProductivityDto increaseProductivityDto) {
         Company company = companyRepository.findById(increaseProductivityDto.getCompanyId()).get();
+        logicalValidation(company, increaseProductivityDto.getExecutionMonth());
         IncreaseProductivityOrder increaseProductivityOrder = new IncreaseProductivityOrder();
         increaseProductivityOrder.setExecutionMonth(increaseProductivityDto.getExecutionMonth());
         increaseProductivityOrder.setAmount(increaseProductivityDto.getIncreaseProductivityAmount());
@@ -344,6 +354,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void increaseQuality(IncreaseQualityDto increaseQualityDto) {
         Company company = companyRepository.findById(increaseQualityDto.getCompanyId()).get();
+        logicalValidation(company, increaseQualityDto.getExecutionMonth());
         IncreaseQualityOrder increaseQualityOrder = new IncreaseQualityOrder();
         increaseQualityOrder.setExecutionMonth(increaseQualityDto.getExecutionMonth());
         increaseQualityOrder.setAmount(increaseQualityDto.getIncreaseQualityAmount());
@@ -354,6 +365,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void runMarketingCampaign(RunMarketingCampaignDto runMarketingCampaignDto) {
         Company company = companyRepository.findById(runMarketingCampaignDto.getCompanyId()).get();
+        logicalValidation(company, runMarketingCampaignDto.getExecutionMonth());
         MarketingCampaignOrder marketingCampaignOrder = new MarketingCampaignOrder();
         marketingCampaignOrder.setExecutionMonth(runMarketingCampaignDto.getExecutionMonth());
         marketingCampaignOrder.setAmount(runMarketingCampaignDto.getCampaignAmount());
@@ -364,6 +376,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void setIntentedSalesAndPrice(IntendedSalesAndPriceDto intendedSalesAndPriceDto) {
         Company company = companyRepository.findById(intendedSalesAndPriceDto.getCompanyId()).get();
+        logicalValidation(company, intendedSalesAndPriceDto.getExecutionMonth());
         ChangeAmountAndPriceOrder changeIntentedAmountAndPriceOrder = new ChangeAmountAndPriceOrder();
         changeIntentedAmountAndPriceOrder.setExecutionMonth(intendedSalesAndPriceDto.getExecutionMonth());
         changeIntentedAmountAndPriceOrder.setIntentedSales(intendedSalesAndPriceDto.getIntentedSales());
@@ -422,13 +435,24 @@ public class SimulationServiceImpl implements SimulationService {
         }
     }
 
+    // TODO must be removed, goal is a stateless service
     private void checkUserPermission() {
         if (UserManagementServiceImpl.loggedInUser == null) {
             throw new IllegalStateException("No user logged in");
         }
     }
 
+    // TODO must be removed, goal is a stateless service
     private User getLoggedInUser() {
         return UserManagementServiceImpl.loggedInUser;
+    }
+
+    private void logicalValidation(Company company, YearMonth executionMonth) {
+        if (executionMonth.isBefore(company.getSimulation().getStartMonth())) {
+            throw new ConstraintViolationException(null); // TODO add constraint violation with message, etc.
+        }
+        if (executionMonth.isAfter(company.getSimulation().getStartMonth().plusMonths(company.getSimulation().getNrOfMonths()))) {
+            throw new ConstraintViolationException(null);
+        }
     }
 }

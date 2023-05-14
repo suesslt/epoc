@@ -164,6 +164,7 @@ class EpocApplicationTests {
         List<OpenUserSimulationDto> simulationC1 = simulationService.getOpenSimulationsForUser();
         Optional<CompanySimulationStepDto> companySimulationStepC1 = simulationService.getCurrentCompanySimulationStep(simulationC1.get(0).getCompanyId());
         simulationService.increaseCreditLine(AdjustCreditLineDto.builder().companyId(simulationC1.get(0).getCompanyId()).amount(Money.of(CHF, 100000000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
+        assertThrows(ConstraintViolationException.class, () -> simulationService.buildStorage(BuildStorageDto.builder().companyId(simulationC1.get(0).getCompanyId()).capacity(1000).executionMonth(YearMonth.of(2022, 12)).build()));
         simulationService.buildStorage(BuildStorageDto.builder().companyId(simulationC1.get(0).getCompanyId()).capacity(1000).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.buildFactory(BuildFactoryDto.builder().companyId(simulationC1.get(0).getCompanyId()).productionLines(5).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStepC1.get().getId());
@@ -189,6 +190,28 @@ class EpocApplicationTests {
         simulationService.increaseQuality(IncreaseQualityDto.builder().companyId(simulationA2.get(0).getCompanyId()).increaseQualityAmount(Money.of(CHF, 10000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.runMarketingCampaign(RunMarketingCampaignDto.builder().companyId(simulationA2.get(0).getCompanyId()).campaignAmount(Money.of(CHF, 10000)).executionMonth(companySimulationStepC1.get().getSimulationMonth()).build());
         simulationService.finishMoveFor(companySimulationStepA2.get().getId());
+        userManagementService.logout();
+        //
+        // Step 2 for Company B
+        //
+        userManagementService.login(RETO, getPasswordForUser(RETO));
+        List<OpenUserSimulationDto> simulationB2 = simulationService.getOpenSimulationsForUser();
+        Optional<CompanySimulationStepDto> companySimulationStepB2 = simulationService.getCurrentCompanySimulationStep(simulationB2.get(0).getCompanyId());
+        assertEquals(4, companySimulationStepB2.get().getMessages().size());
+        simulationService.buyRawMaterial(BuyRawMaterialDto.builder().companyId(simulationB2.get(0).getCompanyId()).amount(1000).executionMonth(YearMonth.of(2024, 3)).build());
+        simulationService.decreaseCreditLine(AdjustCreditLineDto.builder().companyId(simulationB2.get(0).getCompanyId()).amount(Money.of(CHF, 10)).executionMonth(companySimulationStepB2.get().getSimulationMonth()).build());
+        simulationService.increaseProductivity(IncreaseProductivityDto.builder().companyId(simulationB2.get(0).getCompanyId()).increaseProductivityAmount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepB2.get().getSimulationMonth()).build());
+        simulationService.increaseQuality(IncreaseQualityDto.builder().companyId(simulationB2.get(0).getCompanyId()).increaseQualityAmount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepB2.get().getSimulationMonth()).build());
+        simulationService.runMarketingCampaign(RunMarketingCampaignDto.builder().companyId(simulationB2.get(0).getCompanyId()).campaignAmount(Money.of("CHF", 100000000)).executionMonth(companySimulationStepB2.get().getSimulationMonth()).build());
+        simulationService.finishMoveFor(companySimulationStepB2.get().getId());
+        userManagementService.logout();
+        //
+        // Step 2 for Company C
+        //
+        userManagementService.login(FELIX, getPasswordForUser(FELIX));
+        List<OpenUserSimulationDto> simulationC2 = simulationService.getOpenSimulationsForUser();
+        Optional<CompanySimulationStepDto> companySimulationStepC2 = simulationService.getCurrentCompanySimulationStep(simulationC2.get(0).getCompanyId());
+        simulationService.finishMoveFor(companySimulationStepC2.get().getId());
         userManagementService.logout();
     }
 

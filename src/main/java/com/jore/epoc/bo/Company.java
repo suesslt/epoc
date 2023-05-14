@@ -32,9 +32,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Entity
 public class Company extends BusinessObject {
-    public record MonthlySale(YearMonth simulationMonth, String name, Integer productsSold) {
-    }
-
     private static final int ONE_TWELFTH = 12;
     private String name;
     @ManyToOne(optional = false)

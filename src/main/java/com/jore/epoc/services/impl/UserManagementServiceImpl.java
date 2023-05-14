@@ -31,6 +31,7 @@ import lombok.extern.log4j.Log4j2;
 @Validated
 public class UserManagementServiceImpl implements UserManagementService {
     private static final String ADMIN_EPOC_CH = "admin@epoc.ch";
+    // TODO must be removed, goal is a stateless service
     static User loggedInUser = null;
     @Autowired
     LoginRepository loginRepository;

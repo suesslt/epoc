@@ -59,10 +59,6 @@ public class User extends BusinessObject {
         this.isAdmin = isAdmin;
     }
 
-    public void setCompanies(List<UserInCompanyRole> companies) {
-        this.companies = companies;
-    }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -77,10 +73,6 @@ public class User extends BusinessObject {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
     }
 
     @Override

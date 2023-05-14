@@ -82,24 +82,8 @@ public class MarketSimulation extends BusinessObject {
         return market;
     }
 
-    public int getProductLifecycleDuration() {
-        return productLifecycleDuration;
-    }
-
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
     public Integer getSoldProducts() {
         return distributionInMarkets.stream().mapToInt(distributionInMarket -> distributionInMarket.getSoldProducts()).sum();
-    }
-
-    public YearMonth getStartMonth() {
-        return startMonth;
-    }
-
-    public void setDistributionInMarkets(List<DistributionInMarket> distributionInMarkets) {
-        this.distributionInMarkets = distributionInMarkets;
     }
 
     public void setHigherPercent(Percent higherPercent) {

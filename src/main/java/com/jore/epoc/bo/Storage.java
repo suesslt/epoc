@@ -47,7 +47,7 @@ public class Storage extends BusinessObject {
     public static Money getAverageRawMaterialPrice(List<Storage> storages) {
         Money value = getRawMaterialValue(storages);
         int inventory = getTotalRawMaterialStored(storages);
-        return value != null ? value.divide(inventory) : null;
+        return value != null ? (inventory > 0 ? value.divide(inventory) : value) : null; // TODO Test case
     }
 
     public static Integer getProductsStored(List<Storage> storages) {

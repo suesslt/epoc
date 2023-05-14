@@ -30,10 +30,6 @@ public class DistributionStep extends BusinessObject {
         return companySimulationStep;
     }
 
-    public DistributionInMarket getDistributionInMarket() {
-        return distributionInMarket;
-    }
-
     public int getIntentedProductSale() {
         return intentedProductSale;
     }
