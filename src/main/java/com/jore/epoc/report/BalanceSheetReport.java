@@ -1,8 +1,12 @@
 package com.jore.epoc.report;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 
+import com.jore.datatypes.formatter.MoneyDecimalDigits;
+import com.jore.datatypes.formatter.MoneyFormatter;
+import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 
@@ -30,36 +34,40 @@ public class BalanceSheetReport {
         return data;
     }
 
-    public void setSource(Company company, LocalDate thisDate, LocalDate previousDate) {
+    public void setSource(Company company, YearMonth thisMonth, YearMonth previousMonth) {
+        LocalDate thisDate = thisMonth.atEndOfMonth();
+        LocalDate previousDate = previousMonth.atEndOfMonth();
         FinancialAccounting accounting = company.getAccounting();
         data.setBalanceSheetDate(thisDate.toString());
-        data.setCashThis(accounting.getCash(thisDate).getFormattedAmount());
-        data.setCashPrev(accounting.getCash(previousDate).getFormattedAmount());
+        data.setCashThis(formatMoney(accounting.getCash(thisDate)));
+        data.setCashPrev(formatMoney(accounting.getCash(previousDate)));
         data.setCompanyName(company.getName());
-        data.setInventoryProductsThis(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, thisDate).getFormattedAmount());
-        data.setInventoryProductsPrev(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, previousDate).getFormattedAmount());
-        data.setInventoryRawMaterialThis(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, thisDate).getFormattedAmount());
-        data.setInventoryRawMaterialPrev(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, previousDate).getFormattedAmount());
-        data.setLongTermDebtThis(accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT, thisDate).getFormattedAmount());
-        data.setLongTermDebtPrev(accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT, previousDate).getFormattedAmount());
-        data.setOwnersEquityThis(accounting.getOwnersCapital(thisDate).getFormattedAmount());
-        data.setOwnersEquityPrev(accounting.getOwnersCapital(previousDate).getFormattedAmount());
-        data.setPropertiesThis(accounting.getRealEstateBalance(thisDate).getFormattedAmount());
-        data.setPropertiesPrev(accounting.getRealEstateBalance(previousDate).getFormattedAmount());
-        data.setReceivableThis("");
-        data.setReceivablePrev("");
-        data.setTotalFixedAssetsThis(accounting.getTotalFixedAssets(thisDate).getFormattedAmount());
-        data.setTotalFixedAssetsPrev(accounting.getTotalFixedAssets(previousDate).getFormattedAmount());
-        data.setTotalCurrentAssetsThis(accounting.getTotalCurrentAssets(thisDate).getFormattedAmount());
-        data.setTotalCurrentAssetsPrev(accounting.getTotalCurrentAssets(previousDate).getFormattedAmount());
-        data.setTotalCurrentLiabilitiesThis(accounting.getTotalCurrentLiabilities(thisDate).getFormattedAmount());
-        data.setTotalCurrentLiabilitiesPrev(accounting.getTotalCurrentLiabilities(previousDate).getFormattedAmount());
-        data.setTotalLiabilitiesAndOwnersEquityThis(accounting.getTotalLiabilitiesAndOwnersEquity(thisDate).getFormattedAmount());
-        data.setTotalLiabilitiesAndOwnersEquityPrev(accounting.getTotalLiabilitiesAndOwnersEquity(previousDate).getFormattedAmount());
-        data.setTotalLiabilitiesThis(accounting.getTotalLiabilities(thisDate).getFormattedAmount());
-        data.setTotalLiabilitiesPrev(accounting.getTotalLiabilities(previousDate).getFormattedAmount());
-        data.setTotalAssetsPrev(accounting.getTotalAssets(thisDate).getFormattedAmount());
-        data.setTotalAssetsPrev(accounting.getTotalAssets(previousDate).getFormattedAmount());
+        data.setInventoryProductsThis(formatMoney(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, thisDate)));
+        data.setInventoryProductsPrev(formatMoney(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, previousDate)));
+        data.setInventoryRawMaterialThis(formatMoney(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, thisDate)));
+        data.setInventoryRawMaterialPrev(formatMoney(accounting.getBalanceForAccount(FinancialAccounting.PRODUCTS, previousDate)));
+        data.setLongTermDebtThis(formatMoney(accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT, thisDate)));
+        data.setLongTermDebtPrev(formatMoney(accounting.getBalanceForAccount(FinancialAccounting.LONG_TERM_DEBT, previousDate)));
+        data.setOwnersEquityThis(formatMoney(accounting.getOwnersCapital(thisDate)));
+        data.setOwnersEquityPrev(formatMoney(accounting.getOwnersCapital(previousDate)));
+        data.setPropertiesThis(formatMoney(accounting.getRealEstateBalance(thisDate)));
+        data.setPropertiesPrev(formatMoney(accounting.getRealEstateBalance(previousDate)));
+        data.setReceivableThis(formatMoney(accounting.getReceivables(thisDate)));
+        data.setReceivablePrev(formatMoney(accounting.getReceivables(previousDate)));
+        data.setTotalFixedAssetsThis(formatMoney(accounting.getTotalFixedAssets(thisDate)));
+        data.setTotalFixedAssetsPrev(formatMoney(accounting.getTotalFixedAssets(previousDate)));
+        data.setTotalCurrentAssetsThis(formatMoney(accounting.getTotalCurrentAssets(thisDate)));
+        data.setTotalCurrentAssetsPrev(formatMoney(accounting.getTotalCurrentAssets(previousDate)));
+        data.setTotalCurrentLiabilitiesThis(formatMoney(accounting.getTotalCurrentLiabilities(thisDate)));
+        data.setTotalCurrentLiabilitiesPrev(formatMoney(accounting.getTotalCurrentLiabilities(previousDate)));
+        data.setTotalLiabilitiesAndOwnersEquityThis(formatMoney(accounting.getTotalLiabilitiesAndOwnersEquity(thisDate)));
+        data.setTotalLiabilitiesAndOwnersEquityPrev(formatMoney(accounting.getTotalLiabilitiesAndOwnersEquity(previousDate)));
+        data.setTotalLiabilitiesThis(formatMoney(accounting.getTotalLiabilities(thisDate)));
+        data.setTotalLiabilitiesPrev(formatMoney(accounting.getTotalLiabilities(previousDate)));
+        data.setTotalAssetsThis(formatMoney(accounting.getTotalAssets(thisDate)));
+        data.setTotalAssetsPrev(formatMoney(accounting.getTotalAssets(previousDate)));
+        data.setThisPeriod(thisMonth.toString());
+        data.setPreviousPeriod(previousMonth.toString());
     }
 
     public void store(String reportName, String companyIdString, String dateString) {
@@ -85,5 +93,10 @@ public class BalanceSheetReport {
         } catch (JRException e) {
             log.error(e);
         }
+    }
+
+    private String formatMoney(Money money) {
+        MoneyFormatter formatter = new MoneyFormatter(MoneyDecimalDigits.NO_DECIMAL_DIGITS);
+        return formatter.format(money);
     }
 }

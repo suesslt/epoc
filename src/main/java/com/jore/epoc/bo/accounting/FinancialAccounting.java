@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 public class FinancialAccounting extends BusinessObject {
     private static final int INFINITY_MULTIPLIER = 6;
     public static final String BANK = "1020";
+    public static final String RECEIVABLES = "1100";
     public static final String RAW_MATERIALS = "1210";
     public static final String PRODUCTS = "1260";
     public static final String REAL_ESTATE = "1600";
@@ -47,6 +48,7 @@ public class FinancialAccounting extends BusinessObject {
 
     public FinancialAccounting() {
         addAccount(new Account(AccountType.BALANCE_SHEET, BANK, "Bank"));
+        addAccount(new Account(AccountType.BALANCE_SHEET, RECEIVABLES, "Receivables"));
         addAccount(new Account(AccountType.BALANCE_SHEET, LONG_TERM_DEBT, "Bankverbindlichkeiten"));
         addAccount(new Account(AccountType.BALANCE_SHEET, REAL_ESTATE, "Liegenschaften"));
         addAccount(new Account(AccountType.BALANCE_SHEET, RAW_MATERIALS, "Rohmaterialvorrat"));
@@ -130,6 +132,10 @@ public class FinancialAccounting extends BusinessObject {
 
     public Money getRealEstateBalance(LocalDate valueDate) {
         return getBalanceForAccount(REAL_ESTATE, valueDate);
+    }
+
+    public Money getReceivables(LocalDate valueDate) {
+        return getBalanceForAccount(RECEIVABLES, valueDate);
     }
 
     public Money getRevenues(LocalDate valueDate) {

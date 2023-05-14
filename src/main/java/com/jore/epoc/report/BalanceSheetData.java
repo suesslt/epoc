@@ -32,4 +32,6 @@ public class BalanceSheetData {
     private String totalLiabilitiesAndOwnersEquityPrev;
     private String totalAssetsThis;
     private String totalAssetsPrev;
+    private String thisPeriod;
+    private String previousPeriod;
 }

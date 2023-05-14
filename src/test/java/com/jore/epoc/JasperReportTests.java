@@ -1,6 +1,7 @@
 package com.jore.epoc;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -31,8 +32,7 @@ class JasperReportTests {
         CompanySimulationStep companySimulationStep = company.getSimulation().getActiveSimulationStep().get().getCompanySimulationStepFor(company);
         companySimulationStep.finish();
         BalanceSheetReport report = new BalanceSheetReport();
-        report.setSource(company, LocalDate.of(2020, 1, 31), LocalDate.of(2020, 2, 29));
-        BalanceSheetData data = report.getData();
+        report.setSource(company, YearMonth.of(2020, 2), YearMonth.of(2020, 1));
         report.store("BalanceSheet", company.getId().toString(), LocalDate.of(2020, 1, 31).toString());
     }
 

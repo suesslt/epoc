@@ -33,6 +33,8 @@
 	<field name="totalLiabilitiesAndOwnersEquityPrev" class="java.lang.String"/>
 	<field name="totalAssetsThis" class="java.lang.String"/>
 	<field name="totalAssetsPrev" class="java.lang.String"/>
+	<field name="thisPeriod" class="java.lang.String"/>
+	<field name="previousPeriod" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -40,29 +42,29 @@
 		<band height="83" splitType="Stretch">
 			<staticText>
 				<reportElement x="280" y="0" width="270" height="30" uuid="cb755bc6-52f6-49f6-bbaa-9442e5feb705"/>
-				<textElement>
-					<font fontName="Helvetica" size="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="20"/>
 				</textElement>
 				<text><![CDATA[Balance Sheet]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="10" y="40" width="100" height="30" uuid="d19e65d1-a240-443d-9967-0e19d76de523"/>
-				<textElement>
-					<font fontName="Helvetica" size="16"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
 				</textElement>
 				<text><![CDATA[As of]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="70" y="40" width="100" height="30" uuid="f34e24b4-c51f-4961-9718-ca5e270d80d4"/>
-				<textElement>
-					<font fontName="Helvetica" size="16"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{balanceSheetDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="280" height="30" uuid="17feaf17-905d-4d6b-bcda-b15f9bc7dcc0"/>
-				<textElement>
-					<font fontName="Helvetica" size="16"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
 			</textField>
@@ -77,18 +79,18 @@
 					<bottomPen lineWidth="2.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="16" isBold="true"/>
+					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Assets]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="40" y="250" width="510" height="21" backcolor="#3211C2" uuid="6d3a166b-011d-46d3-ba9f-136fbcc4e43d"/>
+				<reportElement x="40" y="260" width="510" height="21" backcolor="#3211C2" uuid="6d3a166b-011d-46d3-ba9f-136fbcc4e43d"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<bottomPen lineWidth="2.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="16" isBold="true"/>
+					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Liabilities and Owner's Equity]]></text>
 			</staticText>
@@ -99,7 +101,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Current Assets]]></text>
 			</staticText>
@@ -110,25 +112,25 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Fixed (Long Term) Assets]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="120" y="219" width="430" height="21" backcolor="#D9D9D9" uuid="57e971ac-a070-4d80-a705-faff9b6cfc90"/>
+				<reportElement mode="Opaque" x="120" y="223" width="430" height="21" backcolor="#D9D9D9" uuid="57e971ac-a070-4d80-a705-faff9b6cfc90"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Assets]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="180" y="55" width="140" height="16" uuid="fe18c3d9-a4e4-4fcc-aa7c-38d9b873d0ed"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Cash]]></text>
 			</staticText>
@@ -136,8 +138,8 @@
 				<reportElement x="180" y="72" width="140" height="16" uuid="e8149c8d-838e-4050-b76a-24119cbb2c18">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Accounts Receivable]]></text>
 			</staticText>
@@ -145,8 +147,8 @@
 				<reportElement x="180" y="91" width="140" height="16" uuid="4deda5e3-5953-45e0-852b-c9255b7df284">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Inventory on Raw Materials]]></text>
 			</staticText>
@@ -155,7 +157,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cashThis}]]></textFieldExpression>
 			</textField>
@@ -165,49 +167,49 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cashPrev}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="330" y="73" width="100" height="16" uuid="9530352a-05d2-412a-8941-98f75955d1e3"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receivableThis}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="73" width="100" height="16" uuid="bfa33021-0a0f-48f9-bf7c-8a4bc0557756"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receivablePrev}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="330" y="91" width="100" height="16" uuid="91584aa3-98fe-490d-9d73-20d95231d46c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{inventoryRawMaterialThis}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="91" width="100" height="16" uuid="b3b94b39-6ffc-48c8-a238-315224ede225"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{inventoryRawMaterialPrev}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="330" y="109" width="100" height="16" uuid="5c31e8f4-5c86-4646-9bd4-827f829283ea"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{inventoryProductsThis}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="109" width="100" height="16" uuid="221a315b-5aeb-4004-a763-593233d6cc4a"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{inventoryProductsPrev}]]></textFieldExpression>
 			</textField>
@@ -215,57 +217,57 @@
 				<reportElement x="180" y="109" width="140" height="16" uuid="e847db52-2712-40dd-872b-7c2916b74dbb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Inventory on Products]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="330" y="127" width="100" height="16" uuid="b7ac01dc-ee34-4123-b3bf-5cb2d35586bb"/>
+				<reportElement x="330" y="131" width="100" height="16" uuid="b7ac01dc-ee34-4123-b3bf-5cb2d35586bb"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalCurrentAssetsThis}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="127" width="100" height="16" uuid="7c2671f6-065b-4e40-8e41-9ec4f60f2f5c"/>
+				<reportElement x="450" y="131" width="100" height="16" uuid="7c2671f6-065b-4e40-8e41-9ec4f60f2f5c"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalCurrentAssetsPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="180" y="127" width="140" height="16" uuid="9340a968-672c-450c-b887-89e6020d28ca">
+				<reportElement x="180" y="131" width="140" height="16" uuid="9340a968-672c-450c-b887-89e6020d28ca">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Current Assets]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="330" y="179" width="100" height="16" uuid="0a61340a-d6fe-49da-81ac-af51c9e280bc"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{propertiesThis}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="179" width="100" height="16" uuid="ec96630a-6cad-4e35-bffa-4f83c1ac2c34"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{propertiesPrev}]]></textFieldExpression>
 			</textField>
@@ -273,238 +275,252 @@
 				<reportElement x="180" y="179" width="140" height="16" uuid="5556e15a-eeac-4ba1-b217-1d6e3a3b57c9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Properties]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="330" y="197" width="100" height="16" uuid="785a9112-7dbc-4deb-8183-a534269c286a"/>
+				<reportElement x="330" y="201" width="100" height="16" uuid="785a9112-7dbc-4deb-8183-a534269c286a"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalFixedAssetsThis}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="197" width="100" height="16" uuid="c25e87b1-3316-40b7-ba6b-83f2d1f5aa26"/>
+				<reportElement x="450" y="201" width="100" height="16" uuid="c25e87b1-3316-40b7-ba6b-83f2d1f5aa26"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalFixedAssetsPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="180" y="197" width="140" height="16" uuid="152a4fe1-44bc-483b-ab69-94d387e5b14e">
+				<reportElement x="180" y="201" width="140" height="16" uuid="152a4fe1-44bc-483b-ab69-94d387e5b14e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Fixed Assets]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="450" y="221" width="100" height="16" uuid="4eab4c82-b60c-44a5-b3c8-d170d39315ff"/>
+				<reportElement x="450" y="225" width="100" height="16" uuid="4eab4c82-b60c-44a5-b3c8-d170d39315ff"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalAssetsPrev}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="330" y="221" width="100" height="16" uuid="8702f85d-87b7-496c-8809-8f7a4e6a31d9"/>
+				<reportElement x="330" y="225" width="100" height="16" uuid="8702f85d-87b7-496c-8809-8f7a4e6a31d9"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalAssetsThis}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="120" y="280" width="430" height="21" backcolor="#3211C2" uuid="63337ba4-8805-4c97-8cab-26a3075b873e"/>
+				<reportElement x="120" y="290" width="430" height="21" backcolor="#3211C2" uuid="63337ba4-8805-4c97-8cab-26a3075b873e"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Current Liabilities]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="120" y="426" width="430" height="21" backcolor="#D9D9D9" uuid="df5b8bb0-aea1-403e-a5b5-086e7fcbecac"/>
+				<reportElement mode="Opaque" x="120" y="436" width="430" height="21" backcolor="#D9D9D9" uuid="df5b8bb0-aea1-403e-a5b5-086e7fcbecac"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Liabilities and Owner's Equity]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="330" y="310" width="100" height="16" uuid="cd2e4178-48cd-4e0e-8e45-57ce5db57cd6"/>
+				<reportElement x="330" y="316" width="100" height="16" uuid="cd2e4178-48cd-4e0e-8e45-57ce5db57cd6"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{longTermDebtThis}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="310" width="100" height="16" uuid="c91df198-6c5f-43e3-a7f3-7442bea2e77b"/>
+				<reportElement x="450" y="316" width="100" height="16" uuid="c91df198-6c5f-43e3-a7f3-7442bea2e77b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{longTermDebtPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="180" y="310" width="140" height="16" uuid="267406a1-330b-4a5b-a8f6-519eadefc04c">
+				<reportElement x="180" y="316" width="140" height="16" uuid="267406a1-330b-4a5b-a8f6-519eadefc04c">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Long Term Debt]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="330" y="328" width="100" height="16" uuid="1edb98f4-9261-4e52-890d-3ed4b3808528"/>
+				<reportElement x="330" y="338" width="100" height="16" uuid="1edb98f4-9261-4e52-890d-3ed4b3808528"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalFixedAssetsThis}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="328" width="100" height="16" uuid="da1e0d4e-f385-4bd2-b99c-1ff64a8d49a1"/>
+				<reportElement x="450" y="338" width="100" height="16" uuid="da1e0d4e-f385-4bd2-b99c-1ff64a8d49a1"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalFixedAssetsPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="180" y="328" width="140" height="16" uuid="3eef18ba-f6af-4bee-adf6-63de86af740f">
+				<reportElement x="180" y="338" width="140" height="16" uuid="3eef18ba-f6af-4bee-adf6-63de86af740f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Current Liabilities]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="356" width="430" height="21" backcolor="#3211C2" uuid="c882bca9-603b-4e45-bc56-49581b7c2b08"/>
+				<reportElement x="120" y="366" width="430" height="21" backcolor="#3211C2" uuid="c882bca9-603b-4e45-bc56-49581b7c2b08"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Owner's Equity]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="330" y="386" width="100" height="16" uuid="832a5a21-199f-4dca-8b4e-2e8fc99e557c"/>
+				<reportElement x="330" y="392" width="100" height="16" uuid="832a5a21-199f-4dca-8b4e-2e8fc99e557c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ownersEquityThis}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="386" width="100" height="16" uuid="04469afe-d002-417b-a253-7c2e29f55ff4"/>
+				<reportElement x="450" y="392" width="100" height="16" uuid="04469afe-d002-417b-a253-7c2e29f55ff4"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ownersEquityPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="180" y="386" width="140" height="16" uuid="83a9bd51-3b19-4d49-ab87-024399907f7c">
+				<reportElement x="180" y="392" width="140" height="16" uuid="83a9bd51-3b19-4d49-ab87-024399907f7c">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Owner's Equity]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="330" y="404" width="100" height="16" uuid="671aa770-40bd-4fa2-86f0-0981f988934c"/>
+				<reportElement x="330" y="414" width="100" height="16" uuid="671aa770-40bd-4fa2-86f0-0981f988934c"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ownersEquityThis}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="404" width="100" height="16" uuid="73826b1d-70d5-47b9-b564-4a8b81436221"/>
+				<reportElement x="450" y="414" width="100" height="16" uuid="73826b1d-70d5-47b9-b564-4a8b81436221"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ownersEquityPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="180" y="404" width="140" height="16" uuid="21ee0f2a-9f51-48a6-a7ec-a21efc399af9">
+				<reportElement x="180" y="414" width="140" height="16" uuid="21ee0f2a-9f51-48a6-a7ec-a21efc399af9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement verticalAlignment="Bottom">
-					<font fontName="Helvetica" size="11" isBold="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Owner's Equity]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="450" y="428" width="100" height="16" uuid="1f9e95a4-47b0-4cdf-99f0-ca8e3f3453d7"/>
+				<reportElement x="450" y="438" width="100" height="16" uuid="1f9e95a4-47b0-4cdf-99f0-ca8e3f3453d7"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{totalFixedAssetsPrev}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalLiabilitiesAndOwnersEquityPrev}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="330" y="428" width="100" height="16" uuid="119118b2-9c90-42b3-854d-43cc23655bfe"/>
+				<reportElement x="330" y="438" width="100" height="16" uuid="119118b2-9c90-42b3-854d-43cc23655bfe"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{totalFixedAssetsThis}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalLiabilitiesAndOwnersEquityThis}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="330" y="2" width="100" height="16" uuid="3f35573c-e8c3-4432-8b7a-c8d759ddda17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{thisPeriod}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="450" y="0" width="100" height="16" uuid="4f70f7ff-b545-4ed4-9bf4-7b5b7a387ef8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{previousPeriod}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
