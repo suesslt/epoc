@@ -103,7 +103,7 @@ public class SimulationServiceImpl implements SimulationService {
         buildFactoryOrder.setTimeToBuild(company.getSimulation().getSettings().getTimeToBuild());
         buildFactoryOrder.setConstructionCost(company.getSimulation().getSettings().getFactoryConstructionCost());
         buildFactoryOrder.setConstructionCostPerLine(company.getSimulation().getSettings().getFactoryConstructionCostsPerLine());
-        buildFactoryOrder.setMonthlyCapacityPerProductionLine(company.getSimulation().getSettings().getMonthlyCapacityPerProductionLine());
+        buildFactoryOrder.setDailyCapacityPerProductionLine(company.getSimulation().getSettings().getDailyCapacityPerProductionLine());
         buildFactoryOrder.setProductionLineLaborCost(company.getSimulation().getSettings().getProductionLineLaborCost());
         company.addSimulationOrder(buildFactoryOrder);
     }
@@ -168,7 +168,6 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional
     public void enterMarket(EnterMarketDto enterMarketDto) {
         Company company = companyRepository.findById(enterMarketDto.getCompanyId()).get();
-        //        CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(enterMarketDto.getCompanySimulationStepId()).get();
         EnterMarketOrder enterMarketOrder = new EnterMarketOrder();
         Market market = marketRepository.findById(enterMarketDto.getMarketId()).get();
         Simulation simulation = company.getSimulation();
@@ -225,7 +224,6 @@ public class SimulationServiceImpl implements SimulationService {
         }).collect(Collectors.toList());
     }
 
-    // TODO simplify for user by only providing simulation id - delete this service
     @Override
     @Transactional
     public Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId) {

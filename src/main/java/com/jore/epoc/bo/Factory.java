@@ -14,16 +14,14 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Entity
 public class Factory extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     private int productionLines;
     private YearMonth productionStartMonth;
-    private int monthlyCapacityPerProductionLine;
+    private int dailyCapacityPerProductionLine;
     @AttributeOverride(name = "amount", column = @Column(name = "labour_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "labour_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -34,23 +32,18 @@ public class Factory extends BusinessObject {
     }
 
     public int produce(int maximumToProduce, YearMonth productionMonth, double productivityFactor) {
-        Assert.isTrue("Capacity per production line must be greater zero.", monthlyCapacityPerProductionLine > 0);
+        Assert.isTrue("Capacity per production line must be greater zero.", dailyCapacityPerProductionLine > 0);
         Assert.notNull("Production start month must not be null", productionStartMonth);
-        Assert.notNull("Production line labour costs must not be null", productionLineLaborCost);
-        if (isProductionReady(productionMonth)) {
+        int result = 0;
+        if (isProductionReady(productionMonth) && Storage.getTotalRawMaterialStored(company.getStorages()) > 0) {
             for (LocalDate date : Util.getDaysInMonth(productionMonth)) {
                 if (EpocCalendar.getInstance().isWorkingDay(date)) {
-                    // take raw material from storage
-                    // produce
-                    // put product into storage
-                    log.info(date);
+                    int amountRemoved = Storage.removeRawMaterialFromStorages(company.getStorages(), (int) (productionLines * dailyCapacityPerProductionLine * productivityFactor));
+                    // Produce
+                    result += amountRemoved;
+                    Storage.distributeProductAccrossStorages(company.getStorages(), amountRemoved, productionMonth);
                 }
             }
-        }
-        // return produced amount
-        int result = (int) (isProductionReady(productionMonth) ? Math.min(maximumToProduce, productionLines * monthlyCapacityPerProductionLine * productivityFactor) : 0);
-        result = Math.min(result, company.getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum());
-        if (result > 0) {
         }
         return result;
     }
@@ -59,8 +52,8 @@ public class Factory extends BusinessObject {
         this.company = company;
     }
 
-    public void setMonthlyCapacityPerProductionLine(int monthlyCapacityPerProductionLine) {
-        this.monthlyCapacityPerProductionLine = monthlyCapacityPerProductionLine;
+    public void setDailyCapacityPerProductionLine(int dailyCapacityPerProductionLine) {
+        this.dailyCapacityPerProductionLine = dailyCapacityPerProductionLine;
     }
 
     public void setProductionLineLaborCost(Money productionLineLaborCost) {

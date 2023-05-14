@@ -20,7 +20,7 @@ public class EpocSettings extends BusinessObject {
     public static final String FACTORY_COST_PER_PRODUCTION_LINE = "SET0002";
     public static final String STORAGE_FIXED_COST = "SET0003";
     public static final String STORAGE_VARIABLE_COST_PER_SLOT = "SET0004";
-    public static final String MONTHLY_CAPACITY_PER_PRODUCTION_LINE = "SET0005";
+    public static final String DAILY_CAPACITY_PER_PRODUCTION_LINE = "SET0005";
     public static final String FACTORY_CONSTRUCTION_MONTHS = "SET0006";
     public static final String STORAGE_CONSTRUCTION_MONTHS = "SET0007";
     public static final String PASSWORD_LENGTH = "SET0008";
@@ -66,6 +66,10 @@ public class EpocSettings extends BusinessObject {
 
     public Currency getBaseCurrency() {
         return settings.get(BASE_CURRENCY).asCurrency();
+    }
+
+    public Integer getDailyCapacityPerProductionLine() {
+        return settings.get(DAILY_CAPACITY_PER_PRODUCTION_LINE).asInteger();
     }
 
     public Percent getDebtInterestRate() {
@@ -114,10 +118,6 @@ public class EpocSettings extends BusinessObject {
 
     public Money getMaintentanceCostPerBuilding() {
         return settings.get(MAINTENANCE_COST_PER_BUILDING).asMoney();
-    }
-
-    public Integer getMonthlyCapacityPerProductionLine() {
-        return settings.get(MONTHLY_CAPACITY_PER_PRODUCTION_LINE).asInteger();
     }
 
     public Integer getPassiveSteps() {

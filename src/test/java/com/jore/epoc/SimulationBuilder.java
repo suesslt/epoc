@@ -47,7 +47,7 @@ public class SimulationBuilder {
     private int productLifecycleDuration = 100;
     private Integer timeToBuildStorage = 0;
     private Integer timeToBuildFactory = 0;
-    private Integer monthlyCapacityPerProductionLine = 100;
+    private Integer dailyCapacityPerProductionLine = 4;
     private Money factoryLaborCost = Money.of(CHF, 500000);
     private String marketName = "Switzerland";
     private Money marketDistributionCost = Money.of(CHF, 2000000);
@@ -110,7 +110,7 @@ public class SimulationBuilder {
         order.setConstructionCostPerLine(productionLineConstructionCosts);
         order.setProductionLines(productionLines);
         order.setTimeToBuild(timeToBuildFactory);
-        order.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
+        order.setDailyCapacityPerProductionLine(dailyCapacityPerProductionLine);
         order.setProductionLineLaborCost(factoryLaborCost);
         orders.add(order);
         return this;

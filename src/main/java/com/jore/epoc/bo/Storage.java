@@ -18,7 +18,6 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Storage extends BusinessObject {
-    // TODO Write test cases
     public static void distributeProductAccrossStorages(List<Storage> storages, int productsToStore, YearMonth storageMonth) {
         int toStore = productsToStore;
         Iterator<Storage> iter = storages.iterator();
@@ -27,7 +26,6 @@ public class Storage extends BusinessObject {
             int capacity = storage.getAvailableCapacity(storageMonth);
             toStore -= storage.storeProducts(Math.min(toStore, capacity), storageMonth);
         }
-        Assert.isTrue("Remainder in storing products must not be greater zero.", toStore == 0);
     }
 
     public static void distributeRawMaterialAccrossStorages(List<Storage> storages, int rawMaterialToStore, YearMonth storageMonth, Money unitPrice) {
@@ -52,12 +50,24 @@ public class Storage extends BusinessObject {
         return value != null ? value.divide(inventory) : null;
     }
 
+    public static Integer getProductsStored(List<Storage> storages) {
+        return storages.stream().mapToInt(storage -> storage.getStoredProducts()).sum();
+    }
+
+    public static Integer getRawMaterialStored(List<Storage> storages) {
+        return storages.stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
+    }
+
     public static Money getRawMaterialValue(List<Storage> storages) {
         Money result = null;
         for (Storage storage : storages) {
             result = Money.add(result, storage.getValue());
         }
         return result;
+    }
+
+    public static int getTotalRawMaterialStored(List<Storage> storages) {
+        return storages.stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
     }
 
     public static Integer getTotalStored(List<Storage> storages) {
@@ -73,17 +83,16 @@ public class Storage extends BusinessObject {
         Assert.isTrue("Remainder in removing product must not be greater zero.", toRemove == 0);
     }
 
-    public static void removeRawMaterialFromStorages(List<Storage> storages, int rawMaterialToRemove) {
+    public static int removeRawMaterialFromStorages(List<Storage> storages, int rawMaterialToRemove) {
         int toRemove = rawMaterialToRemove;
+        int result = 0;
         Iterator<Storage> storageIterator = storages.iterator();
         while (toRemove > 0 && storageIterator.hasNext()) {
-            toRemove -= storageIterator.next().removeRawMaterials(toRemove);
+            int removed = storageIterator.next().removeRawMaterials(toRemove);
+            toRemove -= removed;
+            result += removed;
         }
-        Assert.isTrue("Remainder in removing raw material must not be greater zero.", toRemove == 0);
-    }
-
-    private static int getTotalRawMaterialStored(List<Storage> storages) {
-        return storages.stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
+        return result;
     }
 
     @ManyToOne(optional = false)

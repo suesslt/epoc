@@ -15,7 +15,7 @@ import jakarta.persistence.Entity;
 public class BuildFactoryOrder extends AbstractSimulationOrder {
     private Integer productionLines;
     private Integer timeToBuild;
-    private Integer monthlyCapacityPerProductionLine;
+    private Integer dailyCapacityPerProductionLine;
     @AttributeOverride(name = "amount", column = @Column(name = "labor_cost_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "labor_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
@@ -55,8 +55,8 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         this.constructionCostsPerLine = constructionCostsPerLine;
     }
 
-    public void setMonthlyCapacityPerProductionLine(Integer monthlyCapacityPerProductionLine) {
-        this.monthlyCapacityPerProductionLine = monthlyCapacityPerProductionLine;
+    public void setDailyCapacityPerProductionLine(Integer dailyCapacityPerProductionLine) {
+        this.dailyCapacityPerProductionLine = dailyCapacityPerProductionLine;
     }
 
     public void setProductionLineLaborCost(Money productionLineLaborCost) {
@@ -75,7 +75,7 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
         Factory factory = new Factory();
         factory.setProductionLines(productionLines);
         factory.setProductionStartMonth(getExecutionMonth().plusMonths(timeToBuild));
-        factory.setMonthlyCapacityPerProductionLine(monthlyCapacityPerProductionLine);
+        factory.setDailyCapacityPerProductionLine(dailyCapacityPerProductionLine);
         factory.setProductionLineLaborCost(productionLineLaborCost);
         getCompany().addFactory(factory);
     }

@@ -38,7 +38,7 @@ class OrderTests {
         order.setExecutionMonth(YearMonth.of(2023, 1));
         order.setConstructionCost(Money.of("CHF", 1000000));
         order.setProductionLines(10);
-        order.setMonthlyCapacityPerProductionLine(100);
+        order.setDailyCapacityPerProductionLine(4);
         order.setTimeToBuild(0);
         order.setProductionLineLaborCost(Money.of("CHF", 1));
         order.setConstructionCostPerLine(Money.of("CHF", 1000));
@@ -59,7 +59,7 @@ class OrderTests {
         order.setExecutionMonth(YearMonth.of(2023, 1));
         order.setConstructionCost(Money.of("CHF", 1000000));
         order.setProductionLines(10);
-        order.setMonthlyCapacityPerProductionLine(100);
+        order.setDailyCapacityPerProductionLine(4);
         order.setTimeToBuild(0);
         order.setProductionLineLaborCost(Money.of("CHF", 1));
         order.setConstructionCostPerLine(Money.of("CHF", 1000));
