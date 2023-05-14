@@ -159,13 +159,12 @@ public class FinancialAccounting extends BusinessObject {
         return getBalanceForAccount(SALARIES, valueDate);
     }
 
-    @Deprecated
-    public void setBalanceForAccount(String accountNumber, Money balance) {
-        getAccount(accountNumber).get().setStartBalance(balance.getAmount());
-    }
-
     public void setBaseCurrency(Currency baseCurrency) {
         this.baseCurrency = baseCurrency;
+    }
+
+    public void setStartBalanceForAccount(String accountNumber, Money balance) {
+        getAccount(accountNumber).get().setStartBalance(balance.getAmount());
     }
 
     @Override

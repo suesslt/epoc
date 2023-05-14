@@ -56,7 +56,7 @@ class OrderTests {
         Company company = new Company();
         FinancialAccounting accounting = new FinancialAccounting();
         company.setAccounting(accounting);
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 1100000));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 1100000));
         BuildFactoryOrder order = new BuildFactoryOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
         order.setConstructionCost(Money.of("CHF", 1000000));
@@ -96,7 +96,7 @@ class OrderTests {
         Company company = new Company();
         FinancialAccounting accounting = new FinancialAccounting();
         company.setAccounting(accounting);
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 1100000));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 1100000));
         BuildStorageOrder order = new BuildStorageOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
         order.setConstructionCost(Money.of("CHF", 1000000));
@@ -121,7 +121,7 @@ class OrderTests {
         storage.setCapacity(1001);
         storage.setStorageStartMonth(EXECUTION_MONTH);
         company.addStorage(storage);
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 29999));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 29999));
         BuyRawMaterialOrder order = new BuyRawMaterialOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
         order.setAmount(1000);
@@ -144,7 +144,7 @@ class OrderTests {
         storage.setCapacity(100);
         storage.setStorageStartMonth(EXECUTION_MONTH);
         company.addStorage(storage);
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 30001));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 30001));
         BuyRawMaterialOrder order = new BuyRawMaterialOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
         order.setAmount(1000);
@@ -167,7 +167,7 @@ class OrderTests {
         storage.setCapacity(1001);
         storage.setStorageStartMonth(EXECUTION_MONTH);
         company.addStorage(storage);
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 30001));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 30001));
         BuyRawMaterialOrder order = new BuyRawMaterialOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
         order.setAmount(1000);
@@ -185,7 +185,7 @@ class OrderTests {
     public void testDecreaseCreditAmountSuccessfully() {
         Company company = new Company();
         FinancialAccounting accounting = new FinancialAccounting();
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 100002));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 100002));
         company.setAccounting(accounting);
         AdjustCreditLineOrder order = new AdjustCreditLineOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
@@ -223,7 +223,7 @@ class OrderTests {
         Company company = new Company();
         FinancialAccounting accounting = new FinancialAccounting();
         company.setAccounting(accounting);
-        accounting.setBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 100000));
+        accounting.setStartBalanceForAccount(FinancialAccounting.BANK, Money.of("CHF", 100000));
         EnterMarketOrder order = new EnterMarketOrder();
         order.setExecutionMonth(EXECUTION_MONTH);
         order.setEnterMarktCost(Money.of("CHF", 100000));
