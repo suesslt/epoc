@@ -19,13 +19,13 @@ public class IncreaseQualityOrder extends AbstractSimulationOrder {
 
     @Override
     public void execute() {
-        if (getCompany().getAccounting().checkFunds(increaseQualityAmount)) {
+        if (getCompany().getAccounting().checkFunds(increaseQualityAmount, getExecutionMonth().atEndOfMonth())) {
             increaseQuality();
             book(getExecutionMonth().atDay(1), "Increase quality", FinancialAccounting.SERVICES, FinancialAccounting.BANK, increaseQualityAmount);
             addMessage(MessageLevel.INFORMATION, "IncreaseQuality", getExecutionMonth(), increaseQualityAmount);
             setExecuted(true);
         } else {
-            addMessage(MessageLevel.WARNING, "NoIncreaseInQualityDueToFunding", getExecutionMonth(), increaseQualityAmount, getCompany().getAccounting().getBankBalance());
+            addMessage(MessageLevel.WARNING, "NoIncreaseInQualityDueToFunding", getExecutionMonth(), increaseQualityAmount, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
         }
     }
 

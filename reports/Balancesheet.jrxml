@@ -12,7 +12,7 @@
 	<field name="receivableThis" class="java.lang.String"/>
 	<field name="receivablePrev" class="java.lang.String"/>
 	<field name="inventoryRawMaterialThis" class="java.lang.String"/>
-	<field name="inventorRawMaterialPrev" class="java.lang.String"/>
+	<field name="inventoryRawMaterialPrev" class="java.lang.String"/>
 	<field name="inventoryProductsThis" class="java.lang.String"/>
 	<field name="inventoryProductsPrev" class="java.lang.String"/>
 	<field name="totalCurrentAssetsThis" class="java.lang.String"/>
@@ -27,10 +27,10 @@
 	<field name="totalCurrentLiabilitiesPrev" class="java.lang.String"/>
 	<field name="totalLiabilitiesThis" class="java.lang.String"/>
 	<field name="totalLiabilitiesPrev" class="java.lang.String"/>
-	<field name="OwnersEquityThis" class="java.lang.String"/>
-	<field name="OwnersEquityPrev" class="java.lang.String"/>
-	<field name="totaLiabilitiesAndOwnersEquityThis" class="java.lang.String"/>
-	<field name="totaLiabilitiesAndOwnersEquityPrev" class="java.lang.String"/>
+	<field name="ownersEquityThis" class="java.lang.String"/>
+	<field name="ownersEquityPrev" class="java.lang.String"/>
+	<field name="totalLiabilitiesAndOwnersEquityThis" class="java.lang.String"/>
+	<field name="totalLiabilitiesAndOwnersEquityPrev" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -193,7 +193,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{inventorRawMaterialPrev}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inventoryRawMaterialPrev}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="330" y="109" width="100" height="16" uuid="5c31e8f4-5c86-4646-9bd4-827f829283ea"/>
@@ -429,14 +429,14 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OwnersEquityThis}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ownersEquityThis}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="386" width="100" height="16" uuid="04469afe-d002-417b-a253-7c2e29f55ff4"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OwnersEquityPrev}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ownersEquityPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="180" y="386" width="140" height="16" uuid="83a9bd51-3b19-4d49-ab87-024399907f7c">
@@ -456,7 +456,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OwnersEquityThis}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ownersEquityThis}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="404" width="100" height="16" uuid="73826b1d-70d5-47b9-b564-4a8b81436221"/>
@@ -467,7 +467,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OwnersEquityPrev}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ownersEquityPrev}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="180" y="404" width="140" height="16" uuid="21ee0f2a-9f51-48a6-a7ec-a21efc399af9">

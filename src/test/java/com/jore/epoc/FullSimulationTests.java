@@ -42,14 +42,14 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", 5320000.00), company.getAccounting().getBankBalance());
-        assertEquals(Money.of("CHF", -13000000.00), company.getAccounting().getLongTermDebt());
-        assertEquals(Money.of("CHF", 2665673.44), company.getAccounting().getRealEstateBalance());
-        assertEquals(Money.of("CHF", 8800000.00), company.getAccounting().getRevenues());
-        assertEquals(Money.of("CHF", -4657926.56), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -32605485.89), company.getAccounting().getCompanyValue());
-        assertEquals(Money.of("CHF", 396000.00), company.getAccounting().getRawMaterialBalance());
-        assertEquals(Money.of("CHF", -39600.00), company.getAccounting().getProductBalance());
+        assertEquals(Money.of("CHF", 5320000.00), company.getAccounting().getBankBalance(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -13000000.00), company.getAccounting().getLongTermDebt(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", 2665673.44), company.getAccounting().getRealEstateBalance(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", 8800000.00), company.getAccounting().getRevenues(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -4657926.56), company.getAccounting().getPnL(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -32605485.89), company.getAccounting().getCompanyValue(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", 396000.00), company.getAccounting().getRawMaterialBalance(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -39600.00), company.getAccounting().getProductBalance(YearMonth.of(2020, 12).atEndOfMonth()));
     }
 
     @Test
@@ -68,9 +68,9 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -10392280.66), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getPnL(YearMonth.of(2020, 1).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getOwnersCapital(YearMonth.of(2020, 1).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -10392280.66), company.getAccounting().getCompanyValue(YearMonth.of(2020, 1).atEndOfMonth()));
     }
 
     @Test
@@ -100,9 +100,9 @@ class FullSimulationTests {
         }
         log.info(company.getAccounting().toString());
         assertEquals(11000, company.getSoldProducts());
-        assertEquals(Money.of("CHF", -5687926.56), company.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -5687926.56), company.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -39815485.89), company.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -5687926.56), company.getAccounting().getPnL(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -5687926.56), company.getAccounting().getOwnersCapital(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -39815485.89), company.getAccounting().getCompanyValue(YearMonth.of(2020, 12).atEndOfMonth()));
     }
 
     @Test
@@ -125,7 +125,7 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", 16768000), company.getAccounting().getRevenues());
+        assertEquals(Money.of("CHF", 16768000), company.getAccounting().getRevenues(YearMonth.of(2022, 8).atEndOfMonth()));
         assertEquals(10, activeStepCounter);
         assertEquals(120, company.getCompanySimulationSteps().size());
         assertEquals(120, company.getSimulation().getSimulationSteps().size());
@@ -175,13 +175,13 @@ class FullSimulationTests {
         }
         log.info(companyA.getAccounting().toString());
         assertEquals(10000, companyA.getSoldProducts());
-        assertEquals(Money.of("CHF", -6220326.56), companyA.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6220326.56), companyA.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -43542285.89), companyA.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6220326.56), companyA.getAccounting().getPnL(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -6220326.56), companyA.getAccounting().getOwnersCapital(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -43542285.89), companyA.getAccounting().getCompanyValue(YearMonth.of(2020, 12).atEndOfMonth()));
         assertEquals(10000, companyB.getSoldProducts());
-        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -43542285.89), companyB.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getPnL(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getOwnersCapital(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -43542285.89), companyB.getAccounting().getCompanyValue(YearMonth.of(2020, 12).atEndOfMonth()));
     }
 
     @Test
@@ -278,12 +278,12 @@ class FullSimulationTests {
         }
         log.info(companyA.getAccounting().toString());
         assertEquals(10000, companyA.getSoldProducts());
-        assertEquals(Money.of("CHF", -6520326.56), companyA.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6520326.56), companyA.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -45642285.89), companyA.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6520326.56), companyA.getAccounting().getPnL(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -6520326.56), companyA.getAccounting().getOwnersCapital(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -45642285.89), companyA.getAccounting().getCompanyValue(YearMonth.of(2020, 12).atEndOfMonth()));
         assertEquals(10000, companyB.getSoldProducts());
-        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getPnL());
-        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getOwnersCapital());
-        assertEquals(Money.of("CHF", -43542285.89), companyB.getAccounting().getCompanyValue());
+        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getPnL(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -6220326.56), companyB.getAccounting().getOwnersCapital(YearMonth.of(2020, 12).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -43542285.89), companyB.getAccounting().getCompanyValue(YearMonth.of(2020, 12).atEndOfMonth()));
     }
 }

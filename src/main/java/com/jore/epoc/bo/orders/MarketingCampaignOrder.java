@@ -19,13 +19,13 @@ public class MarketingCampaignOrder extends AbstractSimulationOrder {
 
     @Override
     public void execute() {
-        if (getCompany().getAccounting().checkFunds(marketingCampaignAmount)) {
+        if (getCompany().getAccounting().checkFunds(marketingCampaignAmount, getExecutionMonth().atEndOfMonth())) {
             runMarketingCampaign();
             book(getExecutionMonth().atDay(1), "Marketing campaign", FinancialAccounting.SERVICES, FinancialAccounting.BANK, marketingCampaignAmount);
             addMessage(MessageLevel.INFORMATION, "MarketingCampaign", getExecutionMonth(), marketingCampaignAmount);
             setExecuted(true);
         } else {
-            addMessage(MessageLevel.WARNING, "NoMarketingCampaignDueToFunding", getExecutionMonth(), marketingCampaignAmount, getCompany().getAccounting().getBankBalance());
+            addMessage(MessageLevel.WARNING, "NoMarketingCampaignDueToFunding", getExecutionMonth(), marketingCampaignAmount, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
         }
     }
 

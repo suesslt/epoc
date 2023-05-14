@@ -1,7 +1,10 @@
 package com.jore.epoc.bo.accounting;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.annotations.Type;
 
@@ -35,6 +38,8 @@ public class FinancialAccounting extends BusinessObject {
     public static final String INTEREST = "6900";
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accounting", orphanRemoval = true)
+    private List<JournalEntry> journalEntries = new ArrayList<>();
     @Type(CurrencyUserType.class)
     private Currency baseCurrency = Currency.getInstance("CHF");
 
@@ -60,82 +65,103 @@ public class FinancialAccounting extends BusinessObject {
         accounts.add(account);
     }
 
-    public void book(BookingRecord bookingRecord) {
-        log.debug(bookingRecord);
-        String debitAccountNumber = bookingRecord.amount().debitAccount();
-        Account debitAccount = getAccount(debitAccountNumber);
-        debitAccount.debit(bookingRecord.amount().amount());
-        String creditAccountNumber = bookingRecord.amount().creditAccount();
-        Account creditAccount = getAccount(creditAccountNumber);
-        creditAccount.credit(bookingRecord.amount().amount());
+    public void addJournalEntry(JournalEntry journalEntry) {
+        journalEntry.setAccounting(this);
+        journalEntries.add(journalEntry);
     }
 
-    public boolean checkFunds(Money costsToBeCharged) {
-        return getBankBalance().compareTo(costsToBeCharged) >= 0;
+    public void book(String bookingText, LocalDate bookingDate, LocalDate valueDate, DebitCreditAmount... creditDebitAmounts) {
+        JournalEntry journalEntry = new JournalEntry();
+        journalEntry.setBookingText(bookingText);
+        journalEntry.setBookingDate(bookingDate);
+        journalEntry.setValueDate(valueDate);
+        for (DebitCreditAmount creditDebitAmount : creditDebitAmounts) {
+            Booking booking = new Booking();
+            booking.setAmount(creditDebitAmount.amount().getAmount()); // TODO Test case if not found
+            getAccount(creditDebitAmount.debitAccountNumber()).get().debit(booking);
+            getAccount(creditDebitAmount.creditAccountNumber()).get().credit(booking);
+            journalEntry.addBooking(booking);
+        }
+        addJournalEntry(journalEntry);
+        log.debug(journalEntry);
     }
 
-    public Money getBalanceForAccount(String accountNumber) {
-        return nullToZero(getAccount(accountNumber).getBalance());
+    public boolean checkFunds(Money costsToBeCharged, LocalDate valueDate) {
+        return getBankBalance(valueDate).compareTo(costsToBeCharged) >= 0;
     }
 
-    public Money getBankBalance() {
-        return nullToZero(getAccount(BANK).getBalance());
-    }
-
-    public Money getCompanyValue() {
-        return Money.add(getOwnersCapital(), getPnL() != null ? getPnL().multiply(INFINITY_MULTIPLIER) : null);
-    }
-
-    public Money getLongTermDebt() {
-        return nullToZero(getAccount(LONG_TERM_DEBT).getBalance());
-    }
-
-    public Money getOwnersCapital() {
+    public Money getBalanceForAccount(String accountNumber, LocalDate valueDate) {
         Money result = null;
-        result = Money.add(result, getBalanceForAccount(BANK));
-        result = Money.add(result, getBalanceForAccount(REAL_ESTATE));
-        result = Money.add(result, getBalanceForAccount(RAW_MATERIALS));
-        result = Money.add(result, getBalanceForAccount(PRODUCTS));
-        result = Money.add(result, getBalanceForAccount(LONG_TERM_DEBT));
+        Optional<Account> account = getAccount(accountNumber);
+        if (account.isPresent()) {
+            result = Money.of(baseCurrency, account.get().getBalance());
+        } else {
+            result = Money.of(baseCurrency, BigDecimal.ZERO); // TODO Consider to return Optional<Money>
+        }
         return result;
     }
 
-    public Money getPnL() {
+    public Money getBankBalance(LocalDate valueDate) {
+        return getBalanceForAccount(BANK, valueDate);
+    }
+
+    public Money getCompanyValue(LocalDate valueDate) {
+        return Money.add(getOwnersCapital(valueDate), getPnL(valueDate) != null ? getPnL(valueDate).multiply(INFINITY_MULTIPLIER) : null);
+    }
+
+    public Money getLongTermDebt(LocalDate valueDate) {
+        return getBalanceForAccount(LONG_TERM_DEBT, valueDate);
+    }
+
+    // TODO stream accounts, filter and add
+    public Money getOwnersCapital(LocalDate valueDate) {
         Money result = null;
-        result = Money.add(result, getBalanceForAccount(PRODUCT_REVENUES));
-        result = Money.add(result, getBalanceForAccount(SERVICES));
-        result = Money.add(result, getBalanceForAccount(INTEREST));
-        result = Money.add(result, getBalanceForAccount(RAUMAUFWAND));
-        result = Money.add(result, getBalanceForAccount(DEPRECIATION));
-        result = Money.add(result, getBalanceForAccount(SALARIES));
-        result = Money.add(result, getBalanceForAccount(MATERIALAUFWAND));
-        result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_ROHWAREN));
-        result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_PRODUKTE));
+        result = Money.add(result, getBalanceForAccount(BANK, valueDate));
+        result = Money.add(result, getBalanceForAccount(REAL_ESTATE, valueDate));
+        result = Money.add(result, getBalanceForAccount(RAW_MATERIALS, valueDate));
+        result = Money.add(result, getBalanceForAccount(PRODUCTS, valueDate));
+        result = Money.add(result, getBalanceForAccount(LONG_TERM_DEBT, valueDate));
         return result;
     }
 
-    public Money getProductBalance() {
-        return nullToZero(getAccount(PRODUCTS).getBalance());
+    // TODO stream accounts, filter and add
+    public Money getPnL(LocalDate valueDate) {
+        Money result = null;
+        result = Money.add(result, getBalanceForAccount(PRODUCT_REVENUES, valueDate));
+        result = Money.add(result, getBalanceForAccount(SERVICES, valueDate));
+        result = Money.add(result, getBalanceForAccount(INTEREST, valueDate));
+        result = Money.add(result, getBalanceForAccount(RAUMAUFWAND, valueDate));
+        result = Money.add(result, getBalanceForAccount(DEPRECIATION, valueDate));
+        result = Money.add(result, getBalanceForAccount(SALARIES, valueDate));
+        result = Money.add(result, getBalanceForAccount(MATERIALAUFWAND, valueDate));
+        result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_ROHWAREN, valueDate));
+        result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_PRODUKTE, valueDate));
+        return result;
     }
 
-    public Money getRawMaterialBalance() {
-        return nullToZero(getAccount(RAW_MATERIALS).getBalance());
+    public Money getProductBalance(LocalDate valueDate) {
+        return getBalanceForAccount(PRODUCTS, valueDate);
     }
 
-    public Money getRealEstateBalance() {
-        return nullToZero(getAccount(REAL_ESTATE).getBalance());
+    public Money getRawMaterialBalance(LocalDate valueDate) {
+        return getBalanceForAccount(RAW_MATERIALS, valueDate);
     }
 
-    public Money getRevenues() {
-        return nullToZero(getAccount(PRODUCT_REVENUES).getBalance());
+    public Money getRealEstateBalance(LocalDate valueDate) {
+        return getBalanceForAccount(REAL_ESTATE, valueDate);
     }
 
-    public Money getSalaries() {
-        return nullToZero(getAccount(SALARIES).getBalance());
+    public Money getRevenues(LocalDate valueDate) {
+        return getBalanceForAccount(PRODUCT_REVENUES, valueDate);
     }
 
+    public Money getSalaries(LocalDate valueDate) {
+        return getBalanceForAccount(SALARIES, valueDate);
+    }
+
+    @Deprecated
     public void setBalanceForAccount(String accountNumber, Money balance) {
-        getAccount(accountNumber).setBalance(balance);
+        getAccount(accountNumber).get().setStartBalance(balance.getAmount());
     }
 
     public void setBaseCurrency(Currency baseCurrency) {
@@ -149,25 +175,16 @@ public class FinancialAccounting extends BusinessObject {
             result.append("\n");
             result.append(account.getNumber());
             result.append(": ");
-            result.append(account.getBalance());
+            result.append(account.getStartBalance());
             result.append(" (");
             result.append(account.getName());
             result.append(")");
         }
         result.append("\n");
-        result.append("PnL:           ");
-        result.append(getPnL());
-        result.append("\n");
-        result.append("Company Value: ");
-        result.append(getCompanyValue());
         return result.toString();
     }
 
-    private Account getAccount(String number) {
-        return accounts.stream().filter(account -> account.getNumber().equals(number)).findFirst().get();
-    }
-
-    private Money nullToZero(Money balance) {
-        return balance == null ? Money.of(baseCurrency, 0) : balance;
+    private Optional<Account> getAccount(String number) {
+        return accounts.stream().filter(account -> account.getNumber().equals(number)).findFirst();
     }
 }

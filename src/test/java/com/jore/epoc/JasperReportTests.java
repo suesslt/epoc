@@ -21,7 +21,7 @@ class JasperReportTests {
     @Test
     void test() throws JRException {
         JasperReport report = JasperCompileManager.compileReport("/Users/thomassussli/workspace/epoc/reports/BalanceSheet.jrxml");
-        JRSaver.saveObject(report, "/Users/thomassussli/JaspersoftWorkspace/MyReports/JasperTest.jasper");
+        JRSaver.saveObject(report, "/Users/thomassussli/workspace/epoc/reports/BalanceSheet.jasper");
         BalanceSheetData testReportData = new BalanceSheetData();
         ArrayList<BalanceSheetData> list = new ArrayList<>();
         list.add(testReportData);
@@ -29,7 +29,7 @@ class JasperReportTests {
         JasperPrint print = JasperFillManager.fillReport(report, null, source);
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(print));
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput("/Users/thomassussli/JaspersoftWorkspace/MyReports/JasperTest.pdf"));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput("/Users/thomassussli/workspace/epoc/reports/BalanceSheet.pdf"));
         SimplePdfReportConfiguration reportConfig = new SimplePdfReportConfiguration();
         reportConfig.setSizePageToContent(true);
         reportConfig.setForceLineBreakPolicy(false);

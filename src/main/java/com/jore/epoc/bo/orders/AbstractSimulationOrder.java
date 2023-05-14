@@ -5,7 +5,6 @@ import java.time.YearMonth;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
-import com.jore.epoc.bo.accounting.BookingRecord;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.message.Message;
 import com.jore.epoc.bo.message.MessageLevel;
@@ -13,7 +12,9 @@ import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 // TODO Check if subclasses can be stored in one table
 public abstract class AbstractSimulationOrder extends BusinessObject implements SimulationOrder {
@@ -60,14 +61,14 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
         message.setLevel(level);
         message.setMessage(key, parms);
         company.addMessage(message);
+        log.debug(message);
     }
 
     protected void book(LocalDate bookingDate, String bookingText, String debitAccount, String creditAccount, Money bookingAmount) {
-        company.getAccounting().book(new BookingRecord(bookingDate, bookingText, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount)));
+        company.getAccounting().book(bookingText, bookingDate, bookingDate, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount));
     }
 
     protected void book(LocalDate bookingDate, String bookingText, String debitAccount, String creditAccount, Money bookingAmount, String debitAccount2, String creditAccount2, Money bookingAmount2) {
-        company.getAccounting().book(new BookingRecord(bookingDate, bookingText, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount)));
-        company.getAccounting().book(new BookingRecord(bookingDate, bookingText, new DebitCreditAmount(debitAccount2, creditAccount2, bookingAmount2)));
+        company.getAccounting().book(bookingText, bookingDate, bookingDate, new DebitCreditAmount(debitAccount, creditAccount, bookingAmount), new DebitCreditAmount(debitAccount2, creditAccount2, bookingAmount2));
     }
 }

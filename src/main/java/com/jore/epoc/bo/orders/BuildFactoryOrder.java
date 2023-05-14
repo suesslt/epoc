@@ -32,13 +32,13 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
     @Override
     public void execute() {
         Money factoryCosts = constructionCosts.add(constructionCostsPerLine.multiply(productionLines));
-        if (getCompany().getAccounting().checkFunds(factoryCosts)) {
+        if (getCompany().getAccounting().checkFunds(factoryCosts, getExecutionMonth().atEndOfMonth())) {
             addFactory();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", FinancialAccounting.REAL_ESTATE, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines)));
             addMessage(MessageLevel.INFORMATION, "FactoryCreated", factoryCosts, getExecutionMonth());
             setExecuted(true);
         } else {
-            addMessage(MessageLevel.WARNING, "NoFactoryDueToFunds", getExecutionMonth(), factoryCosts, getCompany().getAccounting().getBankBalance());
+            addMessage(MessageLevel.WARNING, "NoFactoryDueToFunds", getExecutionMonth(), factoryCosts, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
         }
     }
 

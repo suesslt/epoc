@@ -19,13 +19,13 @@ public class IncreaseProductivityOrder extends AbstractSimulationOrder {
 
     @Override
     public void execute() {
-        if (getCompany().getAccounting().checkFunds(increaseProductivityAmount)) {
+        if (getCompany().getAccounting().checkFunds(increaseProductivityAmount, getExecutionMonth().atEndOfMonth())) {
             setProductivityFactor();
             book(getExecutionMonth().atDay(1), "Increase productivity", FinancialAccounting.SERVICES, FinancialAccounting.BANK, increaseProductivityAmount);
             addMessage(MessageLevel.INFORMATION, "IncreaseProductivity", getExecutionMonth(), increaseProductivityAmount);
             setExecuted(true);
         } else {
-            addMessage(MessageLevel.WARNING, "NoIncreaseInProductivityDueToFunding", getExecutionMonth(), increaseProductivityAmount, getCompany().getAccounting().getBankBalance());
+            addMessage(MessageLevel.WARNING, "NoIncreaseInProductivityDueToFunding", getExecutionMonth(), increaseProductivityAmount, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
         }
     }
 

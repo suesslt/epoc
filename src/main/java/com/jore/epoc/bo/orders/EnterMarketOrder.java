@@ -29,7 +29,7 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
 
     @Override
     public void execute() {
-        if (getCompany().getAccounting().checkFunds(marketEntryCost)) {
+        if (getCompany().getAccounting().checkFunds(marketEntryCost, getExecutionMonth().atEndOfMonth())) {
             addDistributionInMarket();
             book(getExecutionMonth().atDay(1), "Entry into market", FinancialAccounting.SERVICES, FinancialAccounting.BANK, marketEntryCost);
             addMessage(MessageLevel.INFORMATION, "MarketEntrySuccess", marketSimulation.getMarket().getName());

@@ -40,7 +40,7 @@ class CompanyTests {
         Optional<SimulationStep> activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         CompanySimulationStep companySimulationStep = activeSimulationStep.get().getCompanySimulationStepFor(company);
         companySimulationStep.finish();
-        assertEquals(Money.of(CHF, -583333.33), company.getAccounting().getSalaries());
+        assertEquals(Money.of(CHF, -583333.33), company.getAccounting().getSalaries(FIRST_MONTH.atEndOfMonth()));
     }
 
     @Test

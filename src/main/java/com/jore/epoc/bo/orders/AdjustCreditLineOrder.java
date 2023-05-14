@@ -29,12 +29,12 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
             addMessage(MessageLevel.INFORMATION, "CreditLineIncreased", amount, getExecutionMonth());
             setExecuted(true);
         } else if (direction.equals(CreditEventDirection.DECREASE)) {
-            if (getCompany().getAccounting().checkFunds(amount)) {
+            if (getCompany().getAccounting().checkFunds(amount, getExecutionMonth().atEndOfMonth())) {
                 book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Decrease credit line by " + amount, FinancialAccounting.LONG_TERM_DEBT, FinancialAccounting.BANK, amount);
                 addMessage(MessageLevel.INFORMATION, "CreditLineDecreased", amount, getExecutionMonth());
                 setExecuted(true);
             } else {
-                addMessage(MessageLevel.WARNING, "InsufficientFundToDecrase", amount, getCompany().getAccounting().getBankBalance());
+                addMessage(MessageLevel.WARNING, "InsufficientFundToDecrase", amount, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
             }
         }
     }

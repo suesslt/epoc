@@ -1,17 +1,33 @@
 package com.jore.epoc;
 
-import com.jore.datatypes.money.Money;
-
 import lombok.Data;
 
 @Data
 public class BalanceSheetData {
     private String balanceSheetDate = "Today";
     private String companyName = "The Best Company";
-    private String cashThis = Money.of("CHF", 15000).toString();
-    private String cashPrev = Money.of("CHF", 15000).toString();
-    private String recThis = Money.of("CHF", 15000).toString();
-    private String recPrev = Money.of("CHF", 15000).toString();
-    private String invThis = Money.of("CHF", 15000).toString();
-    private String invPrev = Money.of("CHF", 15000).toString();
+    private String cashThis;
+    private String cashPrev;
+    private String receivableThis;
+    private String receivablePrev;
+    private String inventoryRawMaterialThis;
+    private String inventoryRawMaterialPrev;
+    private String inventoryProductsThis;
+    private String inventoryProductsPrev;
+    private String totalCurrentAssetsThis;
+    private String totalCurrentAssetsPrev;
+    private String totalFixedAssetsThis;
+    private String totalFixedAssetsPrev;
+    private String propertiesThis;
+    private String propertiesPrev;
+    private String longTermDebtThis;
+    private String longTermDebtPrev;
+    private String totalCurrentLiabilitiesThis;
+    private String totalCurrentLiabilitiesPrev;
+    private String totalLiabilitiesThis;
+    private String totalLiabilitiesPrev;
+    private String ownersEquityThis;
+    private String ownersEquityPrev;
+    private String totalLiabilitiesAndOwnersEquityThis;
+    private String totalLiabilitiesAndOwnersEquityPrev;
 }
