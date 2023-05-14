@@ -1,8 +1,10 @@
 package com.jore.epoc.bo.accounting;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.jore.jpa.BusinessObject;
 
@@ -27,6 +29,7 @@ public class Account extends BusinessObject {
     public Account() {
     }
 
+    // TODO disable public constructor
     public Account(AccountType accountType, String number, String name) {
         this.accountType = accountType;
         this.number = number;
@@ -43,10 +46,11 @@ public class Account extends BusinessObject {
         debitBookings.add(booking);
     }
 
-    public BigDecimal getBalance() {
+    public BigDecimal getBalance(LocalDate valueDate) {
+        Objects.requireNonNull(valueDate, "Value date must not be null.");
         BigDecimal result = startBalance;
-        result = result.add(debitBookings.stream().map(booking -> booking.getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add));
-        result = result.add(creditBookings.stream().map(booking -> booking.getAmount().negate()).reduce(BigDecimal.ZERO, BigDecimal::add));
+        result = result.add(debitBookings.stream().filter(booking -> !booking.getValueDate().isAfter(valueDate)).map(booking -> booking.getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add));
+        result = result.add(creditBookings.stream().filter(booking -> !booking.getValueDate().isAfter(valueDate)).map(booking -> booking.getAmount().negate()).reduce(BigDecimal.ZERO, BigDecimal::add));
         return accountType.equals(AccountType.BALANCE_SHEET) ? result : result.negate();
     }
 
@@ -62,6 +66,10 @@ public class Account extends BusinessObject {
         return startBalance;
     }
 
+    public AccountType getType() {
+        return accountType;
+    }
+
     public void setAccounting(FinancialAccounting financialAccounting) {
         accounting = financialAccounting;
     }
@@ -71,6 +79,6 @@ public class Account extends BusinessObject {
     }
 
     public void setStartBalance(BigDecimal startBalance) {
-        this.startBalance = startBalance;
+        this.startBalance = Objects.requireNonNull(startBalance, "Start balance must not be null.");
     }
 }

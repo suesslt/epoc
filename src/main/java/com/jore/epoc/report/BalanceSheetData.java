@@ -1,4 +1,4 @@
-package com.jore.epoc;
+package com.jore.epoc.report;
 
 import lombok.Data;
 
@@ -30,4 +30,6 @@ public class BalanceSheetData {
     private String ownersEquityPrev;
     private String totalLiabilitiesAndOwnersEquityThis;
     private String totalLiabilitiesAndOwnersEquityPrev;
+    private String totalAssetsThis;
+    private String totalAssetsPrev;
 }

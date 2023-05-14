@@ -27,6 +27,10 @@ public class JournalEntry extends BusinessObject {
         bookings.add(booking);
     }
 
+    public LocalDate getValueDate() {
+        return valueDate;
+    }
+
     public void setAccounting(FinancialAccounting accounting) {
         this.accounting = accounting;
     }

@@ -68,9 +68,9 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getPnL(YearMonth.of(2020, 1).atEndOfMonth()));
-        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getOwnersCapital(YearMonth.of(2020, 1).atEndOfMonth()));
-        assertEquals(Money.of("CHF", -10392280.66), company.getAccounting().getCompanyValue(YearMonth.of(2020, 1).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getPnL(YearMonth.of(2020, 4).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -1484611.52), company.getAccounting().getOwnersCapital(YearMonth.of(2020, 4).atEndOfMonth()));
+        assertEquals(Money.of("CHF", -10392280.66), company.getAccounting().getCompanyValue(YearMonth.of(2020, 4).atEndOfMonth()));
     }
 
     @Test
@@ -125,7 +125,7 @@ class FullSimulationTests {
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }
         log.info(company.getAccounting().toString());
-        assertEquals(Money.of("CHF", 16768000), company.getAccounting().getRevenues(YearMonth.of(2022, 8).atEndOfMonth()));
+        assertEquals(Money.of("CHF", 16768000), company.getAccounting().getRevenues(YearMonth.of(2030, 1).atEndOfMonth()));
         assertEquals(10, activeStepCounter);
         assertEquals(120, company.getCompanySimulationSteps().size());
         assertEquals(120, company.getSimulation().getSimulationSteps().size());

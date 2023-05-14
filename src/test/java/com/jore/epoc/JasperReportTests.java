@@ -1,8 +1,14 @@
 package com.jore.epoc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
+
+import com.jore.epoc.bo.Company;
+import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.report.BalanceSheetData;
+import com.jore.epoc.report.BalanceSheetReport;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -19,7 +25,19 @@ import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 
 class JasperReportTests {
     @Test
-    void test() throws JRException {
+    public void testBalanceSheetData() {
+        Company company = SimulationBuilder.builder().build();
+        company.setId(1385);
+        CompanySimulationStep companySimulationStep = company.getSimulation().getActiveSimulationStep().get().getCompanySimulationStepFor(company);
+        companySimulationStep.finish();
+        BalanceSheetReport report = new BalanceSheetReport();
+        report.setSource(company, LocalDate.of(2020, 1, 31), LocalDate.of(2020, 2, 29));
+        BalanceSheetData data = report.getData();
+        report.store("BalanceSheet", company.getId().toString(), LocalDate.of(2020, 1, 31).toString());
+    }
+
+    @Test
+    public void testCompilation() throws JRException {
         JasperReport report = JasperCompileManager.compileReport("/Users/thomassussli/workspace/epoc/reports/BalanceSheet.jrxml");
         JRSaver.saveObject(report, "/Users/thomassussli/workspace/epoc/reports/BalanceSheet.jasper");
         BalanceSheetData testReportData = new BalanceSheetData();

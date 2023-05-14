@@ -1,6 +1,7 @@
 package com.jore.epoc.bo.accounting;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import com.jore.jpa.BusinessObject;
 
@@ -20,6 +21,10 @@ public class Booking extends BusinessObject {
 
     public BigDecimal getAmount() {
         return amount;
+    }
+
+    public LocalDate getValueDate() {
+        return journalEntry.getValueDate();
     }
 
     public void setAmount(BigDecimal amount) {

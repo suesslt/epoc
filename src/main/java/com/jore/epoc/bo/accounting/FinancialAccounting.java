@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.hibernate.annotations.Type;
 
+import com.jore.Assert;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.hibernate.CurrencyUserType;
 import com.jore.datatypes.money.Money;
@@ -65,78 +67,57 @@ public class FinancialAccounting extends BusinessObject {
         accounts.add(account);
     }
 
-    public void addJournalEntry(JournalEntry journalEntry) {
-        journalEntry.setAccounting(this);
-        journalEntries.add(journalEntry);
-    }
-
     public void book(String bookingText, LocalDate bookingDate, LocalDate valueDate, DebitCreditAmount... creditDebitAmounts) {
         JournalEntry journalEntry = new JournalEntry();
-        journalEntry.setBookingText(bookingText);
-        journalEntry.setBookingDate(bookingDate);
-        journalEntry.setValueDate(valueDate);
-        for (DebitCreditAmount creditDebitAmount : creditDebitAmounts) {
+        journalEntry.setBookingText(Objects.requireNonNull(bookingText, "Bookig text must not be null."));
+        journalEntry.setBookingDate(Objects.requireNonNull(bookingDate, "Bookig date must not be null."));
+        journalEntry.setValueDate(Objects.requireNonNull(valueDate, "Value date must not be null."));
+        Assert.isTrue("At least one debit to credit amount required.", creditDebitAmounts.length > 0);
+        for (DebitCreditAmount debitCreditAmount : creditDebitAmounts) {
+            validateAmount(debitCreditAmount.amount());
+            validateAccount(debitCreditAmount.debitAccountNumber());
+            validateAccount(debitCreditAmount.creditAccountNumber());
             Booking booking = new Booking();
-            booking.setAmount(creditDebitAmount.amount().getAmount()); // TODO Test case if not found
-            getAccount(creditDebitAmount.debitAccountNumber()).get().debit(booking);
-            getAccount(creditDebitAmount.creditAccountNumber()).get().credit(booking);
+            booking.setAmount(debitCreditAmount.amount().getAmount());
+            getAccount(debitCreditAmount.debitAccountNumber()).get().debit(booking);
+            getAccount(debitCreditAmount.creditAccountNumber()).get().credit(booking);
             journalEntry.addBooking(booking);
         }
         addJournalEntry(journalEntry);
         log.debug(journalEntry);
     }
 
-    public boolean checkFunds(Money costsToBeCharged, LocalDate valueDate) {
-        return getBankBalance(valueDate).compareTo(costsToBeCharged) >= 0;
+    public boolean checkFunds(Money minimumRequiredAmount, LocalDate valueDate) {
+        return getBankBalance(valueDate).compareTo(Objects.requireNonNull(minimumRequiredAmount, "Minimum required amount must not be null.")) >= 0;
     }
 
     public Money getBalanceForAccount(String accountNumber, LocalDate valueDate) {
-        Money result = null;
-        Optional<Account> account = getAccount(accountNumber);
-        if (account.isPresent()) {
-            result = Money.of(baseCurrency, account.get().getBalance());
-        } else {
-            result = Money.of(baseCurrency, BigDecimal.ZERO); // TODO Consider to return Optional<Money>
-        }
-        return result;
+        validateAccount(accountNumber);
+        return Money.of(baseCurrency, getAccount(accountNumber).get().getBalance(valueDate));
     }
 
     public Money getBankBalance(LocalDate valueDate) {
         return getBalanceForAccount(BANK, valueDate);
     }
 
+    public Money getCash(LocalDate valueDate) {
+        return getBalanceForAccount(BANK, valueDate);
+    }
+
     public Money getCompanyValue(LocalDate valueDate) {
-        return Money.add(getOwnersCapital(valueDate), getPnL(valueDate) != null ? getPnL(valueDate).multiply(INFINITY_MULTIPLIER) : null);
+        return Money.add(getOwnersCapital(valueDate), getPnL(valueDate).multiply(INFINITY_MULTIPLIER));
     }
 
     public Money getLongTermDebt(LocalDate valueDate) {
         return getBalanceForAccount(LONG_TERM_DEBT, valueDate);
     }
 
-    // TODO stream accounts, filter and add
     public Money getOwnersCapital(LocalDate valueDate) {
-        Money result = null;
-        result = Money.add(result, getBalanceForAccount(BANK, valueDate));
-        result = Money.add(result, getBalanceForAccount(REAL_ESTATE, valueDate));
-        result = Money.add(result, getBalanceForAccount(RAW_MATERIALS, valueDate));
-        result = Money.add(result, getBalanceForAccount(PRODUCTS, valueDate));
-        result = Money.add(result, getBalanceForAccount(LONG_TERM_DEBT, valueDate));
-        return result;
+        return Money.of(baseCurrency, accounts.stream().filter(account -> account.getType().equals(AccountType.BALANCE_SHEET)).map(account -> account.getBalance(valueDate)).reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
-    // TODO stream accounts, filter and add
     public Money getPnL(LocalDate valueDate) {
-        Money result = null;
-        result = Money.add(result, getBalanceForAccount(PRODUCT_REVENUES, valueDate));
-        result = Money.add(result, getBalanceForAccount(SERVICES, valueDate));
-        result = Money.add(result, getBalanceForAccount(INTEREST, valueDate));
-        result = Money.add(result, getBalanceForAccount(RAUMAUFWAND, valueDate));
-        result = Money.add(result, getBalanceForAccount(DEPRECIATION, valueDate));
-        result = Money.add(result, getBalanceForAccount(SALARIES, valueDate));
-        result = Money.add(result, getBalanceForAccount(MATERIALAUFWAND, valueDate));
-        result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_ROHWAREN, valueDate));
-        result = Money.add(result, getBalanceForAccount(BESTANDESAENDERUNGEN_PRODUKTE, valueDate));
-        return result;
+        return Money.of(baseCurrency, accounts.stream().filter(account -> account.getType().equals(AccountType.INCOME_STATEMENT)).map(account -> account.getBalance(valueDate)).reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
     public Money getProductBalance(LocalDate valueDate) {
@@ -157,6 +138,37 @@ public class FinancialAccounting extends BusinessObject {
 
     public Money getSalaries(LocalDate valueDate) {
         return getBalanceForAccount(SALARIES, valueDate);
+    }
+
+    public Money getTotalAssets(LocalDate valueDate) {
+        Money result = getTotalCurrentAssets(valueDate);
+        result = result.add(getTotalFixedAssets(valueDate));
+        return result;
+    }
+
+    public Money getTotalCurrentAssets(LocalDate valueDate) {
+        Money result = getBankBalance(valueDate);
+        result = result.add(getProductBalance(valueDate));
+        result = result.add(getRawMaterialBalance(valueDate));
+        return result;
+    }
+
+    public Money getTotalCurrentLiabilities(LocalDate valueDate) {
+        return getLongTermDebt(valueDate);
+    }
+
+    public Money getTotalFixedAssets(LocalDate valueDate) {
+        return getRealEstateBalance(valueDate);
+    }
+
+    public Money getTotalLiabilities(LocalDate valueDate) {
+        return getTotalCurrentLiabilities(valueDate);
+    }
+
+    public Money getTotalLiabilitiesAndOwnersEquity(LocalDate valueDate) {
+        Money result = getTotalLiabilities(valueDate);
+        result = result.add(getOwnersCapital(valueDate));
+        return result;
     }
 
     public void setBaseCurrency(Currency baseCurrency) {
@@ -183,7 +195,20 @@ public class FinancialAccounting extends BusinessObject {
         return result.toString();
     }
 
+    private void addJournalEntry(JournalEntry journalEntry) {
+        journalEntry.setAccounting(this);
+        journalEntries.add(journalEntry);
+    }
+
     private Optional<Account> getAccount(String number) {
         return accounts.stream().filter(account -> account.getNumber().equals(number)).findFirst();
+    }
+
+    private void validateAccount(String accountNumber) {
+        Assert.isTrue(String.format("Account for number '%s' not found.", accountNumber), getAccount(accountNumber).isPresent());
+    }
+
+    private void validateAmount(Money amount) {
+        Assert.isTrue(String.format("Booked currency (%s) must be equal to base currency (%s).", amount.getCurrency(), baseCurrency), baseCurrency.equals(amount.getCurrency()));
     }
 }
