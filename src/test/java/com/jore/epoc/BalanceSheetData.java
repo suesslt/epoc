@@ -5,7 +5,7 @@ import com.jore.datatypes.money.Money;
 import lombok.Data;
 
 @Data
-public class TestReportData {
+public class BalanceSheetData {
     private String balanceSheetDate = "Today";
     private String companyName = "The Best Company";
     private String cashThis = Money.of("CHF", 15000).toString();

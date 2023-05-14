@@ -20,10 +20,10 @@ import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 class JasperReportTests {
     @Test
     void test() throws JRException {
-        JasperReport report = JasperCompileManager.compileReport("/Users/thomassussli/JaspersoftWorkspace/MyReports/JasperTest.jrxml");
+        JasperReport report = JasperCompileManager.compileReport("/Users/thomassussli/workspace/epoc/reports/BalanceSheet.jrxml");
         JRSaver.saveObject(report, "/Users/thomassussli/JaspersoftWorkspace/MyReports/JasperTest.jasper");
-        TestReportData testReportData = new TestReportData();
-        ArrayList<TestReportData> list = new ArrayList<>();
+        BalanceSheetData testReportData = new BalanceSheetData();
+        ArrayList<BalanceSheetData> list = new ArrayList<>();
         list.add(testReportData);
         JRBeanCollectionDataSource source = new JRBeanCollectionDataSource(list);
         JasperPrint print = JasperFillManager.fillReport(report, null, source);
