@@ -32,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 @Entity
 public class Simulation extends BusinessObject {
     private String name;
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth startMonth;
     private Integer nrOfMonths;
     private boolean isStarted = false;

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.annotations.Type;
+
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.Simulation;
 import com.jore.jpa.BusinessObject;
@@ -20,6 +22,7 @@ public class SimulationStep extends BusinessObject {
     private Simulation simulation;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulationStep", orphanRemoval = true)
     private List<CompanySimulationStep> companySimulationSteps = new ArrayList<>();
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth simulationMonth;
     private boolean isOpen;
 

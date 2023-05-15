@@ -3,6 +3,8 @@ package com.jore.epoc.bo.orders;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
+import org.hibernate.annotations.Type;
+
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
@@ -19,6 +21,7 @@ import lombok.extern.log4j.Log4j2;
 // TODO Check if subclasses can be stored in one table
 public abstract class AbstractSimulationOrder extends BusinessObject implements SimulationOrder {
     protected static final int FIRST_OF_MONTH = 1;
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth executionMonth;
     private boolean isExecuted = false;
     @ManyToOne(optional = false)

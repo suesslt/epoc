@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 
 import org.hibernate.annotations.CompositeType;
+import org.hibernate.annotations.Type;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
@@ -20,6 +21,7 @@ public class Factory extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     private int productionLines;
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth productionStartMonth;
     private int dailyCapacityPerProductionLine;
     @AttributeOverride(name = "amount", column = @Column(name = "labour_cost_amount"))

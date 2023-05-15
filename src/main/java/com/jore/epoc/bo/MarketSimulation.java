@@ -53,6 +53,7 @@ public class MarketSimulation extends BusinessObject {
     private Simulation simulation;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "marketSimulation", orphanRemoval = true)
     private List<DistributionInMarket> distributionInMarkets = new ArrayList<>();
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth startMonth;
     @AttributeOverride(name = "amount", column = @Column(name = "higher_price_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "higher_price_currency"))

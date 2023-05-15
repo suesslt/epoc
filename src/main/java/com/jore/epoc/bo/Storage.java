@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.CompositeType;
+import org.hibernate.annotations.Type;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
@@ -97,6 +98,7 @@ public class Storage extends BusinessObject {
 
     @ManyToOne(optional = false)
     private Company company;
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth storageStartMonth;
     private int capacity;
     private int storedProducts = 0;

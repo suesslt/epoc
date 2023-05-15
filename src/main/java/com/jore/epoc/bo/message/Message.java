@@ -2,6 +2,8 @@ package com.jore.epoc.bo.message;
 
 import java.time.YearMonth;
 
+import org.hibernate.annotations.Type;
+
 import com.jore.epoc.bo.Company;
 import com.jore.jpa.BusinessObject;
 
@@ -12,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 public class Message extends BusinessObject {
     @ManyToOne(optional = false)
     private Company company;
+    @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth relevantMonth;
     private String message;
     private MessageLevel level;
