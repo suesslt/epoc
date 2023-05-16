@@ -64,7 +64,7 @@ drop table if exists user_in_company_role CASCADE;
 create table abstract_simulation_order (
     id integer not null,
     dtype varchar(31) not null,
-    execution_month date,
+    execution_month date not null,
     is_executed boolean not null,
     adjust_amount decimal(18,6),
     adjust_currency varchar(3),
@@ -100,7 +100,7 @@ create table abstract_simulation_order (
     marketing_campaign_amount decimal(18,6),
     marketing_amount_currency varchar(3),
     company_id integer not null,
-    market_id integer,
+    market_id integer, -- is necessary?
     market_simulation_id integer,
     primary key (id)
 );
@@ -211,9 +211,9 @@ create table login (
    id integer not null,
     email varchar(255),
     is_admin boolean not null,
-    login varchar(255),
+    login varchar(255) unique,
     name varchar(255),
-    password varchar(255),
+    password varchar(255) not null,
     simulation_id integer,
     primary key (id)
 );
@@ -323,142 +323,170 @@ create table user_in_company_role (
 alter table if exists login 
    add constraint UK_o7rt0909f6ygply7judc4s8v unique (login);
 
-alter table if exists abstract_simulation_order 
-   add constraint FK_abstract_simulation_order_company
+alter table abstract_simulation_order 
+   add constraint FK_abstractsimulationorder_company
    foreign key (company_id) 
-   references company;
+   references company
+   on delete cascade;
 
-alter table if exists abstract_simulation_order 
-   add constraint FK_abstract_simulation_order_market
+alter table abstract_simulation_order 
+   add constraint FK_abstractsimulationorder_market
    foreign key (market_id) 
-   references market;
+   references market
+   on delete cascade;
 
-alter table if exists abstract_simulation_order 
-   add constraint FK_abstract_simulation_order_market_simulation
+alter table abstract_simulation_order 
+   add constraint FK_abstractsimulationorder_marketsimulation
    foreign key (market_simulation_id) 
-   references market_simulation;
+   references market_simulation
+   on delete cascade;
 
-alter table if exists account 
-   add constraint FK_account_financial_accounting
+alter table account 
+   add constraint FK_account_financialaccounting
    foreign key (accounting_id) 
-   references financial_accounting;
+   references financial_accounting
+   on delete cascade;
 
-alter table if exists booking 
+alter table booking 
    add constraint FK_booking_account_credit
    foreign key (credit_account_id) 
-   references account;
+   references account
+   on delete cascade;
 
-alter table if exists booking 
+alter table booking 
    add constraint FK_booking_account_debit
    foreign key (debit_account_id) 
-   references account;
+   references account
+   on delete cascade;
 
-alter table if exists booking 
-   add constraint FK_booking_journal_entry
+alter table booking 
+   add constraint FK_booking_journalentry
    foreign key (journal_entry_id) 
-   references journal_entry;
+   references journal_entry
+   on delete cascade;
 
-alter table if exists company 
-   add constraint FK_company_financial_accounting
+alter table company 
+   add constraint FK_company_financialaccounting
    foreign key (accounting_id) 
-   references financial_accounting;
+   references financial_accounting
+   on delete cascade;
 
-alter table if exists company 
+alter table company 
    add constraint FK_company_simulation
    foreign key (simulation_id) 
-   references simulation;
+   references simulation
+   on delete cascade;
 
-alter table if exists company_simulation_step 
-   add constraint FK_company_simulation_step_company
+alter table company_simulation_step 
+   add constraint FK_companysimulationstep_company
+   foreign key (company_id)
+   references company
+   on delete cascade;
+
+alter table company_simulation_step 
+   add constraint FK_companysimulationstep_simulationstep
+   foreign key (simulation_step_id)
+   references simulation_step
+   on delete cascade;
+
+alter table distribution_in_market 
+   add constraint FK_distributioninmarket_company
    foreign key (company_id) 
-   references company;
+   references company
+   on delete cascade;
 
-alter table if exists company_simulation_step 
-   add constraint FK_company_simulation_step_simulation_step
-   foreign key (simulation_step_id) 
-   references simulation_step;
-
-alter table if exists distribution_in_market 
-   add constraint FK_distribution_in_market_company
-   foreign key (company_id) 
-   references company;
-
-alter table if exists distribution_in_market 
-   add constraint FK_distribution_in_market_market_simulation
+alter table distribution_in_market 
+   add constraint FK_distributioninmarket_marketsimulation
    foreign key (market_simulation_id) 
-   references market_simulation;
+   references market_simulation
+   on delete cascade;
 
-alter table if exists distribution_step 
-   add constraint FK_distribution_step_company_simulation_step
+alter table distribution_step 
+   add constraint FK_distributionstep_companysimulationstep
    foreign key (company_simulation_step_id) 
-   references company_simulation_step;
+   references company_simulation_step
+   on delete cascade;
 
-alter table if exists distribution_step 
-   add constraint FK_distribution_step_distribution_in_market
+alter table distribution_step 
+   add constraint FK_distributionstep_distributioninmarket
    foreign key (distribution_in_market_id) 
-   references distribution_in_market;
+   references distribution_in_market
+   on delete cascade;
 
-alter table if exists epoc_setting 
-   add constraint FK_epoc_setting_epoc_settings
+alter table epoc_setting 
+   add constraint FK_epocsetting_epocsettings
    foreign key (settings_id) 
-   references epoc_settings;
+   references epoc_settings
+   on delete cascade;
 
-alter table if exists factory 
+alter table factory 
    add constraint FK_factory_company
    foreign key (company_id) 
-   references company;
+   references company
+   on delete cascade;
 
-alter table if exists journal_entry 
-   add constraint FK_journal_entry_financial_accounting
+alter table journal_entry 
+   add constraint FK_journalentry_financialaccounting
    foreign key (accounting_id) 
-   references financial_accounting;
+   references financial_accounting
+   on delete cascade;
 
-alter table if exists login 
+alter table login 
    add constraint FK_login_simulation
    foreign key (simulation_id) 
-   references simulation;
+   references simulation
+   on delete cascade;
 
-alter table if exists market_simulation 
-   add constraint FK_market_simulation_market
+alter table market_simulation 
+   add constraint FK_marketsimulation_market
    foreign key (market_id) 
-   references market;
+   references market
+   on delete cascade;
 
-alter table if exists market_simulation 
-   add constraint FK_market_simulation_simulation
+alter table market_simulation 
+   add constraint FK_marketsimulation_simulation
    foreign key (simulation_id) 
-   references simulation;
+   references simulation
+   on delete cascade;
 
-alter table if exists message 
+alter table message 
    add constraint FK_message_company
    foreign key (company_id) 
-   references company;
+   references company
+   on delete cascade;
 
-alter table if exists simulation 
+alter table simulation 
    add constraint FK_simulation_login
    foreign key (owner_id) 
-   references login;
+   references login
+   on delete cascade;
 
-alter table if exists simulation 
-   add constraint FK_simulation_epoc_settings
+alter table simulation 
+   add constraint FK_simulation_epocsettings
    foreign key (settings_id) 
-   references epoc_settings;
+   references epoc_settings
+   on delete cascade;
 
-alter table if exists simulation_step 
-   add constraint FK_simulation_step_simulation
+alter table simulation_step 
+   add constraint FK_simulationstep_simulation
    foreign key (simulation_id) 
-   references simulation;
+   references simulation
+   on delete cascade;
 
-alter table if exists storage 
+alter table storage 
    add constraint FK_storage_company
    foreign key (company_id) 
-   references company;
+   references company
+   on delete cascade;
 
-alter table if exists user_in_company_role 
-   add constraint FK_user_in_company_role_company
+alter table user_in_company_role 
+   add constraint FK_userincompanyrole_company
    foreign key (company_id) 
-   references company;
+   references company
+   on delete cascade;
 
-alter table if exists user_in_company_role 
-   add constraint FK_user_in_company_role_login
+alter table user_in_company_role 
+   add constraint FK_userincompanyrole_login
    foreign key (user_id) 
-   references login;
+   references login
+   on delete cascade;

@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class EnterMarketOrder extends AbstractSimulationOrder {
-    @ManyToOne(optional = true) // TODO Why optional?
+    @ManyToOne(optional = true)
     private MarketSimulation marketSimulation;
     private int intentedProductSale;
     @AttributeOverride(name = "amount", column = @Column(name = "offered_price_amount"))
