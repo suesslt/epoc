@@ -40,7 +40,7 @@ public class Market extends BusinessObject {
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money costToEnterMarket;
     @AttributeOverride(name = "amount", column = @Column(name = "distribution_cost_amount"))
-    @AttributeOverride(name = "currency", column = @Column(name = "distribution_cost__currency"))
+    @AttributeOverride(name = "currency", column = @Column(name = "distribution_cost_currency"))
     @CompositeType(com.jore.datatypes.hibernate.MoneyCompositeUserType.class)
     private Money distributionCost;
     private int ageTo14Male;

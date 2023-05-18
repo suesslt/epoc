@@ -20,6 +20,7 @@ import com.jore.epoc.repositories.UserInCompanyRoleRepository;
 import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.Mail;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.log4j.Log4j2;
 
 /*
@@ -37,8 +38,11 @@ public class UserManagementServiceImpl implements UserManagementService {
     LoginRepository loginRepository;
     @Autowired
     UserInCompanyRoleRepository userInCompanyRoleRepository;
+    @Autowired
+    EntityManager entityManager;
 
     @Override
+    @Transactional
     public LoginDto createAdmin(LoginDto adminDto) {
         if (loggedInUser == null) {
             throw new IllegalStateException("No admin currently logged in.");
@@ -48,20 +52,28 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
         User login = LoginMapper.INSTANCE.loginDtoToLogin(adminDto);
         login.setAdmin(true);
+        if (loginRepository.findByLogin(adminDto.getLogin()).isPresent()) {
+            throw new IllegalStateException();
+        }
         return LoginMapper.INSTANCE.loginToLoginDto(loginRepository.save(login));
     }
 
     @Override
     @Transactional
     public void createInitialAdmin(String user, String password) {
+        entityManager.createQuery("delete from com.jore.epoc.bo.user.User").executeUpdate();
         User login = new User();
         login.setLogin("admin");
         login.setPassword("g00dPa&word");
         login.setAdmin(true);
+        if (loginRepository.findByLogin("admin").isPresent()) {
+            throw new IllegalStateException();
+        }
         loginRepository.save(login);
     }
 
     @Override
+    @Transactional
     public LoginDto createUser(LoginDto userDto) {
         if (loggedInUser == null) {
             throw new IllegalStateException("No admin currently logged in.");
@@ -86,7 +98,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         boolean result = false;
         if (loggedInUser != null) {
             if (!loggedInUser.getLogin().equals(login)) {
-                loginRepository.deleteByLogin(login);
+                User user = loginRepository.findByLogin(login).get();
+                loginRepository.delete(user);
+                //                loginRepository.deleteByLogin(login);
                 result = true;
             }
         }
@@ -94,6 +108,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
+    @Transactional
     public Collection<Mail> getEmailsForNewUsers() {
         List<Mail> result = new ArrayList<>();
         Iterable<UserInCompanyRole> findByIsInvitationRequired = userInCompanyRoleRepository.findByIsInvitationRequired(true);
@@ -112,6 +127,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
+    @Transactional
     public boolean login(String login, String password) {
         logout();
         Optional<User> result = loginRepository.findByLoginAndPassword(login, password);
