@@ -49,15 +49,16 @@
 			<optional>true</optional>
 		</dependency>
 		<!-- Database -->
-<!--		<dependency>-->
-<!--			<groupId>com.h2database</groupId>-->
-<!--			<artifactId>h2</artifactId>-->
-<!--			<scope>runtime</scope>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -77,14 +78,14 @@
 		<!-- jore -->
 		<dependency>
 			<groupId>com.epoc</groupId>
-			<artifactId>jore</artifactId>
+			<artifactId>jore-ee</artifactId>
 			<version>0.9.1</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.epoc</groupId>
-			<artifactId>jore-ee</artifactId>
+			<artifactId>jore</artifactId>
 			<version>0.9.1</version>
-			<scope>compile</scope>
 		</dependency>
 		<!--
 		https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->

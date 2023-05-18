@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Company;
@@ -56,6 +57,7 @@ import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("testdb")
 class EpocApplicationTests {
     private static final String CHF = "CHF";
     private static final int NR_OF_SIM_STEPS = 120;

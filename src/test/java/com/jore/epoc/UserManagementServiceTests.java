@@ -9,7 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.dto.LoginDto;
@@ -20,6 +23,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@ActiveProfiles("testdb")
 class UserManagementServiceTests {
     @Autowired
     private UserManagementService userManagementService;

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.Market;
@@ -18,6 +19,7 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("testdb")
 class JdbcTests {
     @Autowired
     MarketRepository marketRepository;

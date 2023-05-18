@@ -1,17 +1,18 @@
 package com.jore.epoc.bo.message;
 
 import java.text.MessageFormat;
-import java.util.ResourceBundle;
+
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 public class Messages {
-    private static ResourceBundle myRessources = null;
+    private static ResourceBundleMessageSource myRessources = null;
 
     public static String getMessage(String key, Object... param) {
         if (myRessources == null) {
             load();
         }
         MessageFormat format = new MessageFormat("");
-        format.applyPattern(myRessources.getString(key));
+        format.applyPattern(myRessources.getMessage(key, null, null));
         return format.format(param);
     }
 
@@ -20,6 +21,9 @@ public class Messages {
     }
 
     public static void load(String resourceName) {
-        myRessources = ResourceBundle.getBundle(resourceName);
+        myRessources = new ResourceBundleMessageSource();
+        myRessources.setBasename(resourceName);
+        myRessources.setDefaultEncoding("UTF-8");
+        myRessources.setUseCodeAsDefaultMessage(true);
     }
 }
