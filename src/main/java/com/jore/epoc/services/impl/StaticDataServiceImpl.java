@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 @Validated
+@Service
 public class StaticDataServiceImpl implements StaticDataService {
     @Autowired
     MarketRepository marketRepository;

@@ -10,12 +10,10 @@ import lombok.Data;
 
 @Builder
 @Data
-public class LoginDto implements DataTransferObject {
-    //    @NotNull // TODO Steuerung über Kontext
+public class UserDto implements DataTransferObject {
     private Integer id;
     @NotEmpty
     private String login;
-    @NotEmpty
     private String password;
     @NotEmpty
     private String name;

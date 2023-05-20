@@ -176,7 +176,7 @@ CREATE TABLE login (
 	is_admin boolean NOT NULL,
 	login varchar(255) UNIQUE,
 	name varchar(255),
-	password varchar(255) NOT NULL,
+	password varchar(255),
 	simulation_id integer,
 	PRIMARY KEY (id)
 );

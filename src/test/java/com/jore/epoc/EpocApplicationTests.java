@@ -40,7 +40,7 @@ import com.jore.epoc.dto.EnterMarketDto;
 import com.jore.epoc.dto.IncreaseProductivityDto;
 import com.jore.epoc.dto.IncreaseQualityDto;
 import com.jore.epoc.dto.IntendedSalesAndPriceDto;
-import com.jore.epoc.dto.LoginDto;
+import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.RunMarketingCampaignDto;
 import com.jore.epoc.dto.SimulationDto;
@@ -87,7 +87,7 @@ class EpocApplicationTests {
         //
         assertThrows(ConstraintViolationException.class, () -> userManagementService.login("admin", ""));
         userManagementService.login("admin", "g00dPa&word");
-        userManagementService.createAdmin(LoginDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
+        userManagementService.createAdmin(UserDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
         userManagementService.logout();
         //
         // login as applicatoin user
@@ -98,8 +98,8 @@ class EpocApplicationTests {
         assertThrows(ConstraintViolationException.class, () -> staticDataService.loadMarkets(null));
         staticDataService.loadMarkets("markets.xlsx");
         staticDataService.loadSettings("EpocSettings.xlsx");
-        assertThrows(ConstraintViolationException.class, () -> userManagementService.createUser(LoginDto.builder().login("simuser").name("Thomas").email("thomas.sepoc.ch").password("e*Wasdf_erwer23").build()));
-        userManagementService.createUser(LoginDto.builder().login("simuser").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
+        assertThrows(ConstraintViolationException.class, () -> userManagementService.saveUser(UserDto.builder().login("simuser").name("Thomas").email("thomas.sepoc.ch").password("e*Wasdf_erwer23").build()));
+        userManagementService.saveUser(UserDto.builder().login("simuser").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();
         assertEquals(1, databaseViewer.getNumberOfRecords(EpocSettings.class));
         //
@@ -112,9 +112,9 @@ class EpocApplicationTests {
         simulation.setName("This is my first real simulation!");
         simulation.setStartMonth(YearMonth.of(2023, 1));
         simulation.setNrOfMonths(NR_OF_SIM_STEPS);
-        simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(UserDto.builder().email(MAX).build(), UserDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(UserDto.builder().email(RETO).build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(UserDto.builder().email(FELIX).build(), UserDto.builder().email("peter.gross@bluewin.ch").build(), UserDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
         simulation.addSetting(SettingDtoBuilder.builder().settingKey(EpocSettings.PASSIVE_STEPS).valueText("12").build());
         simulationService.updateSimulation(simulation);
         Collection<Mail> emailsForNewUsers = userManagementService.getEmailsForNewUsers();
@@ -225,13 +225,13 @@ class EpocApplicationTests {
         // Create user for simulation and delete ad min
         //
         userManagementService.login("admin", "g00dPa&word");
-        userManagementService.createAdmin(LoginDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
+        userManagementService.createAdmin(UserDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
         userManagementService.logout();
         userManagementService.login("epocadmin", "badpw");
         userManagementService.deleteLogin("admin");
         staticDataService.loadMarkets("markets.xlsx");
         staticDataService.loadSettings("EpocSettings.xlsx");
-        userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
+        userManagementService.saveUser(UserDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         userManagementService.logout();
         //
         // Login as game user, buy simulations, create companies with users
@@ -243,9 +243,9 @@ class EpocApplicationTests {
             simulation.setName("This is my first real simulation!");
             simulation.setStartMonth(YearMonth.of(2023, 1));
             simulation.setNrOfMonths(3);
-            simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
-            simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
-            simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+            simulation.addCompany(CompanyDto.builder().name("Company A").users(Arrays.asList(UserDto.builder().email(MAX).build(), UserDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
+            simulation.addCompany(CompanyDto.builder().name("Company B").users(Arrays.asList(UserDto.builder().email(RETO).build())).build());
+            simulation.addCompany(CompanyDto.builder().name("Company C").users(Arrays.asList(UserDto.builder().email(FELIX).build(), UserDto.builder().email("peter.gross@bluewin.ch").build(), UserDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
             simulationService.updateSimulation(simulation);
             sendMailService.send(userManagementService.getEmailsForNewUsers());
             userManagementService.logout();
@@ -364,9 +364,9 @@ class EpocApplicationTests {
         simulation.setName("OK, now to the second simulation...");
         simulation.setStartMonth(YearMonth.of(2023, 1));
         simulation.setNrOfMonths(100);
-        simulation.addCompany(CompanyDto.builder().name("Company One").users(Arrays.asList(LoginDto.builder().email(MAX).build(), LoginDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company Two").users(Arrays.asList(LoginDto.builder().email(RETO).build())).build());
-        simulation.addCompany(CompanyDto.builder().name("Company Three").users(Arrays.asList(LoginDto.builder().email(FELIX).build(), LoginDto.builder().email("peter.gross@bluewin.ch").build(), LoginDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company One").users(Arrays.asList(UserDto.builder().email(MAX).build(), UserDto.builder().email("kurt.gruen@bluewin.ch").build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company Two").users(Arrays.asList(UserDto.builder().email(RETO).build())).build());
+        simulation.addCompany(CompanyDto.builder().name("Company Three").users(Arrays.asList(UserDto.builder().email(FELIX).build(), UserDto.builder().email("peter.gross@bluewin.ch").build(), UserDto.builder().email("beat-huerg.minder@bluewin.ch").build())).build());
         simulationService.updateSimulation(simulation);
         sendMailService.send(userManagementService.getEmailsForNewUsers());
         userManagementService.logout();

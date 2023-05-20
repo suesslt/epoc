@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -50,7 +51,7 @@ import com.jore.epoc.dto.FactoryDto;
 import com.jore.epoc.dto.IncreaseProductivityDto;
 import com.jore.epoc.dto.IncreaseQualityDto;
 import com.jore.epoc.dto.IntendedSalesAndPriceDto;
-import com.jore.epoc.dto.LoginDto;
+import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.dto.MarketDto;
 import com.jore.epoc.dto.MessageDto;
 import com.jore.epoc.dto.OpenUserSimulationDto;
@@ -77,6 +78,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 @Validated
+@Service
 public class SimulationServiceImpl implements SimulationService {
     @Autowired
     private SimulationRepository simulationRepository;
@@ -401,7 +403,7 @@ public class SimulationServiceImpl implements SimulationService {
                 company.setBaseCurrency(simulation.getSettings().getBaseCurrency());
                 simulation.addCompany(company);
                 companyRepository.save(company);
-                for (LoginDto loginDto : companyDto.getUsers()) {
+                for (UserDto loginDto : companyDto.getUsers()) {
                     Optional<User> login = loginRepository.findByLogin(loginDto.getEmail());
                     if (login.isEmpty()) {
                         login = Optional.of(new User());

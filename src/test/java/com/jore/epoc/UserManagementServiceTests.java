@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.jore.epoc.bo.user.User;
-import com.jore.epoc.dto.LoginDto;
+import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.services.UserManagementService;
 
 import jakarta.persistence.EntityManager;
@@ -59,7 +59,7 @@ class UserManagementServiceTests {
     @Transactional
     public void testCreateNewAdmin() {
         userManagementService.login("admin", "g00dPa&word");
-        LoginDto loginDto = userManagementService.createAdmin(LoginDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
+        UserDto loginDto = userManagementService.createAdmin(UserDto.builder().login("epocadmin").name("Epoc").email("admin@epoc.ch").password("badpw").build());
         User storedLogin = entityManager.find(User.class, loginDto.getId());
         assertEquals("epocadmin", storedLogin.getLogin());
     }
@@ -68,7 +68,7 @@ class UserManagementServiceTests {
     @Transactional
     public void testCreateUser() {
         userManagementService.login("admin", "g00dPa&word");
-        LoginDto loginDto = userManagementService.createUser(LoginDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
+        UserDto loginDto = userManagementService.saveUser(UserDto.builder().login("user").name("Thomas").email("thomas.s@epoc.ch").password("e*Wasdf_erwer23").build());
         User storedLogin = entityManager.find(User.class, loginDto.getId());
         assertEquals("user", storedLogin.getLogin());
     }
@@ -77,7 +77,7 @@ class UserManagementServiceTests {
     @Transactional
     public void testDeleteAdmin() {
         userManagementService.login("admin", "g00dPa&word");
-        userManagementService.createAdmin(LoginDto.builder().login("epocadmin_new").name("Epoc").email("admin@epoc.ch").password("badpw").build());
+        userManagementService.createAdmin(UserDto.builder().login("epocadmin_new").name("Epoc").email("admin@epoc.ch").password("badpw").build());
         userManagementService.logout();
         userManagementService.login("epocadmin_new", "badpw");
         long nr = (long) entityManager.createQuery("select count(*) from Login").getSingleResult();

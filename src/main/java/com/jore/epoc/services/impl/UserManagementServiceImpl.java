@@ -7,13 +7,19 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.bo.user.UserInCompanyRole;
-import com.jore.epoc.dto.LoginDto;
+import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.mapper.LoginMapper;
 import com.jore.epoc.repositories.LoginRepository;
 import com.jore.epoc.repositories.UserInCompanyRoleRepository;
@@ -21,6 +27,7 @@ import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.Mail;
 
 import jakarta.persistence.EntityManager;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 
 /*
@@ -30,12 +37,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 @Validated
+@Service
+@RestController
 public class UserManagementServiceImpl implements UserManagementService {
     private static final String ADMIN_EPOC_CH = "admin@epoc.ch";
     // TODO must be removed, goal is a stateless service
     static User loggedInUser = null;
     @Autowired
-    LoginRepository loginRepository;
+    LoginRepository userRepository;
     @Autowired
     UserInCompanyRoleRepository userInCompanyRoleRepository;
     @Autowired
@@ -43,7 +52,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     @Transactional
-    public LoginDto createAdmin(LoginDto adminDto) {
+    public UserDto createAdmin(UserDto adminDto) {
         if (loggedInUser == null) {
             throw new IllegalStateException("No admin currently logged in.");
         }
@@ -52,10 +61,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
         User login = LoginMapper.INSTANCE.loginDtoToLogin(adminDto);
         login.setAdmin(true);
-        if (loginRepository.findByLogin(adminDto.getLogin()).isPresent()) {
+        if (userRepository.findByLogin(adminDto.getLogin()).isPresent()) {
             throw new IllegalStateException();
         }
-        return LoginMapper.INSTANCE.loginToLoginDto(loginRepository.save(login));
+        return LoginMapper.INSTANCE.loginToLoginDto(userRepository.save(login));
     }
 
     @Override
@@ -66,24 +75,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         login.setLogin("admin");
         login.setPassword("g00dPa&word");
         login.setAdmin(true);
-        if (loginRepository.findByLogin("admin").isPresent()) {
+        if (userRepository.findByLogin("admin").isPresent()) {
             throw new IllegalStateException();
         }
-        loginRepository.save(login);
-    }
-
-    @Override
-    @Transactional
-    public LoginDto createUser(LoginDto userDto) {
-        if (loggedInUser == null) {
-            throw new IllegalStateException("No admin currently logged in.");
-        }
-        if (!loggedInUser.isAdmin()) {
-            throw new IllegalStateException("Current logged in user is not an admin.");
-        }
-        User login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
-        login.setAdmin(true);
-        return LoginMapper.INSTANCE.loginToLoginDto(loginRepository.save(login));
+        userRepository.save(login);
     }
 
     @Override
@@ -98,13 +93,23 @@ public class UserManagementServiceImpl implements UserManagementService {
         boolean result = false;
         if (loggedInUser != null) {
             if (!loggedInUser.getLogin().equals(login)) {
-                User user = loginRepository.findByLogin(login).get();
-                loginRepository.delete(user);
+                User user = userRepository.findByLogin(login).get();
+                userRepository.delete(user);
                 //                loginRepository.deleteByLogin(login);
                 result = true;
             }
         }
         return result;
+    }
+
+    @GetMapping("/users")
+    public List<UserDto> getAllUsers() {
+        return LoginMapper.INSTANCE.loginToLoginDto(userRepository.findAll());
+    }
+
+    @GetMapping("/users/{id}")
+    public UserDto getById(@PathVariable Long id) {
+        return LoginMapper.INSTANCE.loginToLoginDto(userRepository.findById(id.intValue()).get());
     }
 
     @Override
@@ -130,7 +135,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Transactional
     public boolean login(String login, String password) {
         logout();
-        Optional<User> result = loginRepository.findByLoginAndPassword(login, password);
+        Optional<User> result = userRepository.findByLoginAndPassword(login, password);
         if (result.isPresent()) {
             loggedInUser = result.get();
             log.info("Login user " + login + ".");
@@ -146,6 +151,42 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (loggedInUser != null) {
             result = true;
             loggedInUser = null;
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
+    @PostMapping("/users/{user}")
+    public UserDto saveUser(@RequestBody @Valid UserDto userDto) {
+        String errorData = "{error}";
+        UserDto result = null;
+        if (userDto.getId() == null) {
+            Optional<User> existingLogin = userRepository.findByLogin(userDto.getLogin());
+            if (existingLogin.isEmpty()) {
+                User login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
+                result = LoginMapper.INSTANCE.loginToLoginDto(userRepository.save(login));
+            } else {
+                throw new IllegalStateException(errorData);
+            }
+        } else {
+            Optional<User> otherLogin = userRepository.findById(userDto.getId());
+            if (otherLogin.isPresent()) {
+                if (!otherLogin.get().getLogin().equals(userDto.getLogin())) {
+                    Optional<User> existingLogin = userRepository.findByLogin(userDto.getLogin());
+                    if (existingLogin.isEmpty()) {
+                        User login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
+                        result = LoginMapper.INSTANCE.loginToLoginDto(userRepository.save(login));
+                    } else {
+                        throw new IllegalStateException(errorData);
+                    }
+                } else {
+                    User login = LoginMapper.INSTANCE.loginDtoToLogin(userDto);
+                    result = LoginMapper.INSTANCE.loginToLoginDto(userRepository.save(login));
+                }
+            } else {
+                throw new IllegalStateException(errorData);
+            }
         }
         return result;
     }

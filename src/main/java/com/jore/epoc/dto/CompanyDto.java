@@ -14,7 +14,7 @@ public class CompanyDto implements DataTransferObject {
     private Integer id;
     private String name;
     @Builder.Default
-    private List<LoginDto> users = new ArrayList<>();
+    private List<UserDto> users = new ArrayList<>();
     private final List<CreditLineDto> creditLines = new ArrayList<>();
     private final List<FactoryDto> factories = new ArrayList<>();
     private final List<StorageDto> storages = new ArrayList<>();

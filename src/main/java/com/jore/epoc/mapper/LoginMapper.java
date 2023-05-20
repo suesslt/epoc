@@ -1,12 +1,15 @@
 package com.jore.epoc.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.jore.epoc.bo.user.User;
-import com.jore.epoc.dto.LoginDto;
+import com.jore.epoc.dto.UserDto;
 
 public interface LoginMapper {
     public LoginMapper INSTANCE = new LoginMapper() {
         @Override
-        public User loginDtoToLogin(LoginDto loginDto) {
+        public User loginDtoToLogin(UserDto loginDto) {
             User result = new User();
             result.setId(loginDto.getId());
             result.setName(loginDto.getName());
@@ -18,12 +21,21 @@ public interface LoginMapper {
         }
 
         @Override
-        public LoginDto loginToLoginDto(User login) {
-            return LoginDto.builder().id(login.getId()).name(login.getName()).email(login.getEmail()).login(login.getLogin()).password(login.getPassword()).isAdmin(login.isAdmin()).build();
+        public List<UserDto> loginToLoginDto(Iterable<User> users) {
+            List<UserDto> result = new ArrayList<>();
+            users.forEach(user -> result.add(loginToLoginDto(user)));
+            return result;
+        }
+
+        @Override
+        public UserDto loginToLoginDto(User login) {
+            return UserDto.builder().id(login.getId()).name(login.getName()).email(login.getEmail()).login(login.getLogin()).password(login.getPassword()).isAdmin(login.isAdmin()).build();
         }
     };
 
-    public User loginDtoToLogin(LoginDto loginDto);
+    public User loginDtoToLogin(UserDto loginDto);
 
-    public LoginDto loginToLoginDto(User login);
+    public List<UserDto> loginToLoginDto(Iterable<User> users);
+
+    public UserDto loginToLoginDto(User login);
 }
