@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<!-- Project metadata and description -->
 	<groupId>com.jore</groupId>
 	<artifactId>epoc</artifactId>
@@ -11,6 +12,7 @@
 	<name>epoc</name>
 	<description>epoc Simulation</description>
 	<url></url>
+
 	<!-- Properties -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,14 +29,15 @@
 			<version>1.18.26</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- jore -->
 		<dependency>
-			<groupId>
-				com.jore</groupId>
+			<groupId>com.jore</groupId>
 			<artifactId>jore</artifactId>
 			<version>0.9.1</version>
 		</dependency>
+
+		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -46,24 +49,25 @@
 			<version>3.0.2</version>
 		</dependency>
 
+		<!-- Jasper Reports -->
 		<dependency>
-			<groupId>
-				net.sf.jasperreports</groupId>
+			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>6.20.5</version>
 		</dependency>
+
 		<!-- Logging with Log4j 2 -->
-		<dependency>
-			<groupId>
-				org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.apache.logging.log4j</groupId>-->
+<!--			<artifactId>log4j-api</artifactId>-->
+<!--			<version>2.0</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.logging.log4j</groupId>-->
+<!--			<artifactId>log4j-core</artifactId>-->
+<!--			<version>2.0</version>-->
+<!--		</dependency>-->
+
 		<!-- Junit 5-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -80,8 +84,7 @@
 				<configuration>
 					<excludes>
 						<exclude>
-							<groupId>
-								org.projectlombok</groupId>
+							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
