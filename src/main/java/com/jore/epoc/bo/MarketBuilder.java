@@ -1,7 +1,6 @@
-package com.jore.epoc;
+package com.jore.epoc.bo;
 
 import com.jore.datatypes.money.Money;
-import com.jore.epoc.bo.Market;
 
 public class MarketBuilder {
     public static MarketBuilder builder() {
