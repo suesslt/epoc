@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 import com.jore.epoc.bo.Simulation;
 
 public interface SimulationRepository extends CrudRepository<Simulation, Integer> {
-    List<Simulation> findByIsStartedAndOwnerLogin(boolean isStarted, String login);
+    List<Simulation> findByIsStartedAndOwnerUsername(boolean isStarted, String username);
 }

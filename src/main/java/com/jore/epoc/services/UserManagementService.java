@@ -1,6 +1,10 @@
 package com.jore.epoc.services;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
 
 import com.jore.epoc.dto.UserDto;
 import com.jore.mail.Mail;
@@ -15,7 +19,11 @@ public interface UserManagementService {
 
     boolean deleteLogin(@NotEmpty String login);
 
+    Optional<UserDto> getById(Long id);
+
     Collection<Mail> getEmailsForNewUsers();
+
+    List<UserDto> list(PageRequest of);
 
     boolean login(@NotEmpty String login, @NotEmpty String password);
 

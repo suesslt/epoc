@@ -17,15 +17,17 @@ import jakarta.persistence.OneToMany;
 @Entity(name = "Login")
 public class User extends BusinessObject {
     @Column(unique = true)
-    private String login;
     private String password;
-    private String name;
     private String email;
     private boolean isAdmin;
     @ManyToOne(cascade = CascadeType.ALL, optional = true)
     private Simulation simulation;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private List<UserInCompanyRole> companies = new ArrayList<>();
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String phone;
 
     public void addCompanyRole(UserInCompanyRole userInCompanyRole) {
         companies.add(userInCompanyRole);
@@ -39,16 +41,24 @@ public class User extends BusinessObject {
         return email;
     }
 
-    public String getLogin() {
-        return login;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getName() {
-        return name;
+    public String getLastName() {
+        return lastName;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public boolean isAdmin() {
@@ -63,20 +73,28 @@ public class User extends BusinessObject {
         this.email = email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public String toString() {
-        return "Login [login=" + login + ", password=" + password + ", name=" + name + ", email=" + email + ", isAdmin=" + isAdmin + "]";
+        return "Login [username=" + username + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", phone=" + phone + ", isAdmin=" + isAdmin + "]";
     }
 }

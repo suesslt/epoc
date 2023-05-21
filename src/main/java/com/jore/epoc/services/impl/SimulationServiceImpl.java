@@ -63,12 +63,12 @@ import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.mapper.SimulationMapper;
 import com.jore.epoc.repositories.CompanyRepository;
 import com.jore.epoc.repositories.CompanySimulationStepRepository;
-import com.jore.epoc.repositories.LoginRepository;
 import com.jore.epoc.repositories.MarketRepository;
 import com.jore.epoc.repositories.MarketSimulationRepository;
 import com.jore.epoc.repositories.SettingsRepository;
 import com.jore.epoc.repositories.SimulationRepository;
 import com.jore.epoc.repositories.SimulationStepRepository;
+import com.jore.epoc.repositories.UserRepository;
 import com.jore.epoc.services.SimulationService;
 import com.jore.util.Util;
 
@@ -83,7 +83,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Autowired
     private SimulationRepository simulationRepository;
     @Autowired
-    private LoginRepository loginRepository;
+    private UserRepository loginRepository;
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
@@ -211,9 +211,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String user) {
+    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String username) {
         List<CompletedUserSimulationDto> result = new ArrayList<>();
-        User login = loginRepository.findByLogin(user).get();
+        User login = loginRepository.findByUsername(username).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -286,7 +286,7 @@ public class SimulationServiceImpl implements SimulationService {
     public Optional<SimulationDto> getNextAvailableSimulationForOwner() {
         checkUserPermission();
         Optional<SimulationDto> result = Optional.empty();
-        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerLogin(false, getLoggedInUser().getLogin()).stream().findFirst();
+        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerUsername(false, getLoggedInUser().getUsername()).stream().findFirst();
         if (simulation.isPresent()) {
             result = Optional.of(SimulationMapper.INSTANCE.simulationToSimulationDto(simulation.get()));
         }
@@ -298,7 +298,7 @@ public class SimulationServiceImpl implements SimulationService {
     public List<OpenUserSimulationDto> getOpenSimulationsForUser() {
         checkUserPermission();
         List<OpenUserSimulationDto> result = new ArrayList<>();
-        User login = loginRepository.findByLogin(getLoggedInUser().getLogin()).get();
+        User login = loginRepository.findByUsername(getLoggedInUser().getUsername()).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -403,19 +403,22 @@ public class SimulationServiceImpl implements SimulationService {
                 company.setBaseCurrency(simulation.getSettings().getBaseCurrency());
                 simulation.addCompany(company);
                 companyRepository.save(company);
-                for (UserDto loginDto : companyDto.getUsers()) {
-                    Optional<User> login = loginRepository.findByLogin(loginDto.getEmail());
-                    if (login.isEmpty()) {
-                        login = Optional.of(new User());
-                        login.get().setAdmin(false);
-                        login.get().setEmail(loginDto.getEmail());
-                        login.get().setName(loginDto.getName());
-                        login.get().setLogin(loginDto.getEmail());
-                        login.get().setPassword(Util.createPassword(simulation.getSettings().getPasswordLength()));
+                for (UserDto userDto : companyDto.getUsers()) {
+                    Optional<User> user = loginRepository.findByUsername(userDto.getEmail());
+                    if (user.isEmpty()) {
+                        user = Optional.of(new User());
+                        user.get().setAdmin(false);
+                        user.get().setEmail(userDto.getEmail());
+                        user.get().setFirstName(userDto.getFirstName());
+                        user.get().setLastName(userDto.getLastName());
+                        user.get().setUsername(userDto.getUsername());
+                        user.get().setEmail(userDto.getEmail());
+                        user.get().setPhone(userDto.getPhone());
+                        user.get().setPassword(Util.createPassword(simulation.getSettings().getPasswordLength()));
                     }
-                    UserInCompanyRole userInCompany = company.addLogin(login.get());
+                    UserInCompanyRole userInCompany = company.addLogin(user.get());
                     userInCompany.setIsInvitationRequired(true);
-                    loginRepository.save(login.get());
+                    loginRepository.save(user.get());
                 }
             }
             if (!simulationDto.getSettings().isEmpty()) {
