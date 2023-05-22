@@ -1,4 +1,4 @@
-package com.jore.epoc.bo;
+package com.jore.epoc.bo.user;
 
 public enum Role {
     USER, ADMIN;

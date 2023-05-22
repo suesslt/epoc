@@ -2,13 +2,18 @@ package com.jore.epoc.bo.user;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.jore.epoc.bo.Simulation;
 import com.jore.jpa.BusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -28,6 +33,9 @@ public class User extends BusinessObject {
     private String firstName;
     private String lastName;
     private String phone;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 
     public void addCompanyRole(UserInCompanyRole userInCompanyRole) {
         companies.add(userInCompanyRole);
@@ -55,6 +63,10 @@ public class User extends BusinessObject {
 
     public String getPhone() {
         return phone;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     public String getUsername() {

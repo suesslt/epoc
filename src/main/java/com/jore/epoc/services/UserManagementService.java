@@ -17,9 +17,13 @@ public interface UserManagementService {
 
     void createInitialAdmin(@NotEmpty String user, @NotEmpty String password); // TODO only required for Test Cases
 
+    void delete(UserDto user);
+
     boolean deleteLogin(@NotEmpty String login);
 
     Optional<UserDto> getById(Long id);
+
+    UserDto getByUsername(String username);
 
     Collection<Mail> getEmailsForNewUsers();
 

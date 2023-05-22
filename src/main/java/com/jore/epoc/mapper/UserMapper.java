@@ -30,7 +30,7 @@ public interface UserMapper {
 
         @Override
         public UserDto userToUserDto(User user) {
-            return UserDto.builder().id(user.getId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).username(user.getUsername()).password(user.getPassword()).isAdmin(user.isAdmin()).build();
+            return UserDto.builder().id(user.getId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).username(user.getUsername()).password(user.getPassword()).isAdmin(user.isAdmin()).roles(user.getRoles()).build();
         }
     };
 

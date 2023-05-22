@@ -76,6 +76,11 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
+    public void delete(UserDto user) {
+        userRepository.delete(UserMapper.INSTANCE.userDtoToUser(user));
+    }
+
+    @Override
     @Transactional
     public boolean deleteLogin(String login) {
         if (loggedInUser == null) {
@@ -103,6 +108,11 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public Optional<UserDto> getById(Long id) {
         return userRepository.findById(id.intValue()).map(user -> UserMapper.INSTANCE.userToUserDto(user));
+    }
+
+    @Override
+    public UserDto getByUsername(String username) {
+        return userRepository.findByUsername(username).map(user -> UserMapper.INSTANCE.userToUserDto(user)).get();
     }
 
     @Override
