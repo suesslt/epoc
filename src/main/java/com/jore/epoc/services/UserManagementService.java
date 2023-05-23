@@ -21,6 +21,10 @@ public interface UserManagementService {
 
     boolean deleteLogin(@NotEmpty String login);
 
+    List<UserDto> getAllFiltered(String filterText);
+
+    Optional<UserDto> getAuthenticatedUser();
+
     Optional<UserDto> getById(Long id);
 
     UserDto getByUsername(String username);

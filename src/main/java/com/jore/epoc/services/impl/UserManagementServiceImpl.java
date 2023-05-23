@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ import com.jore.epoc.repositories.UserInCompanyRoleRepository;
 import com.jore.epoc.repositories.UserRepository;
 import com.jore.epoc.services.UserManagementService;
 import com.jore.mail.Mail;
+import com.jore.util.Util;
 
 import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
@@ -101,8 +106,23 @@ public class UserManagementServiceImpl implements UserManagementService {
         return result;
     }
 
+    @Override
+    public List<UserDto> getAllFiltered(String filterText) {
+        return getAllUsers().stream().filter(user -> matchesFilter(user, filterText)).collect(Collectors.toList());
+    }
+
     public List<UserDto> getAllUsers() {
         return UserMapper.INSTANCE.userToUserDto(userRepository.findAll());
+    }
+
+    @Override
+    public Optional<UserDto> getAuthenticatedUser() {
+        Optional<UserDto> result = Optional.empty();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            result = userRepository.findByUsername(authentication.getName()).map(user -> UserMapper.INSTANCE.userToUserDto(user));
+        }
+        return result;
     }
 
     @Override
@@ -195,6 +215,16 @@ public class UserManagementServiceImpl implements UserManagementService {
                 throw new IllegalStateException(errorData);
             }
         }
+        return result;
+    }
+
+    private boolean matchesFilter(UserDto user, String filterText) {
+        boolean result = false;
+        result = result || Util.contains(user.getEmail(), filterText);
+        result = result || Util.contains(user.getFirstName(), filterText);
+        result = result || Util.contains(user.getLastName(), filterText);
+        result = result || Util.contains(user.getUsername(), filterText);
+        result = result || Util.contains(user.getPhone(), filterText);
         return result;
     }
 }
