@@ -16,8 +16,8 @@ public interface UserMapper {
             result.setLastName(userDto.getLastName());
             result.setEmail(userDto.getEmail());
             result.setUsername(userDto.getUsername());
-            result.setPassword(userDto.getPassword());
-            result.setAdmin(userDto.isAdmin());
+            result.setPhone(userDto.getPhone());
+            result.setAdmin(userDto.isAdministrator());
             return result;
         }
 
@@ -30,7 +30,7 @@ public interface UserMapper {
 
         @Override
         public UserDto userToUserDto(User user) {
-            return UserDto.builder().id(user.getId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).username(user.getUsername()).password(user.getPassword()).isAdmin(user.isAdmin()).roles(user.getRoles()).build();
+            return UserDto.builder().id(user.getId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).username(user.getUsername()).password(user.getPassword()).administrator(user.isAdmin()).phone(user.getPhone()).build();
         }
     };
 

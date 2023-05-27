@@ -83,7 +83,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Autowired
     private SimulationRepository simulationRepository;
     @Autowired
-    private UserRepository loginRepository;
+    private UserRepository userRepository;
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
@@ -142,13 +142,12 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void buySimulations(int nrOfSimulations) {
-        checkUserPermission();
+    public void buySimulations(int nrOfSimulations, UserDto user) {
         EpocSettings settings = settingsRepository.findByIsTemplate(true).get();
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
             simulation.setSettings(settings);
-            simulation.setOwner(getLoggedInUser());
+            simulation.setOwner(userRepository.findById(user.getId()).get());
             simulation.setIsStarted(false);
             simulation.setStartMonth(settings.getSimulationStartMonth());
             simulation.setInterestRate(settings.getDebtInterestRate());
@@ -211,9 +210,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(String username) {
+    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(UserDto user) {
         List<CompletedUserSimulationDto> result = new ArrayList<>();
-        User login = loginRepository.findByUsername(username).get();
+        User login = userRepository.findById(user.getId()).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -283,10 +282,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public Optional<SimulationDto> getNextAvailableSimulationForOwner() {
-        checkUserPermission();
+    public Optional<SimulationDto> getNextAvailableSimulationForOwner(UserDto user) {
         Optional<SimulationDto> result = Optional.empty();
-        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerUsername(false, getLoggedInUser().getUsername()).stream().findFirst();
+        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerId(false, user.getId()).stream().findFirst();
         if (simulation.isPresent()) {
             result = Optional.of(SimulationMapper.INSTANCE.simulationToSimulationDto(simulation.get()));
         }
@@ -295,10 +293,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public List<OpenUserSimulationDto> getOpenSimulationsForUser() {
-        checkUserPermission();
+    public List<OpenUserSimulationDto> getOpenSimulationsForUser(UserDto user) {
         List<OpenUserSimulationDto> result = new ArrayList<>();
-        User login = loginRepository.findByUsername(getLoggedInUser().getUsername()).get();
+        User login = userRepository.findById(user.getId()).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -404,7 +401,7 @@ public class SimulationServiceImpl implements SimulationService {
                 simulation.addCompany(company);
                 companyRepository.save(company);
                 for (UserDto userDto : companyDto.getUsers()) {
-                    Optional<User> user = loginRepository.findByUsername(userDto.getEmail());
+                    Optional<User> user = userRepository.findByUsername(userDto.getEmail());
                     if (user.isEmpty()) {
                         user = Optional.of(new User());
                         user.get().setAdmin(false);
@@ -418,7 +415,7 @@ public class SimulationServiceImpl implements SimulationService {
                     }
                     UserInCompanyRole userInCompany = company.addLogin(user.get());
                     userInCompany.setIsInvitationRequired(true);
-                    loginRepository.save(user.get());
+                    userRepository.save(user.get());
                 }
             }
             if (!simulationDto.getSettings().isEmpty()) {
@@ -438,18 +435,6 @@ public class SimulationServiceImpl implements SimulationService {
             // TODO write test case
             log.warn(String.format("Tried to update simulation (%d) which is started.", simulation.getId()));
         }
-    }
-
-    // TODO must be removed, goal is a stateless service
-    private void checkUserPermission() {
-        if (UserManagementServiceImpl.loggedInUser == null) {
-            throw new IllegalStateException("No user logged in");
-        }
-    }
-
-    // TODO must be removed, goal is a stateless service
-    private User getLoggedInUser() {
-        return UserManagementServiceImpl.loggedInUser;
     }
 
     private void logicalValidation(Company company, YearMonth executionMonth) {

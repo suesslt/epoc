@@ -1,9 +1,6 @@
 package com.jore.epoc.dto;
 
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jore.epoc.bo.user.Role;
 import com.jore.jpa.DataTransferObject;
 
 import jakarta.validation.constraints.Email;
@@ -32,6 +29,5 @@ public class UserDto implements DataTransferObject {
     @NotEmpty
     @NotNull
     private String email;
-    private boolean isAdmin;
-    private Set<Role> roles;
+    private boolean administrator;
 }

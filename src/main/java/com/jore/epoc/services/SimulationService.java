@@ -17,6 +17,7 @@ import com.jore.epoc.dto.OpenUserSimulationDto;
 import com.jore.epoc.dto.RunMarketingCampaignDto;
 import com.jore.epoc.dto.SimulationDto;
 import com.jore.epoc.dto.SimulationStatisticsDto;
+import com.jore.epoc.dto.UserDto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -30,7 +31,7 @@ public interface SimulationService {
 
     void buyRawMaterial(@Valid BuyRawMaterialDto buyRawMaterialDto);
 
-    void buySimulations(@Min(1) int nrOfSimulations);
+    void buySimulations(@Min(1) int nrOfSimulations, UserDto user);
 
     void decreaseCreditLine(@Valid AdjustCreditLineDto decreaseCreditLineDto);
 
@@ -38,13 +39,13 @@ public interface SimulationService {
 
     void finishMoveFor(@NotNull Integer companyId);
 
-    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(@NotEmpty String user);
+    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(@NotEmpty UserDto user);
 
     Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(@NotNull Integer companyId);
 
-    Optional<SimulationDto> getNextAvailableSimulationForOwner();
+    Optional<SimulationDto> getNextAvailableSimulationForOwner(UserDto user);
 
-    List<OpenUserSimulationDto> getOpenSimulationsForUser();
+    List<OpenUserSimulationDto> getOpenSimulationsForUser(UserDto user);
 
     SimulationStatisticsDto getSimulationStatistics(@NotNull Integer simulationId);
 

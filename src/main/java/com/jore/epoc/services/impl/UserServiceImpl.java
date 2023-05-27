@@ -7,10 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,87 +19,32 @@ import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.mapper.UserMapper;
 import com.jore.epoc.repositories.UserInCompanyRoleRepository;
 import com.jore.epoc.repositories.UserRepository;
-import com.jore.epoc.services.UserManagementService;
+import com.jore.epoc.services.UserService;
 import com.jore.mail.Mail;
 import com.jore.util.Util;
 
-import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
-import lombok.extern.log4j.Log4j2;
 
-/*
- * TODO add roles for users with multiples companies (and simulations)
- */
-@Log4j2
 @Component
 @Validated
 @Service
-public class UserManagementServiceImpl implements UserManagementService {
+public class UserServiceImpl implements UserService {
     private static final String ADMIN_EPOC_CH = "admin@epoc.ch";
-    // TODO must be removed, goal is a stateless service
-    static User loggedInUser = null;
     @Autowired
     UserRepository userRepository;
     @Autowired
     UserInCompanyRoleRepository userInCompanyRoleRepository;
-    @Autowired
-    EntityManager entityManager;
 
     @Override
     @Transactional
-    public UserDto createAdmin(UserDto adminDto) {
-        if (loggedInUser == null) {
-            throw new IllegalStateException("No admin currently logged in.");
-        }
-        if (!loggedInUser.isAdmin()) {
-            throw new IllegalStateException("Current logged in user is not an admin.");
-        }
-        User login = UserMapper.INSTANCE.userDtoToUser(adminDto);
-        login.setAdmin(true);
-        if (userRepository.findByUsername(adminDto.getUsername()).isPresent()) {
-            throw new IllegalStateException();
-        }
-        return UserMapper.INSTANCE.userToUserDto(userRepository.save(login));
-    }
-
-    @Override
-    @Transactional
-    public void createInitialAdmin(String user, String password) {
-        entityManager.createQuery("delete from com.jore.epoc.bo.user.User").executeUpdate();
-        User login = new User();
-        login.setUsername("admin");
-        login.setPassword("g00dPa&word");
-        login.setAdmin(true);
-        if (userRepository.findByUsername("admin").isPresent()) {
-            throw new IllegalStateException();
-        }
-        userRepository.save(login);
-    }
-
-    @Override
     public void delete(UserDto user) {
         userRepository.delete(UserMapper.INSTANCE.userDtoToUser(user));
     }
 
     @Override
     @Transactional
-    public boolean deleteLogin(String login) {
-        if (loggedInUser == null) {
-            throw new IllegalStateException("No admin currently logged in.");
-        }
-        if (!loggedInUser.isAdmin()) {
-            throw new IllegalStateException("Current logged in user is not an admin.");
-        }
-        boolean result = false;
-        if (loggedInUser != null) {
-            if (!loggedInUser.getUsername().equals(login)) {
-                User user = userRepository.findByUsername(login).get();
-                userRepository.delete(user);
-                //                loginRepository.deleteByLogin(login);
-                result = true;
-            }
-        }
-        return result;
+    public void deleteByUsername(String username) {
+        userRepository.delete(userRepository.findByUsername(username).get());
     }
 
     @Override
@@ -116,23 +57,13 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
-    public Optional<UserDto> getAuthenticatedUser() {
-        Optional<UserDto> result = Optional.empty();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            result = userRepository.findByUsername(authentication.getName()).map(user -> UserMapper.INSTANCE.userToUserDto(user));
-        }
-        return result;
-    }
-
-    @Override
     public Optional<UserDto> getById(Long id) {
         return userRepository.findById(id.intValue()).map(user -> UserMapper.INSTANCE.userToUserDto(user));
     }
 
     @Override
-    public UserDto getByUsername(String username) {
-        return userRepository.findByUsername(username).map(user -> UserMapper.INSTANCE.userToUserDto(user)).get();
+    public Optional<UserDto> getByUsername(String username) {
+        return userRepository.findByUsername(username).map(user -> UserMapper.INSTANCE.userToUserDto(user));
     }
 
     @Override
@@ -150,35 +81,6 @@ public class UserManagementServiceImpl implements UserManagementService {
             mail.setMessageBody(Messages.getMessage("mailSimulationReadyBody", userInCompany.getUser().getPassword()));
             mail.setSubject(Messages.getMessage("mailSimulationReadySubject", userInCompany.getCompany().getSimulation().getName()));
             result.add(mail);
-        }
-        return result;
-    }
-
-    @Override
-    public List<UserDto> list(PageRequest of) {
-        return getAllUsers();
-    }
-
-    @Override
-    @Transactional
-    public boolean login(String username, String password) {
-        logout();
-        Optional<User> result = userRepository.findByUsernameAndPassword(username, password);
-        if (result.isPresent()) {
-            loggedInUser = result.get();
-            log.info("Login user " + username + ".");
-        } else {
-            log.warn("Could not login user " + username + ".");
-        }
-        return result.isPresent();
-    }
-
-    @Override
-    public boolean logout() {
-        boolean result = false;
-        if (loggedInUser != null) {
-            result = true;
-            loggedInUser = null;
         }
         return result;
     }
