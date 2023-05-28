@@ -12,7 +12,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.dto.UserDto;
@@ -20,7 +22,8 @@ import com.jore.epoc.mapper.UserMapper;
 import com.jore.epoc.repositories.UserRepository;
 import com.jore.epoc.services.CurrentUserService;
 
-// TODO clear currentUser after logout
+@Component
+@Validated
 @Service
 public class CurrentUserServiceImpl implements CurrentUserService {
     private static List<GrantedAuthority> getAuthorities(User user) {

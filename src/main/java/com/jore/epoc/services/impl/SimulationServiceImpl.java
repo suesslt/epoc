@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -142,12 +143,12 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void buySimulations(int nrOfSimulations, UserDto user) {
+    public void buySimulations(int nrOfSimulations, Long ownerId) {
         EpocSettings settings = settingsRepository.findByIsTemplate(true).get();
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
             simulation.setSettings(settings);
-            simulation.setOwner(userRepository.findById(user.getId()).get());
+            simulation.setOwner(userRepository.findById(ownerId).get());
             simulation.setIsStarted(false);
             simulation.setStartMonth(settings.getSimulationStartMonth());
             simulation.setInterestRate(settings.getDebtInterestRate());
@@ -314,6 +315,14 @@ public class SimulationServiceImpl implements SimulationService {
                 return o1.getSimulationName().compareTo(o2.getSimulationName());
             }
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SimulationDto> getSimulationsForOwner(Long ownerId) {
+        List<Simulation> simulations = simulationRepository.findByOwnerId(ownerId);
+        Stream<SimulationDto> map = simulations.stream().map(sim -> SimulationMapper.INSTANCE.simulationToSimulationDto(sim));
+        List<SimulationDto> collect = map.collect(Collectors.toList());
+        return collect;
     }
 
     @Override
