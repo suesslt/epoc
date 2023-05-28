@@ -21,7 +21,6 @@ import com.jore.epoc.dto.UserDto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public interface SimulationService {
@@ -37,17 +36,17 @@ public interface SimulationService {
 
     void enterMarket(@Valid EnterMarketDto enterMarketDto);
 
-    void finishMoveFor(@NotNull Integer companyId);
+    void finishMoveFor(@NotNull Long companyId);
 
-    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(@NotEmpty UserDto user);
+    List<CompletedUserSimulationDto> getCompletedSimulationsForUser(@NotNull Long userId);
 
-    Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(@NotNull Integer companyId);
+    Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(@NotNull Long companyId);
 
-    Optional<SimulationDto> getNextAvailableSimulationForOwner(UserDto user);
+    Optional<SimulationDto> getNextAvailableSimulationForOwner(@NotNull Long userId);
 
-    List<OpenUserSimulationDto> getOpenSimulationsForUser(UserDto user);
+    List<OpenUserSimulationDto> getOpenSimulationsForUser(@NotNull Long userId);
 
-    SimulationStatisticsDto getSimulationStatistics(@NotNull Integer simulationId);
+    SimulationStatisticsDto getSimulationStatistics(@NotNull Long simulationId);
 
     void increaseCreditLine(@Valid AdjustCreditLineDto increaseCreditLineDto);
 

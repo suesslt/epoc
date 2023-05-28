@@ -13,11 +13,12 @@ import lombok.Data;
 
 @Data
 public class MarketDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
     @NotEmpty
     private String name;
     @Min(1)
-    private int marketSize;
+    @NotNull
+    private Integer laborForce;
     @NotNull
     private Money costToEnterMarket;
     @NotNull

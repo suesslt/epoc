@@ -16,7 +16,7 @@ import lombok.Data;
 @Builder
 public class SimulationDto implements DataTransferObject {
     @NotNull
-    private Integer id;
+    private Long id;
     @NotEmpty
     private String name;
     @Builder.Default

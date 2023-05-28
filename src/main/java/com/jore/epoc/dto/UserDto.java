@@ -12,7 +12,7 @@ import lombok.Data;
 @Builder
 @Data
 public class UserDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
     @NotEmpty
     @NotNull
     private String username;

@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 public class FactoryDto implements DataTransferObject {
-    private int capacity;
-    private Integer id;
+    private Long id;
+    private Integer capacity;
 }

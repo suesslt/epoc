@@ -14,7 +14,7 @@ import lombok.Data;
 @Builder
 public class BuyRawMaterialDto implements DataTransferObject {
     @NotNull
-    private Integer companyId;
+    private Long companyId;
     @Min(1)
     @Max(1000)
     private int amount;

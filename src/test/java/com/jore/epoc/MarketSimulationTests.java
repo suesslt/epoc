@@ -17,7 +17,7 @@ class MarketSimulationTests {
 
     @Test
     public void testSoldProductsFullDistributionForOneCompany() {
-        SimulationBuilder builder = SimulationBuilder.builder().numberOfSimulationSteps(100).marketSize(100000);
+        SimulationBuilder builder = SimulationBuilder.builder().numberOfSimulationSteps(100).laborForce(100000);
         builder.increaseCreditLine(YearMonth.of(2020, 1), Money.of(CHF, 1000000000));
         builder.buildStorage(YearMonth.of(2020, 1), 1000000);
         builder.buyRawMaterial(YearMonth.of(2020, 1), 1000000);
@@ -38,7 +38,7 @@ class MarketSimulationTests {
 
     @Test
     public void testSoldProductsFullDistributionForTwoCompanies() {
-        SimulationBuilder builder = SimulationBuilder.builder().numberOfSimulationSteps(100).marketSize(100000);
+        SimulationBuilder builder = SimulationBuilder.builder().numberOfSimulationSteps(100).laborForce(100000);
         builder.increaseCreditLine(YearMonth.of(2020, 1), Money.of(CHF, 1000000000));
         builder.buildStorage(YearMonth.of(2020, 1), 1000000);
         builder.buyRawMaterial(YearMonth.of(2020, 1), 1000000);

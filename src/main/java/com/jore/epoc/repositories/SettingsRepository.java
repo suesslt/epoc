@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.jore.epoc.bo.settings.EpocSettings;
 
-public interface SettingsRepository extends CrudRepository<EpocSettings, Integer> {
+public interface SettingsRepository extends CrudRepository<EpocSettings, Long> {
     Optional<EpocSettings> findByIsTemplate(boolean isTemplate);
 }

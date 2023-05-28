@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.jore.epoc.bo.Market;
 
-public interface MarketRepository extends CrudRepository<Market, Integer> {
+public interface MarketRepository extends CrudRepository<Market, Long> {
     Optional<Market> findByName(String name);
 }

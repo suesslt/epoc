@@ -13,7 +13,7 @@ import lombok.Data;
 @Builder
 public class RunMarketingCampaignDto implements DataTransferObject {
     @NotNull
-    private Integer companyId;
+    private Long companyId;
     @NotNull
     private Money campaignAmount;
     @NotNull

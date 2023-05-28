@@ -3,6 +3,7 @@ package com.jore.epoc.services.impl;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -27,6 +28,10 @@ import com.jore.excel.ExcelWorkbook;
 import com.jore.view.FieldModel;
 
 import jakarta.persistence.EntityManager;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -51,7 +56,11 @@ public class StaticDataServiceImpl implements StaticDataService {
             List<MarketDto> markets = new ExcelReader<MarketDto>(workbook, new FieldModel<>(MarketDto.class)).read();
             markets.forEach(market -> saveMarket(market));
             workbook.close();
+        } catch (ConstraintViolationException e) {
+            log.error(e);
+            throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e);
         }
     }
@@ -84,6 +93,11 @@ public class StaticDataServiceImpl implements StaticDataService {
 
     @Override
     public MarketDto saveMarket(MarketDto marketDto) {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<MarketDto>> validate = validator.validate(marketDto);
+        if (!validate.isEmpty()) {
+            throw new ConstraintViolationException(validate);
+        }
         Optional<Market> market = marketRepository.findByName(marketDto.getName());
         if (market.isPresent()) {
             MarketMapper.INSTANCE.updateMarketFromMarketDto(market.get(), marketDto);

@@ -13,7 +13,7 @@ import lombok.Data;
 @Builder
 public class IncreaseProductivityDto implements DataTransferObject {
     @NotNull
-    private Integer companyId;
+    private Long companyId;
     @NotNull
     private Money increaseProductivityAmount;
     @NotNull

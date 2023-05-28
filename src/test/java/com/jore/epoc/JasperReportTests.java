@@ -28,7 +28,7 @@ class JasperReportTests {
     @Test
     public void testBalanceSheetData() {
         Company company = SimulationBuilder.builder().build();
-        company.setId(1385);
+        company.setId(1385l);
         CompanySimulationStep companySimulationStep = company.getSimulation().getActiveSimulationStep().get().getCompanySimulationStepFor(company);
         companySimulationStep.finish();
         BalanceSheetReport report = new BalanceSheetReport();

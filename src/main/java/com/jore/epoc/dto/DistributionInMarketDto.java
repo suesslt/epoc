@@ -6,5 +6,5 @@ import lombok.Data;
 
 @Data
 public class DistributionInMarketDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
 }

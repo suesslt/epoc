@@ -26,7 +26,7 @@ class SimulationTests {
     @Test
     public void testFirstCall() {
         Simulation simulation = new Simulation();
-        simulation.setId(42);
+        simulation.setId(42l);
         simulation.setIsFinished(false);
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
@@ -41,7 +41,7 @@ class SimulationTests {
     @Test
     public void testLastCall() {
         Simulation simulation = new Simulation();
-        simulation.setId(42);
+        simulation.setId(42l);
         simulation.setIsFinished(false);
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
@@ -54,7 +54,7 @@ class SimulationTests {
     @Test
     public void testWithinSimulation() {
         Simulation simulation = new Simulation();
-        simulation.setId(42);
+        simulation.setId(42l);
         simulation.setIsFinished(false);
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");
@@ -73,7 +73,7 @@ class SimulationTests {
     @Test
     public void testWithinSimulationLastStepClosed() {
         Simulation simulation = new Simulation();
-        simulation.setId(42);
+        simulation.setId(42l);
         simulation.setIsFinished(false);
         simulation.setIsStarted(false);
         simulation.setName("Test Simulation");

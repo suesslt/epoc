@@ -11,7 +11,7 @@ import lombok.Data;
 @Builder
 @Data
 public class CompanyDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
     private String name;
     @Builder.Default
     private List<UserDto> users = new ArrayList<>();

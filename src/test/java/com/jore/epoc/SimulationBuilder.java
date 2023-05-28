@@ -27,7 +27,7 @@ import com.jore.epoc.bo.settings.EpocSettings;
 
 public class SimulationBuilder {
     private static final String CHF = "CHF";
-    private static int ID = 0;
+    private static Long ID = 0l;
 
     public static SimulationBuilder builder() {
         return new SimulationBuilder();
@@ -51,7 +51,7 @@ public class SimulationBuilder {
     private Money factoryLaborCost = Money.of(CHF, 500000);
     private String marketName = "Switzerland";
     private Money marketDistributionCost = Money.of(CHF, 2000000);
-    private int marketSize = 1000000;
+    private int laborForce = 1000000;
     private Money buildingMaintenanceCost = Money.of(CHF, 10000);
     private Percent depreciationRate = Percent.of("15%");
     private Money headquarterCost = Money.of(CHF, 1500000);
@@ -182,8 +182,8 @@ public class SimulationBuilder {
         return this;
     }
 
-    public SimulationBuilder laborForce(int marketSize) {
-        this.marketSize = marketSize;
+    public SimulationBuilder laborForce(int laborForce) {
+        this.laborForce = laborForce;
         return this;
     }
 
@@ -192,11 +192,6 @@ public class SimulationBuilder {
         order.setExecutionMonth(executionMonth);
         order.setAmount(marketingCampaignAmount);
         orders.add(order);
-        return this;
-    }
-
-    public SimulationBuilder marketSize(int marketSize) {
-        this.marketSize = marketSize;
         return this;
     }
 
@@ -229,7 +224,7 @@ public class SimulationBuilder {
         Market market = new Market();
         market.setId(ID++);
         market.setName(marketName);
-        market.setMarketSize(marketSize);
+        market.setLaborForce(laborForce);
         market.setDistributionCost(marketDistributionCost);
         market.setCostToEnterMarket(marketEntryCost);
         return market;

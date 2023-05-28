@@ -203,16 +203,16 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public void finishMoveFor(Integer companySimulationStepId) {
+    public void finishMoveFor(Long companySimulationStepId) {
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
     }
 
     @Override
     @Transactional
-    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(UserDto user) {
+    public List<CompletedUserSimulationDto> getCompletedSimulationsForUser(Long userId) {
         List<CompletedUserSimulationDto> result = new ArrayList<>();
-        User login = userRepository.findById(user.getId()).get();
+        User login = userRepository.findById(userId).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -235,7 +235,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Integer companyId) {
+    public Optional<CompanySimulationStepDto> getCurrentCompanySimulationStep(Long companyId) {
         Optional<CompanySimulationStepDto> result = Optional.empty();
         Company company = companyRepository.findById(companyId).get();
         Simulation simulation = company.getSimulation();
@@ -282,9 +282,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public Optional<SimulationDto> getNextAvailableSimulationForOwner(UserDto user) {
+    public Optional<SimulationDto> getNextAvailableSimulationForOwner(Long userId) {
         Optional<SimulationDto> result = Optional.empty();
-        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerId(false, user.getId()).stream().findFirst();
+        Optional<Simulation> simulation = simulationRepository.findByIsStartedAndOwnerId(false, userId).stream().findFirst();
         if (simulation.isPresent()) {
             result = Optional.of(SimulationMapper.INSTANCE.simulationToSimulationDto(simulation.get()));
         }
@@ -293,9 +293,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public List<OpenUserSimulationDto> getOpenSimulationsForUser(UserDto user) {
+    public List<OpenUserSimulationDto> getOpenSimulationsForUser(Long userId) {
         List<OpenUserSimulationDto> result = new ArrayList<>();
-        User login = userRepository.findById(user.getId()).get();
+        User login = userRepository.findById(userId).get();
         for (UserInCompanyRole userInCompany : login.getCompanies()) {
             Company company = userInCompany.getCompany();
             Simulation simulation = company.getSimulation();
@@ -318,7 +318,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
-    public SimulationStatisticsDto getSimulationStatistics(Integer simulationId) {
+    public SimulationStatisticsDto getSimulationStatistics(Long simulationId) {
         SimulationStatisticsDto result = new SimulationStatisticsDto();
         Simulation simulation = simulationRepository.findById(simulationId).get();
         result.setTotalSoldProducts(simulation.getSoldProducts());

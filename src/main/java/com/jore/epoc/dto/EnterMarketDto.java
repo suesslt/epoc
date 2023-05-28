@@ -13,13 +13,13 @@ import lombok.Data;
 @Builder
 public class EnterMarketDto implements DataTransferObject {
     @NotNull
-    private Integer companyId;
+    private Long companyId;
     @NotNull
-    private Integer marketId;
+    private Long marketId;
     @NotNull
     private YearMonth executionMonth;
     @NotNull
-    private int intentedProductSales;
+    private Integer intentedProductSales;
     @NotNull
     private Money offeredPrice;
 }

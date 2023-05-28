@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class OpenUserSimulationDto implements DataTransferObject {
-    private Integer simulationId;
-    private Integer companyId;
+    private Long simulationId;
+    private Long companyId;
     private String simulationName;
     private String companyName;
 }

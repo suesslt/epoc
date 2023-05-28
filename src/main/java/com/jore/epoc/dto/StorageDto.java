@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @Builder
 public class StorageDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
     private int capacity;
 }

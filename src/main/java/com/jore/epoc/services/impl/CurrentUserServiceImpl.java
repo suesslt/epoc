@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.dto.UserDto;
@@ -24,9 +23,6 @@ import com.jore.epoc.services.CurrentUserService;
 // TODO clear currentUser after logout
 @Service
 public class CurrentUserServiceImpl implements CurrentUserService {
-    //    private static Optional<Authentication> getAuthentication() {
-    //        return Optional.of(SecurityContextHolder.getContext()).map(SecurityContext::getAuthentication).filter(auth -> !(auth instanceof AnonymousAuthenticationToken));
-    //    }
     private static List<GrantedAuthority> getAuthorities(User user) {
         List<GrantedAuthority> result = new ArrayList<>();
         result.add(new SimpleGrantedAuthority("ROLE_USER"));
@@ -38,17 +34,6 @@ public class CurrentUserServiceImpl implements CurrentUserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Override
-    @Transactional
-    public UserDto createAdmin(UserDto adminDto) {
-        User login = UserMapper.INSTANCE.userDtoToUser(adminDto);
-        login.setAdmin(true);
-        if (userRepository.findByUsername(adminDto.getUsername()).isPresent()) {
-            throw new IllegalStateException();
-        }
-        return UserMapper.INSTANCE.userToUserDto(userRepository.save(login));
-    }
 
     @Override
     public Optional<UserDto> getAuthenticatedUser() {

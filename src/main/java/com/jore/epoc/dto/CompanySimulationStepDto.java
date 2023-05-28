@@ -14,7 +14,7 @@ import lombok.Data;
  * This is the main DTO for the display of company step related information
  */
 public class CompanySimulationStepDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
     private String companyName;
     private List<FactoryDto> factories = new ArrayList<>();
     private CreditLineDto creditLine;

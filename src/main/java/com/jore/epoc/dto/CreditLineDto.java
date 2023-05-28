@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 public class CreditLineDto implements DataTransferObject {
-    private Integer id;
+    private Long id;
     private CreditEventDirection direction;
     private Money amount;
 }

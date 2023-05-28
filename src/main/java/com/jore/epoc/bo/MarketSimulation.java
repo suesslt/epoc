@@ -3,6 +3,7 @@ package com.jore.epoc.bo;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.annotations.CompositeType;
 import org.hibernate.annotations.Type;
@@ -120,9 +121,9 @@ public class MarketSimulation extends BusinessObject {
     }
 
     public void simulateMarket(YearMonth simulationMonth) {
-        int marketSize = market.getMarketSizeForConsumption();
+        Integer marketSize = market.getMarketSizeForConsumption();
         int productsSold = getSoldProducts();
-        int availableMarketSize = marketSize - productsSold;
+        int availableMarketSize = Objects.requireNonNull(marketSize) - productsSold;
         for (DistributionInMarket distributionInMarket : distributionInMarkets) {
             addDistributionStep(distributionInMarket, simulationMonth);
             int marketPotentialForProduct = calculateMarketPotentialForProductPrice(marketSize, distributionInMarket.getOfferedPrice(simulationMonth), distributionInMarket.getCompany().getQualityFactor());
