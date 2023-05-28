@@ -37,4 +37,8 @@ public class SimulationDto implements DataTransferObject {
     public void addSetting(SettingDto settingDto) {
         settings.add(settingDto);
     }
+
+    public Integer getNrOfCompanies() {
+        return companies.size();
+    }
 }

@@ -147,10 +147,12 @@ public class SimulationServiceImpl implements SimulationService {
         EpocSettings settings = settingsRepository.findByIsTemplate(true).get();
         for (int i = 0; i < nrOfSimulations; i++) {
             Simulation simulation = new Simulation();
+            simulation.setName("<no name>");
             simulation.setSettings(settings);
             simulation.setOwner(userRepository.findById(ownerId).get());
             simulation.setIsStarted(false);
             simulation.setStartMonth(settings.getSimulationStartMonth());
+            simulation.setNrOfMonths(12);
             simulation.setInterestRate(settings.getDebtInterestRate());
             simulation.setBuildingMaintenanceCost(settings.getMaintentanceCostPerBuilding());
             simulation.setHeadquarterCost(settings.getHeadquarterCost());
@@ -318,6 +320,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
+    @Transactional
     public List<SimulationDto> getSimulationsForOwner(Long ownerId) {
         List<Simulation> simulations = simulationRepository.findByOwnerId(ownerId);
         Stream<SimulationDto> map = simulations.stream().map(sim -> SimulationMapper.INSTANCE.simulationToSimulationDto(sim));
@@ -378,6 +381,30 @@ public class SimulationServiceImpl implements SimulationService {
         marketingCampaignOrder.setExecutionMonth(runMarketingCampaignDto.getExecutionMonth());
         marketingCampaignOrder.setAmount(runMarketingCampaignDto.getCampaignAmount());
         company.addSimulationOrder(marketingCampaignOrder);
+    }
+
+    @Override
+    @Transactional
+    public CompanyDto saveCompany(CompanyDto companyDto) {
+        Simulation simulation = simulationRepository.findById(companyDto.getSimulationId()).get();
+        Company company;
+        if (companyDto.getId() != null) {
+            company = companyRepository.findById(companyDto.getId()).get();
+            company.setName(companyDto.getName());
+        } else {
+            company = new Company();
+            company.setAccounting(new FinancialAccounting());
+            company.setBaseCurrency(simulation.getSettings().getBaseCurrency());
+            company.setMarketingFactor(1.0d);
+            company.setProductivityFactor(1.0d);
+            company.setQualityFactor(1.0d);
+            company.setSimulation(simulation);
+            company.setName(getName(simulation.getCompanies().size()));
+        }
+        company = companyRepository.save(company);
+        List<UserDto> users = new ArrayList<>();
+        CompanyDto result = CompanyDto.builder().id(company.getId()).name(company.getName()).simulationId(company.getSimulation().getId()).users(users).build();
+        return result;
     }
 
     @Override
@@ -444,6 +471,43 @@ public class SimulationServiceImpl implements SimulationService {
             // TODO write test case
             log.warn(String.format("Tried to update simulation (%d) which is started.", simulation.getId()));
         }
+    }
+
+    private String getName(int companies) {
+        String result;
+        switch (companies) {
+        case 0: {
+            result = "The ALPHA Team";
+            break;
+        }
+        case 1: {
+            result = "The Bravissimos";
+            break;
+        }
+        case 2: {
+            result = "Three Angels for Charlie";
+            break;
+        }
+        case 3: {
+            result = "The Delta Force";
+            break;
+        }
+        case 4: {
+            result = "The original Echoes";
+            break;
+        }
+        case 5: {
+            result = "Foxtrott to Success";
+            break;
+        }
+        case 6: {
+            result = "Golf it in";
+            break;
+        }
+        default:
+            result = "<no name>";
+        }
+        return result;
     }
 
     private void logicalValidation(Company company, YearMonth executionMonth) {

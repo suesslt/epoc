@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.bo.user.UserInCompanyRole;
+import com.jore.epoc.dto.CompanyUserDto;
 import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.mapper.UserMapper;
+import com.jore.epoc.repositories.CompanyRepository;
 import com.jore.epoc.repositories.UserInCompanyRoleRepository;
 import com.jore.epoc.repositories.UserRepository;
 import com.jore.epoc.services.UserService;
@@ -33,7 +36,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    UserInCompanyRoleRepository userInCompanyRoleRepository;
+    private UserInCompanyRoleRepository userInCompanyRoleRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Override
     @Transactional
@@ -83,6 +88,18 @@ public class UserServiceImpl implements UserService {
             result.add(mail);
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public void saveCompanyUser(@Valid CompanyUserDto companyUserDto) {
+        Company company = companyRepository.findById(companyUserDto.getCompanyId()).get();
+        User user = new User();
+        UserInCompanyRole userInCompanyRole = new UserInCompanyRole();
+        userInCompanyRole.setIsInvitationRequired(true);
+        userInCompanyRole.setCompany(company);
+        user.addCompanyRole(userInCompanyRole);
+        userRepository.save(user);
     }
 
     @Override

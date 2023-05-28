@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 public class CompanyDto implements DataTransferObject {
     private Long id;
+    private Long simulationId;
     private String name;
     @Builder.Default
     private List<UserDto> users = new ArrayList<>();

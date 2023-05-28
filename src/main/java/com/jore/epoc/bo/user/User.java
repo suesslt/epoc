@@ -30,6 +30,7 @@ public class User extends BusinessObject {
     private String phone;
 
     public void addCompanyRole(UserInCompanyRole userInCompanyRole) {
+        userInCompanyRole.setUser(this);
         companies.add(userInCompanyRole);
     }
 

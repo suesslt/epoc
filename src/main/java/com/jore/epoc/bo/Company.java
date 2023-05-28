@@ -193,6 +193,10 @@ public class Company extends BusinessObject {
         return Collections.unmodifiableList(storages);
     }
 
+    public List<UserInCompanyRole> getUsers() {
+        return Collections.unmodifiableList(users);
+    }
+
     public int manufactureProducts(YearMonth productionMonth) {
         int totalAmountProduced = 0;
         int rawMaterialInStorage = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();

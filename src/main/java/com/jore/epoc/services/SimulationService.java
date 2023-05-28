@@ -7,6 +7,7 @@ import com.jore.epoc.dto.AdjustCreditLineDto;
 import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
 import com.jore.epoc.dto.BuyRawMaterialDto;
+import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.EnterMarketDto;
@@ -56,6 +57,8 @@ public interface SimulationService {
     void increaseQuality(@Valid IncreaseQualityDto increaseQualityDto);
 
     void runMarketingCampaign(@Valid RunMarketingCampaignDto runMarketingCampaignDto);
+
+    CompanyDto saveCompany(CompanyDto company);
 
     void setIntentedSalesAndPrice(@Valid IntendedSalesAndPriceDto intentendSalesAndPriceDto);
 

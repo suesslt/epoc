@@ -124,6 +124,10 @@ public class Simulation extends BusinessObject {
         return buildingMaintenanceCost;
     }
 
+    public List<Company> getCompanies() {
+        return Collections.unmodifiableList(companies);
+    }
+
     public Percent getDepreciationRate() {
         return depreciationRate;
     }

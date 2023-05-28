@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.jore.epoc.dto.CompanyUserDto;
 import com.jore.epoc.dto.UserDto;
 import com.jore.mail.Mail;
 
@@ -22,6 +23,8 @@ public interface UserService {
     Optional<UserDto> getByUsername(String username);
 
     Collection<Mail> getEmailsForNewUsers();
+
+    void saveCompanyUser(CompanyUserDto companyUserDto);
 
     UserDto saveUser(@Valid UserDto user);
 }
