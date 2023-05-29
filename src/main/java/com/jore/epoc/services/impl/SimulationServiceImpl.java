@@ -45,6 +45,7 @@ import com.jore.epoc.dto.BuildStorageDto;
 import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanyDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
+import com.jore.epoc.dto.CompanyUserDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
 import com.jore.epoc.dto.DistributionInMarketDto;
 import com.jore.epoc.dto.EnterMarketDto;
@@ -173,6 +174,12 @@ public class SimulationServiceImpl implements SimulationService {
         adjustCreditLineOrder.setAmount(decreaseCreditLineDto.getAmount());
         adjustCreditLineOrder.setInterestRate(company.getSimulation().getSettings().getDebtInterestRate());
         company.addSimulationOrder(adjustCreditLineOrder);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCompany(CompanyDto company) {
+        companyRepository.delete(companyRepository.findById(company.getId()).get());
     }
 
     @Override
@@ -405,6 +412,26 @@ public class SimulationServiceImpl implements SimulationService {
         List<UserDto> users = new ArrayList<>();
         CompanyDto result = CompanyDto.builder().id(company.getId()).name(company.getName()).simulationId(company.getSimulation().getId()).users(users).build();
         return result;
+    }
+
+    @Override
+    @Transactional
+    public void saveCompanyUser(CompanyUserDto companyUserDto) {
+        Company company = companyRepository.findById(companyUserDto.getCompanyId()).get();
+        Optional<User> userByEmail = userRepository.findByEmail(companyUserDto.getEmail());
+        User user;
+        if (userByEmail.isPresent()) {
+            user = userByEmail.get();
+        } else {
+            user = new User();
+            user.setEmail(companyUserDto.getEmail());
+            user.setUsername(companyUserDto.getEmail());
+        }
+        UserInCompanyRole userInCompanyRole = new UserInCompanyRole();
+        userInCompanyRole.setIsInvitationRequired(true);
+        userInCompanyRole.setCompany(company);
+        user.addCompanyRole(userInCompanyRole);
+        userRepository.save(user);
     }
 
     @Override
