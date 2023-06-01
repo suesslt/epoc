@@ -299,15 +299,18 @@ CREATE TABLE user_in_company_role (
 	PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS user_token CASCADE;
+DROP SEQUENCE IF EXISTS user_token_seq;
 
-CREATE SEQUENCE user_token_seq START 1;
+CREATE SEQUENCE user_token_seq
+	START 1 increment 50;
+
+DROP TABLE IF EXISTS user_token CASCADE;
 
 CREATE TABLE user_token (
 	id bigint NOT NULL,
 	token varchar(120),
 	user_id bigint NOT NULL,
-	expiry_date time,
+	expiry_date timestamp,
 	PRIMARY KEY (id)
 );
 
@@ -400,7 +403,7 @@ ALTER TABLE user_in_company_role
 
 ALTER TABLE user_in_company_role
 	ADD CONSTRAINT FK_userincompanyrole_login FOREIGN KEY (user_id) REFERENCES LOGIN ON DELETE CASCADE;
-	
+
 ALTER TABLE user_token
 	ADD CONSTRAINT FK_usertoken_login FOREIGN KEY (user_id) REFERENCES LOGIN ON DELETE CASCADE;
 

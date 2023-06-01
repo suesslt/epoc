@@ -1,7 +1,6 @@
 package com.jore.epoc.bo.user;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import com.jore.jpa.BusinessObject;
 
@@ -22,7 +21,15 @@ public class UserToken extends BusinessObject {
     private LocalDateTime expiryDate;
 
     public void calculateAndSetExpiryDate() {
-        expiryDate = LocalDateTime.now().plus(ONE_DAY, ChronoUnit.SECONDS);
+        expiryDate = LocalDateTime.now().plusSeconds(ONE_DAY);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
     }
 
     public void setToken(String token) {
