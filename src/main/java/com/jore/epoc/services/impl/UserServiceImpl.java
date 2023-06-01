@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,12 @@ import org.springframework.validation.annotation.Validated;
 import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.bo.user.UserInCompanyRole;
+import com.jore.epoc.bo.user.UserToken;
 import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.mapper.UserMapper;
 import com.jore.epoc.repositories.UserInCompanyRoleRepository;
 import com.jore.epoc.repositories.UserRepository;
+import com.jore.epoc.repositories.UserTokenRepository;
 import com.jore.epoc.services.UserService;
 import com.jore.mail.Mail;
 import com.jore.util.Util;
@@ -34,6 +37,8 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     @Autowired
     private UserInCompanyRoleRepository userInCompanyRoleRepository;
+    @Autowired
+    private UserTokenRepository userTokenRepository;
 
     @Override
     @Transactional
@@ -74,6 +79,12 @@ public class UserServiceImpl implements UserService {
         for (UserInCompanyRole userInCompany : findByIsInvitationRequired) {
             userInCompany.setIsInvitationRequired(false);
             userInCompanyRoleRepository.save(userInCompany);
+            UserToken userToken = new UserToken();
+            String token = UUID.randomUUID().toString();
+            userToken.setToken(token);
+            userToken.setUser(userInCompany.getUser());
+            userToken.calculateAndSetExpiryDate();
+            userTokenRepository.save(userToken);
             Mail mail = new Mail();
             mail.setSender(ADMIN_EPOC_CH);
             mail.addToRecipient(userInCompany.getUser().getEmail());

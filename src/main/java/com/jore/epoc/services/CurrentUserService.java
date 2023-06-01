@@ -8,4 +8,6 @@ import com.jore.epoc.dto.UserDto;
 
 public interface CurrentUserService extends UserDetailsService {
     Optional<UserDto> getAuthenticatedUser();
+
+    Optional<UserDto> getByToken(String token);
 }

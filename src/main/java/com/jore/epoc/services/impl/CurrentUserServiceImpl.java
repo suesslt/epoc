@@ -49,6 +49,11 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     }
 
     @Override
+    public Optional<UserDto> getByToken(String token) {
+        return Optional.empty(); // TODO implement
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
         if (user == null) {

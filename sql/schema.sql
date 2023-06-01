@@ -295,7 +295,19 @@ CREATE TABLE user_in_company_role (
 	id bigint NOT NULL,
 	is_invitation_required boolean NOT NULL,
 	company_id integer NOT NULL,
-	user_id integer NOT NULL,
+	user_id bigint NOT NULL,
+	PRIMARY KEY (id)
+);
+
+DROP TABLE IF EXISTS user_token CASCADE;
+
+CREATE SEQUENCE user_token_seq START 1;
+
+CREATE TABLE user_token (
+	id bigint NOT NULL,
+	token varchar(120),
+	user_id bigint NOT NULL,
+	expiry_date time,
 	PRIMARY KEY (id)
 );
 
@@ -388,6 +400,9 @@ ALTER TABLE user_in_company_role
 
 ALTER TABLE user_in_company_role
 	ADD CONSTRAINT FK_userincompanyrole_login FOREIGN KEY (user_id) REFERENCES LOGIN ON DELETE CASCADE;
+	
+ALTER TABLE user_token
+	ADD CONSTRAINT FK_usertoken_login FOREIGN KEY (user_id) REFERENCES LOGIN ON DELETE CASCADE;
 
 INSERT INTO login (id, username, first_name, last_name, email, is_admin, PASSWORD)
 	VALUES (1, 'user', 'John', 'Normal', 'john.normal@bluesky.ch', FALSE, '$2a$10$xdbKoM48VySZqVSU/cSlVeJn0Z04XCZ7KZBjUBC00eKo5uLswyOpe');
