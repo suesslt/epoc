@@ -75,6 +75,7 @@ import com.jore.epoc.services.SimulationService;
 import com.jore.util.Util;
 
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -432,6 +433,14 @@ public class SimulationServiceImpl implements SimulationService {
         userInCompanyRole.setCompany(company);
         user.addCompanyRole(userInCompanyRole);
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void saveSimulation(@Valid SimulationDto simulationDto) {
+        Simulation simulation = simulationRepository.findById(simulationDto.getId()).get();
+        SimulationMapper.INSTANCE.simulationDtoToSimulation(simulation, simulationDto);
+        simulationRepository.save(simulation);
     }
 
     @Override

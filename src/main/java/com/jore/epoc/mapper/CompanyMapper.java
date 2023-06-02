@@ -10,7 +10,9 @@ public interface CompanyMapper {
     CompanyMapper INSTANCE = new CompanyMapper() {
         @Override
         public CompanyDto companyToCompanyDto(Company company) {
-            return CompanyDto.builder().id(company.getId()).name(company.getName()).simulationId(company.getSimulation() != null ? company.getSimulation().getId() : null).users(UserMapper.INSTANCE.userToUserDto(company.getUsers())).build();
+            CompanyDto result = CompanyDto.builder().id(company.getId()).name(company.getName()).simulationId(company.getSimulation() != null ? company.getSimulation().getId() : null).users(UserMapper.INSTANCE.userToUserDto(company.getUsers())).build();
+            company.getUsers().forEach(userRole -> result.addUserEmail(userRole.getUser().getEmail()));
+            return result;
         }
 
         @Override

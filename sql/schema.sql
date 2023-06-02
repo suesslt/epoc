@@ -289,6 +289,11 @@ CREATE TABLE storage (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS user_in_company_role_seq;
+
+CREATE SEQUENCE user_in_company_role_seq
+	START 1 increment 50;
+
 DROP TABLE IF EXISTS user_in_company_role CASCADE;
 
 CREATE TABLE user_in_company_role (

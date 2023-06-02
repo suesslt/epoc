@@ -98,9 +98,10 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
-        if (user == null) {
+        if (user.isEmpty()) {
             throw new UsernameNotFoundException("No user present with username: " + username);
         }
+        // TODO Throws Exception if password is null
         return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), getAuthorities(user.get()));
     }
 

@@ -71,18 +71,18 @@ public class UserServiceImpl implements UserService {
                 throw new IllegalStateException(errorData);
             }
         } else {
-            Optional<User> otherLogin = userRepository.findById(userDto.getId());
-            if (otherLogin.isPresent()) {
-                if (!otherLogin.get().getUsername().equals(userDto.getUsername())) {
-                    Optional<User> existingLogin = userRepository.findByUsername(userDto.getUsername());
-                    if (existingLogin.isEmpty()) {
-                        User login = UserMapper.INSTANCE.userDtoToUser(userDto);
+            Optional<User> existing = userRepository.findById(userDto.getId());
+            if (existing.isPresent()) {
+                if (!existing.get().getUsername().equals(userDto.getUsername())) {
+                    Optional<User> existingUsername = userRepository.findByUsername(userDto.getUsername());
+                    if (existingUsername.isEmpty()) {
+                        User login = UserMapper.INSTANCE.userDtoToUser(existing.get(), userDto);
                         result = UserMapper.INSTANCE.userToUserDto(userRepository.save(login));
                     } else {
                         throw new IllegalStateException(errorData);
                     }
                 } else {
-                    User login = UserMapper.INSTANCE.userDtoToUser(userDto);
+                    User login = UserMapper.INSTANCE.userDtoToUser(existing.get(), userDto);
                     result = UserMapper.INSTANCE.userToUserDto(userRepository.save(login));
                 }
             } else {

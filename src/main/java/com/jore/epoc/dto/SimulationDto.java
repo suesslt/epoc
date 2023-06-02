@@ -4,6 +4,8 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jore.datatypes.currency.Currency;
+import com.jore.datatypes.money.Money;
 import com.jore.jpa.DataTransferObject;
 
 import jakarta.validation.constraints.Min;
@@ -26,9 +28,12 @@ public class SimulationDto implements DataTransferObject {
     private boolean isStarted;
     @NotNull
     private YearMonth startMonth;
+    @NotNull
     @Min(1)
     private Integer nrOfMonths;
     private boolean isFinished;
+    private Currency baseCurrency;
+    private Money costToBuildFactory;
 
     public void addCompany(CompanyDto companyDto) {
         companies.add(companyDto);

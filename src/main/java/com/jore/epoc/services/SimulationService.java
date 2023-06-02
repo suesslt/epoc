@@ -49,7 +49,7 @@ public interface SimulationService {
 
     List<OpenUserSimulationDto> getOpenSimulationsForUser(@NotNull Long userId);
 
-    List<SimulationDto> getSimulationsForOwner(Long ownerId);
+    List<SimulationDto> getSimulationsForOwner(@NotNull Long ownerId);
 
     SimulationStatisticsDto getSimulationStatistics(@NotNull Long simulationId);
 
@@ -64,6 +64,8 @@ public interface SimulationService {
     CompanyDto saveCompany(CompanyDto company);
 
     void saveCompanyUser(@Valid CompanyUserDto companyUserDto);
+
+    void saveSimulation(@Valid SimulationDto simulation);
 
     void setIntentedSalesAndPrice(@Valid IntendedSalesAndPriceDto intentendSalesAndPriceDto);
 
