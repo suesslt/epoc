@@ -19,7 +19,8 @@ public class CompanyDto implements DataTransferObject {
     private final List<CreditLineDto> creditLines = new ArrayList<>();
     private final List<FactoryDto> factories = new ArrayList<>();
     private final List<StorageDto> storages = new ArrayList<>();
-    private final List<String> emails = new ArrayList<>();
+    @Builder.Default
+    private List<String> emails = new ArrayList<>();
 
     public void addCreditLine(CreditLineDto creditLine) {
         creditLines.add(creditLine);
@@ -35,5 +36,9 @@ public class CompanyDto implements DataTransferObject {
 
     public void addUserEmail(String email) {
         emails.add(email);
+    }
+
+    public void setEmails(List<String> emails) {
+        this.emails = emails;
     }
 }

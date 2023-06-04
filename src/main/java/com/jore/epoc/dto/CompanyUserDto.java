@@ -17,9 +17,4 @@ public class CompanyUserDto implements DataTransferObject {
     @NotEmpty
     @Email
     private String email;
-
-    @Override
-    public String toString() {
-        return email;
-    }
 }

@@ -37,6 +37,8 @@ public interface SimulationService {
 
     void deleteCompany(@Valid CompanyDto company);
 
+    void deleteCompanyUser(@Valid CompanyUserDto companyUser);
+
     void enterMarket(@Valid EnterMarketDto enterMarketDto);
 
     void finishMoveFor(@NotNull Long companyId);

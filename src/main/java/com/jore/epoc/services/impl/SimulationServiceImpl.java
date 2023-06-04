@@ -185,6 +185,15 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     @Transactional
+    public void deleteCompanyUser(@Valid CompanyUserDto companyUser) {
+        User user = userRepository.findByEmail(companyUser.getEmail()).get();
+        UserInCompanyRole userInCompanyRole = user.getCompanies().stream().filter(company -> company.getCompany().getId().equals(companyUser.getCompanyId())).findFirst().get();
+        user.getCompanies().remove(userInCompanyRole);
+        log.debug("Deleted company user: " + companyUser);
+    }
+
+    @Override
+    @Transactional
     public void enterMarket(EnterMarketDto enterMarketDto) {
         Company company = companyRepository.findById(enterMarketDto.getCompanyId()).get();
         logicalValidation(company, enterMarketDto.getExecutionMonth());
