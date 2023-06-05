@@ -17,7 +17,8 @@ public class BuyRawMaterialDto implements DataTransferObject {
     private Long companyId;
     @Min(1)
     @Max(1000)
-    private int amount;
+    @NotNull
+    private Integer amount;
     @NotNull
     private YearMonth executionMonth;
 }

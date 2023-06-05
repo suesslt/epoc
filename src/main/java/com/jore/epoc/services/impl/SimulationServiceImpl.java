@@ -1,5 +1,6 @@
 package com.jore.epoc.services.impl;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,6 +24,7 @@ import com.jore.epoc.bo.Simulation;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.message.Message;
+import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.epoc.bo.orders.AdjustCreditLineOrder;
 import com.jore.epoc.bo.orders.BuildFactoryOrder;
 import com.jore.epoc.bo.orders.BuildStorageOrder;
@@ -44,6 +46,7 @@ import com.jore.epoc.dto.BuildFactoryDto;
 import com.jore.epoc.dto.BuildStorageDto;
 import com.jore.epoc.dto.BuyRawMaterialDto;
 import com.jore.epoc.dto.CompanyDto;
+import com.jore.epoc.dto.CompanyOrderDto;
 import com.jore.epoc.dto.CompanySimulationStepDto;
 import com.jore.epoc.dto.CompanyUserDto;
 import com.jore.epoc.dto.CompletedUserSimulationDto;
@@ -134,6 +137,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void buyRawMaterial(BuyRawMaterialDto buyRawMaterialDto) {
+        log.debug("Buy raw material: " + buyRawMaterialDto);
         Company company = companyRepository.findById(buyRawMaterialDto.getCompanyId()).get();
         logicalValidation(company, buyRawMaterialDto.getExecutionMonth());
         BuyRawMaterialOrder buyRawMaterialOrder = new BuyRawMaterialOrder();
@@ -224,6 +228,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void finishMoveFor(Long companySimulationStepId) {
+        log.debug("Finish step for " + companySimulationStepId);
         CompanySimulationStep companySimulationStep = companySimulationStepRepository.findById(companySimulationStepId).get();
         companySimulationStep.getSimulationStep().getSimulation().finishCompanyStep(companySimulationStep);
     }
@@ -262,12 +267,14 @@ public class SimulationServiceImpl implements SimulationService {
         Optional<SimulationStep> activeSimulationStep = simulation.getActiveSimulationStep();
         if (activeSimulationStep.isPresent()) {
             SimulationStep simulationStep = activeSimulationStep.get();
+            LocalDate simulationDate = simulationStep.getSimulationMonth().atEndOfMonth();
             simulationStepRepository.save(simulationStep);
             CompanySimulationStep companySimulationStep = simulationStep.getCompanySimulationStepFor(company);
             CompanySimulationStepDto companySimulationStepDto = new CompanySimulationStepDto();
             companySimulationStepDto.setCompanyName(company.getName());
             companySimulationStepDto.setId(companySimulationStep.getId());
             companySimulationStepDto.setSimulationMonth(simulationStep.getSimulationMonth());
+            companySimulationStepDto.setCompanyValue(companySimulationStep.getCompany().getAccounting().getCompanyValue(simulationDate));
             for (Factory factory : company.getFactories()) {
                 FactoryDto factoryDto = new FactoryDto();
                 factoryDto.setId(factory.getId());
@@ -294,6 +301,10 @@ public class SimulationServiceImpl implements SimulationService {
                 messageDto.setMessage(message.getMessage());
                 messageDto.setRelevantMonth(message.getRelevantMonth());
                 companySimulationStepDto.addMessage(messageDto);
+            }
+            for (AbstractSimulationOrder order : company.getOrdersForExecutionIn(activeSimulationStep.get().getSimulationMonth())) {
+                CompanyOrderDto orderDto = CompanyOrderDto.builder().orderType(order.getType()).amount(order.getAmount()).build();
+                companySimulationStepDto.addOrder(orderDto);
             }
             result = Optional.of(companySimulationStepDto);
         }
@@ -357,6 +368,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     @Transactional
     public void increaseCreditLine(AdjustCreditLineDto increaseCreditLineDto) {
+        log.debug("Increase credit line: " + increaseCreditLineDto);
         Company company = companyRepository.findById(increaseCreditLineDto.getCompanyId()).get();
         logicalValidation(company, increaseCreditLineDto.getExecutionMonth());
         AdjustCreditLineOrder adjustCreditLineOrder = new AdjustCreditLineOrder();
@@ -471,7 +483,7 @@ public class SimulationServiceImpl implements SimulationService {
         Simulation simulation = simulationRepository.findById(simulationDto.getId()).get();
         if (!simulation.isStarted()) {
             simulation.setName(simulationDto.getName());
-            simulation.setStartMonth(simulationDto.getStartMonth()); // TODO Consider usting setting as default
+            simulation.setStartMonth(simulationDto.getStartMonth()); // TODO Consider using setting as default
             simulation.setNrOfMonths(simulationDto.getNrOfMonths());
             for (CompanyDto companyDto : simulationDto.getCompanies()) {
                 Company company = new Company();

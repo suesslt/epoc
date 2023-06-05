@@ -40,7 +40,7 @@ public interface UserMapper {
 
         @Override
         public UserDto userToUserDto(User user) {
-            return UserDto.builder().id(user.getId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).username(user.getUsername()).password(user.getPassword()).administrator(user.isAdmin()).phone(user.getPhone()).build();
+            return UserDto.builder().id(user.getId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).username(user.getUsername()).administrator(user.isAdmin()).phone(user.getPhone()).build();
         }
 
         public UserDto userToUserDto(UserInCompanyRole user) {

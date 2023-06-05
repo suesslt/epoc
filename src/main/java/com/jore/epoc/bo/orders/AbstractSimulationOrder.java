@@ -30,6 +30,8 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     @Override
     public abstract void execute();
 
+    public abstract String getAmount();
+
     public Company getCompany() {
         return company;
     }
@@ -40,6 +42,8 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     }
 
     public abstract int getSortOrder();
+
+    public abstract String getType();
 
     @Override
     public boolean isExecuted() {

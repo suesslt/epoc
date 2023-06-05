@@ -1,6 +1,5 @@
 package com.jore.epoc.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jore.jpa.DataTransferObject;
 
 import jakarta.validation.constraints.Email;
@@ -16,8 +15,6 @@ public class UserDto implements DataTransferObject {
     @NotEmpty
     @NotNull
     private String username;
-    @JsonIgnore
-    private String password;
     @NotEmpty
     @NotNull
     private String firstName;

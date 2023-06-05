@@ -44,6 +44,9 @@ CREATE TABLE abstract_simulation_order (
 	PRIMARY KEY (id)
 );
 
+CREATE UNIQUE INDEX ix_abstract_simulation_order_type_month_company ON abstract_simulation_order (dtype, execution_month, company_id);
+
+
 DROP TABLE IF EXISTS account CASCADE;
 
 CREATE TABLE account (
