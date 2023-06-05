@@ -30,15 +30,19 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
 
     @Override
     public void execute() {
-        Money storageCosts = constructionCosts.add(constructionCostsPerUnit.multiply(capacity));
-        if (getCompany().getAccounting().checkFunds(storageCosts, getExecutionMonth().atEndOfMonth())) {
+        if (getCompany().getAccounting().checkFunds(getAmount(), getExecutionMonth().atEndOfMonth())) {
             addStorage();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built storage", FinancialAccounting.REAL_ESTATE, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerUnit.multiply(capacity)));
             addMessage(MessageLevel.INFORMATION, "StorageBuilt", capacity, getExecutionMonth());
             setExecuted(true);
         } else {
-            addMessage(MessageLevel.WARNING, "NoStorageDueToFunds", getExecutionMonth(), storageCosts, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
+            addMessage(MessageLevel.WARNING, "NoStorageDueToFunds", getExecutionMonth(), getAmount(), getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
         }
+    }
+
+    @Override
+    public Money getAmount() {
+        return constructionCosts.add(constructionCostsPerUnit.multiply(capacity));
     }
 
     public Money getInventoryManagementCost() {
@@ -48,6 +52,11 @@ public class BuildStorageOrder extends AbstractSimulationOrder {
     @Override
     public int getSortOrder() {
         return 2;
+    }
+
+    @Override
+    public String getType() {
+        return "Build Storage";
     }
 
     public void setCapacity(Integer capacity) {

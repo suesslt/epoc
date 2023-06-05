@@ -31,20 +31,29 @@ public class BuildFactoryOrder extends AbstractSimulationOrder {
 
     @Override
     public void execute() {
-        Money factoryCosts = constructionCosts.add(constructionCostsPerLine.multiply(productionLines));
-        if (getCompany().getAccounting().checkFunds(factoryCosts, getExecutionMonth().atEndOfMonth())) {
+        if (getCompany().getAccounting().checkFunds(getAmount(), getExecutionMonth().atEndOfMonth())) {
             addFactory();
             book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Built factory", FinancialAccounting.REAL_ESTATE, FinancialAccounting.BANK, constructionCosts.add(constructionCostsPerLine.multiply(productionLines)));
-            addMessage(MessageLevel.INFORMATION, "FactoryCreated", factoryCosts, getExecutionMonth());
+            addMessage(MessageLevel.INFORMATION, "FactoryCreated", getAmount(), getExecutionMonth());
             setExecuted(true);
         } else {
-            addMessage(MessageLevel.WARNING, "NoFactoryDueToFunds", getExecutionMonth(), factoryCosts, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
+            addMessage(MessageLevel.WARNING, "NoFactoryDueToFunds", getExecutionMonth(), getAmount(), getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
         }
+    }
+
+    @Override
+    public Money getAmount() {
+        return constructionCosts.add(constructionCostsPerLine.multiply(productionLines));
     }
 
     @Override
     public int getSortOrder() {
         return 4;
+    }
+
+    @Override
+    public String getType() {
+        return "Build Factory";
     }
 
     public void setConstructionCost(Money constructionCosts) {

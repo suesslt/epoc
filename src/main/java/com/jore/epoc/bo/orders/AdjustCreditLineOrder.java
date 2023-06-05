@@ -40,8 +40,18 @@ public class AdjustCreditLineOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return amount;
+    }
+
+    @Override
     public int getSortOrder() {
         return 1;
+    }
+
+    @Override
+    public String getType() {
+        return direction + " Credit Line";
     }
 
     public void setAmount(Money amount) {

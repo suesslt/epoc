@@ -30,8 +30,18 @@ public class MarketingCampaignOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return marketingCampaignAmount;
+    }
+
+    @Override
     public int getSortOrder() {
         return 8;
+    }
+
+    @Override
+    public String getType() {
+        return "Marketing capmaign";
     }
 
     public void setAmount(Money marketingCampaignAmount) {

@@ -40,8 +40,18 @@ public class EnterMarketOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return marketEntryCost;
+    }
+
+    @Override
     public int getSortOrder() {
         return 5;
+    }
+
+    @Override
+    public String getType() {
+        return "Enter market";
     }
 
     public void setEnterMarktCost(Money marketEntryCost) {

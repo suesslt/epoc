@@ -30,7 +30,7 @@ public abstract class AbstractSimulationOrder extends BusinessObject implements 
     @Override
     public abstract void execute();
 
-    public abstract String getAmount();
+    public abstract Money getAmount();
 
     public Company getCompany() {
         return company;

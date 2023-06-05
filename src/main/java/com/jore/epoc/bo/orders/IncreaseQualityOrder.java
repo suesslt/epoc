@@ -30,8 +30,18 @@ public class IncreaseQualityOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return increaseQualityAmount;
+    }
+
+    @Override
     public int getSortOrder() {
         return 7;
+    }
+
+    @Override
+    public String getType() {
+        return "Increase quality";
     }
 
     public void setAmount(Money increaseQualityAmount) {

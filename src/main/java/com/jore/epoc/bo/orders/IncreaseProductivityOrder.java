@@ -30,8 +30,18 @@ public class IncreaseProductivityOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return increaseProductivityAmount;
+    }
+
+    @Override
     public int getSortOrder() {
         return 7;
+    }
+
+    @Override
+    public String getType() {
+        return "Increase productivity";
     }
 
     public void setAmount(Money increaseProductivityAmount) {

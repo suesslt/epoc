@@ -25,15 +25,14 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
         Assert.notNull("Amount must not be null", amount);
         Assert.notNull("Unit price must not be null", unitPrice);
         int storageCapacity = getCompany().getStorages().stream().mapToInt(storage -> storage.getAvailableCapacity(getExecutionMonth())).sum();
-        Money cost = unitPrice.multiply(amount);
-        if (storageCapacity >= amount && getCompany().getAccounting().checkFunds(cost, getExecutionMonth().atEndOfMonth())) {
+        if (storageCapacity >= amount && getCompany().getAccounting().checkFunds(getAmount(), getExecutionMonth().atEndOfMonth())) {
             Storage.distributeRawMaterialAccrossStorages(getCompany().getStorages(), amount, getExecutionMonth(), unitPrice);
-            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Buy of raw material", FinancialAccounting.MATERIALAUFWAND, FinancialAccounting.BANK, cost, FinancialAccounting.RAW_MATERIALS, FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, cost);
+            book(getExecutionMonth().atDay(FIRST_OF_MONTH), "Buy of raw material", FinancialAccounting.MATERIALAUFWAND, FinancialAccounting.BANK, getAmount(), FinancialAccounting.RAW_MATERIALS, FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, getAmount());
             addMessage(MessageLevel.INFORMATION, "RawMaterialBought", amount, getExecutionMonth());
             setExecuted(true);
         } else {
-            if (!getCompany().getAccounting().checkFunds(cost, getExecutionMonth().atEndOfMonth())) {
-                addMessage(MessageLevel.WARNING, "NoRawMaterialFunds", getExecutionMonth(), cost, getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
+            if (!getCompany().getAccounting().checkFunds(getAmount(), getExecutionMonth().atEndOfMonth())) {
+                addMessage(MessageLevel.WARNING, "NoRawMaterialFunds", getExecutionMonth(), getAmount(), getCompany().getAccounting().getBankBalance(getExecutionMonth().atEndOfMonth()));
             } else {
                 addMessage(MessageLevel.WARNING, "NoRawMaterialCapacity", getExecutionMonth(), amount, storageCapacity);
             }
@@ -41,8 +40,18 @@ public class BuyRawMaterialOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return unitPrice.multiply(amount);
+    }
+
+    @Override
     public int getSortOrder() {
         return 3;
+    }
+
+    @Override
+    public String getType() {
+        return "Buy raw material";
     }
 
     public void setAmount(Integer amount) {

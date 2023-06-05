@@ -31,8 +31,18 @@ public class ChangeAmountAndPriceOrder extends AbstractSimulationOrder {
     }
 
     @Override
+    public Money getAmount() {
+        return offeredPrice;
+    }
+
+    @Override
     public int getSortOrder() {
         return 6;
+    }
+
+    @Override
+    public String getType() {
+        return "Change offered amount and price";
     }
 
     public void setIntentedSales(Integer intentedSales) {
