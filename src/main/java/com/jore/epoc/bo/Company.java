@@ -15,6 +15,7 @@ import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.message.Message;
+import com.jore.epoc.bo.message.Messages;
 import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.user.User;
@@ -86,7 +87,7 @@ public class Company extends BusinessObject {
     }
 
     public void addSimulationOrder(AbstractSimulationOrder simulationOrder) {
-        Assert.notNull("Execution month in simulation order must not be null", simulationOrder.getExecutionMonth());
+        Assert.notNull("Execution month in simulation order must not be null", simulationOrder.getExecutionMonth()); //$NON-NLS-1$
         simulationOrder.setCompany(this);
         simulationOrders.add(simulationOrder);
     }
@@ -101,19 +102,20 @@ public class Company extends BusinessObject {
         nrOfBuildings += factories.size();
         nrOfBuildings += storages.size();
         Money buildingCosts = simulation.getBuildingMaintenanceCost().multiply(nrOfBuildings).divide(12);
-        getAccounting().book(String.format("Building maintenance for %d buildings.", nrOfBuildings), simulationMonth.atDay(1), simulationMonth.atDay(1), new DebitCreditAmount(FinancialAccounting.RAUMAUFWAND, FinancialAccounting.BANK, buildingCosts));
+        getAccounting().book(String.format(Messages.getMessage("Company.1"), nrOfBuildings), simulationMonth.atDay(1), simulationMonth.atDay(1), new DebitCreditAmount(FinancialAccounting.RAUMAUFWAND, FinancialAccounting.BANK, buildingCosts)); //$NON-NLS-1$
     }
 
     public void chargeDepreciation(YearMonth simulationMonth) {
         Money realEstateBalance = accounting.getRealEstateBalance(simulationMonth.atEndOfMonth());
         Money depreciation = realEstateBalance.multiply(getSimulation().getDepreciationRate()).divide(12);
-        getAccounting().book(String.format("Depreciation of %s on value %s.", simulation.getDepreciationRate(), realEstateBalance), simulationMonth.atDay(1), simulationMonth.atDay(1), new DebitCreditAmount(FinancialAccounting.DEPRECIATION, FinancialAccounting.REAL_ESTATE, depreciation));
+        getAccounting().book(String.format(Messages.getMessage("Company.2"), simulation.getDepreciationRate(), realEstateBalance), simulationMonth.atDay(1), simulationMonth.atDay(1), new DebitCreditAmount(FinancialAccounting.DEPRECIATION, FinancialAccounting.REAL_ESTATE, depreciation)); //$NON-NLS-1$
     }
 
     public void chargeInterest(YearMonth simulationMonth) {
         Money interestAmount = accounting.getLongTermDebt(simulationMonth.atEndOfMonth()).negate().multiply(simulation.getInterestRate()).divide(12);
-        getAccounting().book(String.format("%s interest on debt amount of %s.", simulation.getInterestRate(), accounting.getLongTermDebt(simulationMonth.atDay(1))), simulationMonth.atDay(1), simulationMonth.atDay(1),
-                new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount));
+        getAccounting()
+                       .book(String.format(Messages.getMessage("Company.3"), simulation.getInterestRate(), accounting.getLongTermDebt(simulationMonth.atDay(1))), simulationMonth.atDay(1), simulationMonth.atDay(1), //$NON-NLS-1$
+                               new DebitCreditAmount(FinancialAccounting.INTEREST, FinancialAccounting.BANK, interestAmount));
     }
 
     public void chargeWorkforceCost(YearMonth simulationMonth) {
@@ -126,8 +128,9 @@ public class Company extends BusinessObject {
         workforceCost = Money.add(workforceCost, inventoryManagementCost.orElse(null));
         workforceCost = Money.add(workforceCost, productionCost.orElse(null));
         workforceCost = workforceCost.divide(ONE_TWELFTH);
-        getAccounting().book(String.format("Charging costs for HQ: %s, distribution: %s, inventory management: %s, production lines %s.", headquarterCost, distributionCost, inventoryManagementCost, productionCost), simulationMonth.atDay(1), simulationMonth.atDay(1),
-                new DebitCreditAmount(FinancialAccounting.SALARIES, FinancialAccounting.BANK, workforceCost));
+        getAccounting()
+                       .book(String.format(Messages.getMessage("Company.4"), headquarterCost, distributionCost, inventoryManagementCost, productionCost), simulationMonth.atDay(1), simulationMonth.atDay(1), //$NON-NLS-1$
+                               new DebitCreditAmount(FinancialAccounting.SALARIES, FinancialAccounting.BANK, workforceCost));
     }
 
     public void discountFactors() {
@@ -200,7 +203,7 @@ public class Company extends BusinessObject {
     public int manufactureProducts(YearMonth productionMonth) {
         int totalAmountProduced = 0;
         int rawMaterialInStorage = getStorages().stream().mapToInt(storage -> storage.getStoredRawMaterials()).sum();
-        log.debug(String.format("Raw material in storage is %d for company '%s' (%d)", rawMaterialInStorage, name, getId()));
+        log.debug(Messages.getMessage("Company.5", rawMaterialInStorage, name, getId()));
         if (rawMaterialInStorage > 0) {
             Iterator<Factory> factoryIterator = factories.iterator();
             while (factoryIterator.hasNext() && rawMaterialInStorage > 0) {
@@ -209,10 +212,12 @@ public class Company extends BusinessObject {
                 totalAmountProduced += amountProduced;
             }
             Money averageRawMaterialPrice = Storage.getAverageRawMaterialPrice(storages);
-            accounting.book("Production, removal of raw materials from inventory.", productionMonth.atEndOfMonth(), productionMonth.atEndOfMonth(),
-                    new DebitCreditAmount(FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, FinancialAccounting.RAW_MATERIALS, averageRawMaterialPrice.multiply(totalAmountProduced)));
-            accounting.book("Production, adding products to inventory.", productionMonth.atEndOfMonth(), productionMonth.atEndOfMonth(),
-                    new DebitCreditAmount(FinancialAccounting.PRODUCTS, FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, getSimulation().getProductionCost().multiply(totalAmountProduced)));
+            accounting
+                      .book(Messages.getMessage("Company.6"), productionMonth.atEndOfMonth(), productionMonth.atEndOfMonth(), //$NON-NLS-1$
+                              new DebitCreditAmount(FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, FinancialAccounting.RAW_MATERIALS, averageRawMaterialPrice.multiply(totalAmountProduced)));
+            accounting
+                      .book(Messages.getMessage("Company.7"), productionMonth.atEndOfMonth(), productionMonth.atEndOfMonth(), //$NON-NLS-1$
+                              new DebitCreditAmount(FinancialAccounting.PRODUCTS, FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, getSimulation().getProductionCost().multiply(totalAmountProduced)));
             Storage.removeRawMaterialFromStorages(storages, totalAmountProduced);
             Storage.distributeProductAccrossStorages(storages, totalAmountProduced, productionMonth);
         }
@@ -226,10 +231,11 @@ public class Company extends BusinessObject {
         if (amountToSell > 0) {
             distributionInMarket.setSoldProducts(simulationMonth, amountToSell);
             Storage.removeProductsFromStorages(getStorages(), amountToSell);
-            accounting.book(String.format("Sale of %s products.", amountToSell), simulationMonth.atEndOfMonth(), simulationMonth.atEndOfMonth(), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUCT_REVENUES, sellPrice.multiply(amountToSell)),
-                    new DebitCreditAmount(FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, FinancialAccounting.PRODUCTS, getSimulation().getProductionCost().multiply(amountToSell)));
+            accounting
+                      .book(String.format(Messages.getMessage("Company.8"), amountToSell), simulationMonth.atEndOfMonth(), simulationMonth.atEndOfMonth(), new DebitCreditAmount(FinancialAccounting.BANK, FinancialAccounting.PRODUCT_REVENUES, sellPrice.multiply(amountToSell)), //$NON-NLS-1$
+                              new DebitCreditAmount(FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, FinancialAccounting.PRODUCTS, getSimulation().getProductionCost().multiply(amountToSell)));
         }
-        log.debug(String.format("Sell a maximum of %d products for month %s in '%s'. (Stored Amount: %d, Intented Product Sale: %d, Product Market Potential: %d", amountToSell, simulationMonth, name, storedAmount, intentedProductSale, productMarketPotential));
+        log.debug(String.format(Messages.getMessage("Company.9"), amountToSell, simulationMonth, name, storedAmount, intentedProductSale, productMarketPotential)); //$NON-NLS-1$
     }
 
     public void setAccounting(FinancialAccounting accounting) {

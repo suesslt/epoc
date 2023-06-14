@@ -21,6 +21,7 @@ import com.jore.epoc.bo.Factory;
 import com.jore.epoc.bo.Market;
 import com.jore.epoc.bo.MarketSimulation;
 import com.jore.epoc.bo.Simulation;
+import com.jore.epoc.bo.SimulationType;
 import com.jore.epoc.bo.Storage;
 import com.jore.epoc.bo.accounting.FinancialAccounting;
 import com.jore.epoc.bo.message.Message;
@@ -38,6 +39,7 @@ import com.jore.epoc.bo.orders.MarketingCampaignOrder;
 import com.jore.epoc.bo.settings.EpocSetting;
 import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
+import com.jore.epoc.bo.step.DistributionStep;
 import com.jore.epoc.bo.step.SimulationStep;
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.bo.user.UserInCompanyRole;
@@ -68,6 +70,7 @@ import com.jore.epoc.dto.UserDto;
 import com.jore.epoc.mapper.SimulationMapper;
 import com.jore.epoc.repositories.CompanyRepository;
 import com.jore.epoc.repositories.CompanySimulationStepRepository;
+import com.jore.epoc.repositories.DistributionStepRepository;
 import com.jore.epoc.repositories.MarketRepository;
 import com.jore.epoc.repositories.MarketSimulationRepository;
 import com.jore.epoc.repositories.SettingsRepository;
@@ -86,6 +89,7 @@ import lombok.extern.log4j.Log4j2;
 @Validated
 @Service
 public class SimulationServiceImpl implements SimulationService {
+    private static final String SWITZERLAND = "Switzerland";
     @Autowired
     private SimulationRepository simulationRepository;
     @Autowired
@@ -102,6 +106,8 @@ public class SimulationServiceImpl implements SimulationService {
     private MarketSimulationRepository marketSimulationRepository;
     @Autowired
     private SettingsRepository settingsRepository;
+    @Autowired
+    private DistributionStepRepository distributionStepRepository;
 
     @Override
     @Transactional
@@ -307,6 +313,8 @@ public class SimulationServiceImpl implements SimulationService {
                 companySimulationStepDto.addOrder(orderDto);
             }
             result = Optional.of(companySimulationStepDto);
+            List<DistributionStep> distributionSteps = distributionStepRepository.findByDistributionInMarketCompanyId(companyId);
+            log.info(distributionSteps);
         }
         return result;
     }
@@ -429,6 +437,16 @@ public class SimulationServiceImpl implements SimulationService {
             company.setQualityFactor(1.0d);
             company.setSimulation(simulation);
             company.setName(getName(simulation.getCompanies().size()));
+            if (simulation.getSimulationType().equals(SimulationType.IN_MARKET)) {
+                MarketSimulation marketSimulation = marketSimulationRepository.findByMarketName(SWITZERLAND).get();
+                marketSimulation.setStartMonth(simulation.getStartMonth());
+                DistributionInMarket distributionInMarket = new DistributionInMarket();
+                distributionInMarket.setIntentedProductSale(null); // TODO fill from settings
+                distributionInMarket.setOfferedPrice(null); // TODO fill from settings
+                distributionInMarket.setMarketSimulation(marketSimulation);
+                company.addDistributionInMarket(distributionInMarket);
+                marketSimulation.addDistributionInMarket(distributionInMarket);
+            }
         }
         company = companyRepository.save(company);
         List<UserDto> users = new ArrayList<>();

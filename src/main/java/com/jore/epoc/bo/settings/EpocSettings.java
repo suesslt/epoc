@@ -25,6 +25,7 @@ public class EpocSettings extends BusinessObject {
     public static final String STORAGE_CONSTRUCTION_MONTHS = "SET0007";
     public static final String PASSWORD_LENGTH = "SET0008";
     public static final String DEFAULT_SIMULATION_START_MONTH = "SET0009";
+    public static final String SIMULATION_TYPE = "SET0010";
     public static final String LABOR_COST_PER_PRODUCTION_LINE = "SET0011";
     public static final String MAINTENANCE_COST_PER_BUILDING = "SET0012";
     public static final String DEBT_INTEREST_RATE = "SET0013";

@@ -10,4 +10,6 @@ import com.jore.epoc.bo.Simulation;
 
 public interface MarketSimulationRepository extends CrudRepository<MarketSimulation, Long> {
     Optional<MarketSimulation> findByMarketAndSimulation(Market market, Simulation simulation);
+
+    Optional<MarketSimulation> findByMarketName(String marketName);
 }

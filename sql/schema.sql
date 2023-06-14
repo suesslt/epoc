@@ -1,3 +1,9 @@
+DROP SEQUENCE IF EXISTS abstract_simulation_order_seq;
+
+CREATE SEQUENCE abstract_simulation_order_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS abstract_simulation_order CASCADE;
 
 CREATE TABLE abstract_simulation_order (
@@ -46,6 +52,11 @@ CREATE TABLE abstract_simulation_order (
 
 CREATE UNIQUE INDEX ix_abstract_simulation_order_type_month_company ON abstract_simulation_order (dtype, execution_month, company_id);
 
+DROP SEQUENCE IF EXISTS account_seq;
+
+CREATE SEQUENCE account_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS account CASCADE;
 
@@ -59,6 +70,12 @@ CREATE TABLE account (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS booking_seq;
+
+CREATE SEQUENCE booking_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS booking CASCADE;
 
 CREATE TABLE booking (
@@ -69,6 +86,12 @@ CREATE TABLE booking (
 	journal_entry_id integer NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS company_seq;
+
+CREATE SEQUENCE company_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS company CASCADE;
 
@@ -83,6 +106,12 @@ CREATE TABLE company (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS company_simulation_step_seq;
+
+CREATE SEQUENCE company_simulation_step_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS company_simulation_step CASCADE;
 
 CREATE TABLE company_simulation_step (
@@ -92,6 +121,12 @@ CREATE TABLE company_simulation_step (
 	simulation_step_id integer NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS distribution_in_market_seq;
+
+CREATE SEQUENCE distribution_in_market_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS distribution_in_market CASCADE;
 
@@ -104,6 +139,12 @@ CREATE TABLE distribution_in_market (
 	market_simulation_id integer NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS distribution_step_seq;
+
+CREATE SEQUENCE distribution_step_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS distribution_step CASCADE;
 
@@ -119,6 +160,12 @@ CREATE TABLE distribution_step (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS epoc_setting_seq;
+
+CREATE SEQUENCE epoc_setting_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS epoc_setting CASCADE;
 
 CREATE TABLE epoc_setting (
@@ -131,6 +178,12 @@ CREATE TABLE epoc_setting (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS epoc_settings_seq;
+
+CREATE SEQUENCE epoc_settings_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS epoc_settings CASCADE;
 
 CREATE TABLE epoc_settings (
@@ -138,6 +191,12 @@ CREATE TABLE epoc_settings (
 	is_template boolean NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS factory_seq;
+
+CREATE SEQUENCE factory_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS factory CASCADE;
 
@@ -152,6 +211,12 @@ CREATE TABLE factory (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS financial_accounting_seq;
+
+CREATE SEQUENCE financial_accounting_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS financial_accounting CASCADE;
 
 CREATE TABLE financial_accounting (
@@ -159,6 +224,12 @@ CREATE TABLE financial_accounting (
 	base_currency char(3),
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS journal_entry_seq;
+
+CREATE SEQUENCE journal_entry_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS journal_entry CASCADE;
 
@@ -170,6 +241,12 @@ CREATE TABLE journal_entry (
 	accounting_id integer NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS LOGIN_seq;
+
+CREATE SEQUENCE LOGIN_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS LOGIN CASCADE;
 
@@ -185,6 +262,12 @@ CREATE TABLE LOGIN (
 	simulation_id integer,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS market_seq;
+
+CREATE SEQUENCE market_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS market CASCADE;
 
@@ -216,6 +299,12 @@ CREATE TABLE market (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS market_simulation_seq;
+
+CREATE SEQUENCE market_simulation_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS market_simulation CASCADE;
 
 CREATE TABLE market_simulation (
@@ -233,6 +322,12 @@ CREATE TABLE market_simulation (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS message_seq;
+
+CREATE SEQUENCE message_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS message CASCADE;
 
 CREATE TABLE message (
@@ -243,6 +338,12 @@ CREATE TABLE message (
 	company_id integer NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS simulation_seq;
+
+CREATE SEQUENCE simulation_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS simulation CASCADE;
 
@@ -266,6 +367,12 @@ CREATE TABLE simulation (
 	PRIMARY KEY (id)
 );
 
+DROP SEQUENCE IF EXISTS simulation_step_seq;
+
+CREATE SEQUENCE simulation_step_seq
+	START 1
+	INCREMENT 50;
+
 DROP TABLE IF EXISTS simulation_step CASCADE;
 
 CREATE TABLE simulation_step (
@@ -275,6 +382,12 @@ CREATE TABLE simulation_step (
 	simulation_id integer NOT NULL,
 	PRIMARY KEY (id)
 );
+
+DROP SEQUENCE IF EXISTS storage_seq;
+
+CREATE SEQUENCE storage_seq
+	START 1
+	INCREMENT 50;
 
 DROP TABLE IF EXISTS storage CASCADE;
 
@@ -456,61 +569,97 @@ INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, descripti
 	VALUES (9, 'SET0009', 'YearMonth', '2000-01', 'Default simulation start month', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (10, 'SET0011', 'Money', 'CHF 500000', 'Labor cost per production line and year', 1);
+	VALUES (10, 'SET0010', 'String', 'VIRGIN', 'Simulation Type', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (11, 'SET0012', 'Money', 'CHF 10000', 'Maintenance cost per year and building', 1);
+	VALUES (11, 'SET0011', 'Money', 'CHF 500000', 'Labor cost per production line and year', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (12, 'SET0013', 'Percent', '5%', 'Debt interest rate', 1);
+	VALUES (12, 'SET0012', 'Money', 'CHF 10000', 'Maintenance cost per year and building', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (13, 'SET0014', 'Money', 'CHF 35', 'Raw material purchase price per unit', 1);
+	VALUES (13, 'SET0013', 'Percent', '5%', 'Debt interest rate', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (14, 'SET0015', 'Percent', '20%', 'Demand higher percent', 1);
+	VALUES (14, 'SET0014', 'Money', 'CHF 35', 'Raw material purchase price per unit', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (15, 'SET0016', 'Money', 'CHF 80', 'Demand higher price', 1);
+	VALUES (15, 'SET0015', 'Percent', '20%', 'Demand higher percent', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (16, 'SET0017', 'Percent', '80%', 'Demand lower percent', 1);
+	VALUES (16, 'SET0016', 'Money', 'CHF 80', 'Demand higher price', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (17, 'SET0018', 'Money', 'CHF 20', 'Demand lower price', 1);
+	VALUES (17, 'SET0017', 'Percent', '80%', 'Demand lower percent', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (18, 'SET0019', 'Integer', '100', 'Product lifecycle duration', 1);
+	VALUES (18, 'SET0018', 'Money', 'CHF 20', 'Demand lower price', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (19, 'SET0020', 'Money', 'CHF 500000', 'Market entry cost', 1);
+	VALUES (19, 'SET0019', 'Integer', '100', 'Product lifecycle duration', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (20, 'SET0022', 'Currency', 'CHF', 'Base Currency', 1);
+	VALUES (20, 'SET0020', 'Money', 'CHF 500000', 'Market entry cost', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (21, 'SET0023', 'Percent', '15%', 'Depreciation rate', 1);
+	VALUES (21, 'SET0022', 'Currency', 'CHF', 'Base Currency', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (22, 'SET0024', 'Money', 'CHF 500000', 'Inventory management staff cost per 1000 Units', 1);
+	VALUES (22, 'SET0023', 'Percent', '15%', 'Depreciation rate', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (23, 'SET0025', 'Money', 'CHF 1000000', 'Headquarter staff cost per annum', 1);
+	VALUES (23, 'SET0024', 'Money', 'CHF 500000', 'Inventory management staff cost per 1000 Units', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (24, 'SET0026', 'Money', 'CHF 30', 'Manufacturing cost per unit (used for accounting)', 1);
+	VALUES (24, 'SET0025', 'Money', 'CHF 1000000', 'Headquarter staff cost per annum', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (25, 'SET0027', 'Integer', '1', 'Number of months per step', 1);
+	VALUES (25, 'SET0026', 'Money', 'CHF 30', 'Manufacturing cost per unit (used for accounting)', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (26, 'SET0028', 'Money', 'CHF 200000', 'Price per percent point quality increase', 1);
+	VALUES (26, 'SET0027', 'Integer', '1', 'Number of months per step', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (27, 'SET0029', 'Money', 'CHF 500000', 'Price per marketing campaign', 1);
+	VALUES (27, 'SET0028', 'Money', 'CHF 200000', 'Price per percent point quality increase', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (28, 'SET0030', 'Money', 'CHF 100000', 'Price per productivity point', 1);
+	VALUES (28, 'SET0029', 'Money', 'CHF 500000', 'Price per marketing campaign', 1);
 
 INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
-	VALUES (29, 'SET0031', 'Percent', '10%', 'Factor discount rate', 1);
+	VALUES (29, 'SET0030', 'Money', 'CHF 100000', 'Price per productivity point', 1);
+
+INSERT INTO epoc_setting (id, setting_key, setting_format, value_text, description, settings_id)
+	VALUES (30, 'SET0031', 'Percent', '10%', 'Factor discount rate', 1);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (1, 'EuropeanUnion', 'USD', 20850000000, 'USD', 17110000000, 0.023, 238900000, 0.0860, 80.7, 'CHF', 1000000, 'CHF', 5000000, 40905648, 38860151, 28085190, 26851677, 107404085, 105480809, 33083278, 34885100, 43673572, 57881819);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (2, 'China', 'USD', 23210000000, 'USD', 12010000000, 0.069, 806700000, 0.04, 75.8, 'CHF', 10000000, 'CHF', 50000000, 128270371, 110120535, 91443139, 79181726, 338189015, 324180103, 79340391, 77857806, 74277631, 81828269);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (3, 'Switzerland', 'USD', 523100000, 'USD', 679000000, 0.017, 5159000, 0.032, 82.7, 'CHF', 100000, 'CHF', 500000, 650151, 612479, 453003, 433101, 1781425, 1774124, 535457, 532454, 672024, 848591);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (4, 'United States', 'USD', 19490000000, 'USD', 19490000000, 0.022, 160400000, 0.044, 80.1, 'CHF', 1000000, 'CHF', 20000000, 31329121, 29984705, 22119340, 21082599, 64858646, 64496889, 20578432, 22040267, 23489515, 29276951);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (5, 'Japan', 'USD', 5443000000, 'USD', 4873000000, 0.017, 65010000, 0.029, 85.5, 'CHF', 1000000, 'CHF', 8000000, 8251336, 7787234, 6397995, 5746140, 23246562, 23784273, 7588597, 7563245, 15655860, 20146914);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (6, 'Nigeria', 'USD', 1121000000, 'USD', 376400000, 0.008, 60080000, 0.165, 59.3, 'CHF', 1000, 'CHF', 100000, 44087799, 42278742, 20452045, 19861371, 31031253, 30893168, 4017658, 4197739, 3138206, 3494524);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (7, 'India', 'USD', 9474000000, 'USD', 2602000000, 0.067, 521900000, 0.085, 69.1, 'CHF', 5000000, 'CHF', 40000000, 185736879, 164194080, 122573662, 108109968, 276283581, 258563835, 49334703, 49197817, 39184523, 43654994);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (8, 'Germany', 'USD', 4199000000, 'USD', 3701000000, 0.025, 45900000, 0.038, 80.9, 'CHF', 1000000, 'CHF', 20000000, 5299798, 5024184, 4092901, 3933997, 16181931, 15896528, 5989111, 6047449, 7930590, 10061248);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (9, 'France', 'USD', 2856000000, 'USD', 2588000000, 0.023, 30680000, 0.094, 82.0, 'CHF', 1000000, 'CHF', 15000000, 6366789, 6082729, 4065780, 3884488, 12731825, 12515501, 4035073, 4331751, 5781410, 7569011);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (10, 'Austria', 'USD', 441000000, 'USD', 417400000, 0.03, 4260000, 0.055, 81.7, 'CHF', 50000, 'CHF', 2000000, 630739, 600663, 484515, 467064, 1851209, 1851100, 595146, 603249, 743174, 966511);
+
+INSERT INTO market (id, name, gdp_ppp_currency, gdp_ppp_amount, gdp_currency, gdp_amount, gdp_growth, labor_force, unemployment, life_expectancy, cost_to_enter_market_currency, cost_to_enter_market_amount, distribution_cost_currency, distribution_cost_amount, age_to14Male, age_to14Female, age_to24Male, age_to24Female, age_to54Male, age_to54Female, age_to64Male, age_to64Female, age65older_male, age65older_female)
+	VALUES (11, 'United Kingdom', 'USD', 2925000000, 'USD', 2628000000, 0.017, 33500000, 0.044, 80.9, 'CHF', 1000000, 'CHF', 10000000, 5871268, 5582107, 3895850, 3726311, 13387119, 12843549, 3936466, 4022245, 5321392, 6518939);
