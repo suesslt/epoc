@@ -28,7 +28,6 @@ class MarketSimulationTests {
         while (activeSimulationStep.isPresent()) {
             for (CompanySimulationStep companySimulationStep : activeSimulationStep.get().getCompanySimulationSteps()) {
                 companySimulationStep.finish();
-                ;
             }
             activeSimulationStep = company.getSimulation().getActiveSimulationStep();
         }

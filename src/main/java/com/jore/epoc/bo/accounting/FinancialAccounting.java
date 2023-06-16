@@ -13,7 +13,7 @@ import com.jore.Assert;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.hibernate.CurrencyUserType;
 import com.jore.datatypes.money.Money;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Entity
-public class FinancialAccounting extends BusinessObject {
+public class FinancialAccounting extends AbstractBusinessObject {
     private static final int INFINITY_MULTIPLIER = 6;
     public static final String BANK = "1020";
     public static final String RECEIVABLES = "1100";

@@ -8,7 +8,7 @@ import org.hibernate.annotations.Type;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 import com.jore.util.Util;
 
 import jakarta.persistence.AttributeOverride;
@@ -17,7 +17,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Factory extends BusinessObject {
+public class Factory extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     private int productionLines;

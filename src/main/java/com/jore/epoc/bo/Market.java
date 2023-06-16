@@ -10,7 +10,7 @@ import org.hibernate.annotations.Type;
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 import com.jore.util.Util;
 
 import jakarta.persistence.AttributeOverride;
@@ -19,7 +19,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
 @Entity
-public class Market extends BusinessObject {
+public class Market extends AbstractBusinessObject {
     private String name;
     @AttributeOverride(name = "amount", column = @Column(name = "gdp_amount"))
     @AttributeOverride(name = "currency", column = @Column(name = "gdp_currency"))
@@ -78,8 +78,8 @@ public class Market extends BusinessObject {
     public int getFemalePopulation() {
         updateAgetable();
         int result = 0;
-        for (int i = 0; i < ageTableFemale.length; i++) {
-            result = result + ageTableFemale[i];
+        for (int element : ageTableFemale) {
+            result = result + element;
         }
         return result;
     }
@@ -107,8 +107,8 @@ public class Market extends BusinessObject {
     public int getMalePopulation() {
         updateAgetable();
         int result = 0;
-        for (int i = 0; i < ageTableMale.length; i++) {
-            result = result + ageTableMale[i];
+        for (int element : ageTableMale) {
+            result = result + element;
         }
         return result;
     }
@@ -225,9 +225,7 @@ public class Market extends BusinessObject {
 
     @Override
     public String toString() {
-        return "Market [id=" + getId() + ", ageTo14Male=" + ageTo14Male + ", ageTo14Female=" + ageTo14Female + ", ageTo24Male=" + ageTo24Male + ", ageTo24Female=" + ageTo24Female + ", ageTo54Male=" + ageTo54Male + ", ageTo54Female=" + ageTo54Female + ", ageTo64Male=" + ageTo64Male
-                + ", ageTo64Female=" + ageTo64Female + ", age65olderMale=" + age65olderMale + ", age65olderFemale=" + age65olderFemale + ", ageTableUpdated=" + ageTableUpdated + ", ageTableMale=" + Arrays.toString(ageTableMale) + ", ageTableFemale=" + Arrays.toString(ageTableFemale)
-                + ", lifeExpectancy=" + lifeExpectancy + ", marketSizeForConsumption=" + getMarketSizeForConsumption() + ", unemploymentRate=" + unemployment + ", name=" + name + "]";
+        return "Market [id=" + getId() + ", ageTo14Male=" + ageTo14Male + ", ageTo14Female=" + ageTo14Female + ", ageTo24Male=" + ageTo24Male + ", ageTo24Female=" + ageTo24Female + ", ageTo54Male=" + ageTo54Male + ", ageTo54Female=" + ageTo54Female + ", ageTo64Male=" + ageTo64Male + ", ageTo64Female=" + ageTo64Female + ", age65olderMale=" + age65olderMale + ", age65olderFemale=" + age65olderFemale + ", ageTableUpdated=" + ageTableUpdated + ", ageTableMale=" + Arrays.toString(ageTableMale) + ", ageTableFemale=" + Arrays.toString(ageTableFemale) + ", lifeExpectancy=" + lifeExpectancy + ", marketSizeForConsumption=" + getMarketSizeForConsumption() + ", unemploymentRate=" + unemployment + ", name=" + name + "]";
     }
 
     private int calculateForAgeOver65(int number, int divider, int maximumAge, int i) {

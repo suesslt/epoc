@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jore.epoc.bo.Simulation;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,7 +15,7 @@ import jakarta.persistence.OneToMany;
 /**
  */
 @Entity(name = "Login")
-public class User extends BusinessObject {
+public class User extends AbstractBusinessObject {
     @Column(unique = true)
     private String password;
     private String email;

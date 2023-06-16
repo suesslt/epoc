@@ -5,13 +5,13 @@ import java.time.YearMonth;
 import org.hibernate.annotations.Type;
 
 import com.jore.epoc.bo.Company;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Message extends BusinessObject {
+public class Message extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)

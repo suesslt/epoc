@@ -53,7 +53,7 @@ public class StaticDataServiceImpl implements StaticDataService {
     public void loadMarkets(String xlsFileName) {
         try {
             ExcelWorkbook workbook = new ExcelWorkbook(new ClassPathResource(xlsFileName).getInputStream());
-            List<MarketDto> markets = new ExcelReader<MarketDto>(workbook, new FieldModel<>(MarketDto.class)).read();
+            List<MarketDto> markets = new ExcelReader<>(workbook, new FieldModel<>(MarketDto.class)).read();
             markets.forEach(market -> saveMarket(market));
             workbook.close();
         } catch (ConstraintViolationException e) {
@@ -74,7 +74,7 @@ public class StaticDataServiceImpl implements StaticDataService {
             Resource resource = new ClassPathResource(xlsFileName);
             InputStream inputStream = resource.getInputStream();
             ExcelWorkbook workbook = new ExcelWorkbook(inputStream);
-            List<EpocSettingDto> settings = new ExcelReader<EpocSettingDto>(workbook, new FieldModel<>(EpocSettingDto.class)).read();
+            List<EpocSettingDto> settings = new ExcelReader<>(workbook, new FieldModel<>(EpocSettingDto.class)).read();
             for (EpocSettingDto epocSettingDto : settings) {
                 EpocSetting setting = new EpocSetting();
                 setting.setDescription(epocSettingDto.getDescription());

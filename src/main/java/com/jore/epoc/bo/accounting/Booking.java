@@ -3,14 +3,14 @@ package com.jore.epoc.bo.accounting;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Booking extends BusinessObject {
+public class Booking extends AbstractBusinessObject {
     private BigDecimal amount;
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private JournalEntry journalEntry;

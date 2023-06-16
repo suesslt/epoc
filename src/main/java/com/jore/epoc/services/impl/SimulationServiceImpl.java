@@ -586,10 +586,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     private void logicalValidation(Company company, YearMonth executionMonth) {
-        if (executionMonth.isBefore(company.getSimulation().getStartMonth())) {
-            throw new ConstraintViolationException(null); // TODO add constraint violation with message, etc.
-        }
-        if (executionMonth.isAfter(company.getSimulation().getStartMonth().plusMonths(company.getSimulation().getNrOfMonths()))) {
+        if (executionMonth.isBefore(company.getSimulation().getStartMonth()) || executionMonth.isAfter(company.getSimulation().getStartMonth().plusMonths(company.getSimulation().getNrOfMonths()))) {
             throw new ConstraintViolationException(null);
         }
     }

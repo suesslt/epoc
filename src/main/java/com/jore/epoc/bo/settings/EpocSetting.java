@@ -5,13 +5,13 @@ import java.time.YearMonth;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class EpocSetting extends BusinessObject {
+public class EpocSetting extends AbstractBusinessObject {
     private String settingKey;
     private String settingFormat;
     private String valueText;

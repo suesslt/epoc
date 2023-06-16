@@ -4,7 +4,7 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.DistributionInMarket;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
@@ -13,7 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class DistributionStep extends BusinessObject {
+public class DistributionStep extends AbstractBusinessObject {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private DistributionInMarket distributionInMarket;
     @ManyToOne(cascade = CascadeType.ALL, optional = false)

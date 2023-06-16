@@ -10,7 +10,7 @@ import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.accounting.DebitCreditAmount;
 import com.jore.epoc.bo.message.Message;
 import com.jore.epoc.bo.message.MessageLevel;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -19,7 +19,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Entity
 // TODO Check if subclasses can be stored in one table
-public abstract class AbstractSimulationOrder extends BusinessObject implements SimulationOrder {
+public abstract class AbstractSimulationOrder extends AbstractBusinessObject implements SimulationOrder {
     protected static final int FIRST_OF_MONTH = 1;
     @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth executionMonth;

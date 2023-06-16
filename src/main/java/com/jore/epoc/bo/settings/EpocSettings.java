@@ -7,7 +7,7 @@ import java.util.Map;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class EpocSettings extends BusinessObject {
+public class EpocSettings extends AbstractBusinessObject {
     public static final String FACTORY_FIXED_COST = "SET0001";
     public static final String FACTORY_COST_PER_PRODUCTION_LINE = "SET0002";
     public static final String STORAGE_FIXED_COST = "SET0003";

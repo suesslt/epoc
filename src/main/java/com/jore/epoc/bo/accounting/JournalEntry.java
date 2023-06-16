@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class JournalEntry extends BusinessObject {
+public class JournalEntry extends AbstractBusinessObject {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private FinancialAccounting accounting;
     private String bookingText;

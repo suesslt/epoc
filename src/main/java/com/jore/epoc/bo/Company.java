@@ -20,7 +20,7 @@ import com.jore.epoc.bo.orders.AbstractSimulationOrder;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.user.User;
 import com.jore.epoc.bo.user.UserInCompanyRole;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -31,7 +31,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Entity
-public class Company extends BusinessObject {
+public class Company extends AbstractBusinessObject {
     private static final int ONE_TWELFTH = 12;
     private String name;
     @ManyToOne(optional = false)

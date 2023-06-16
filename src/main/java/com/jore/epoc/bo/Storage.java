@@ -10,7 +10,7 @@ import org.hibernate.annotations.Type;
 
 import com.jore.Assert;
 import com.jore.datatypes.money.Money;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -18,7 +18,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Storage extends BusinessObject {
+public class Storage extends AbstractBusinessObject {
     public static void distributeProductAccrossStorages(List<Storage> storages, int productsToStore, YearMonth storageMonth) {
         int toStore = productsToStore;
         Iterator<Storage> iter = storages.iterator();

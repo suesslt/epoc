@@ -12,7 +12,7 @@ import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.DistributionStep;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 import com.jore.util.Util;
 
 import jakarta.persistence.AttributeOverride;
@@ -47,7 +47,7 @@ import jakarta.persistence.OneToMany;
  *
  */
 @Entity
-public class MarketSimulation extends BusinessObject {
+public class MarketSimulation extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private Market market;
     @ManyToOne(optional = false)

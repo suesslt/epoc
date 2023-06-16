@@ -9,7 +9,7 @@ import org.hibernate.annotations.Type;
 
 import com.jore.epoc.bo.Company;
 import com.jore.epoc.bo.Simulation;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class SimulationStep extends BusinessObject {
+public class SimulationStep extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private Simulation simulation;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simulationStep", orphanRemoval = true)
@@ -32,7 +32,7 @@ public class SimulationStep extends BusinessObject {
     }
 
     public boolean areAllCompanyStepsFinished() {
-        return companySimulationSteps.stream().filter(step -> (step.isOpen() == true)).findFirst().isEmpty();
+        return companySimulationSteps.stream().filter(step -> step.isOpen()).findFirst().isEmpty();
     }
 
     public CompanySimulationStep getCompanySimulationStepFor(Company company) {

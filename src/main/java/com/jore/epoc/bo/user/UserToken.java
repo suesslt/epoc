@@ -2,7 +2,7 @@ package com.jore.epoc.bo.user;
 
 import java.time.LocalDateTime;
 
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-public class UserToken extends BusinessObject {
+public class UserToken extends AbstractBusinessObject {
     private static final long ONE_DAY = 24 * 60 * 60;
     @OneToOne(fetch = FetchType.EAGER, optional = false)
     private User user;

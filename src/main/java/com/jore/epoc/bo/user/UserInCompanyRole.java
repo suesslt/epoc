@@ -1,14 +1,14 @@
 package com.jore.epoc.bo.user;
 
 import com.jore.epoc.bo.Company;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 // TODO User and company combination must be unique
 @Entity
-public class UserInCompanyRole extends BusinessObject {
+public class UserInCompanyRole extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     @ManyToOne(optional = false)

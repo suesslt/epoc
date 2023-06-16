@@ -9,7 +9,7 @@ import org.hibernate.annotations.CompositeType;
 
 import com.jore.datatypes.money.Money;
 import com.jore.epoc.bo.step.DistributionStep;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
@@ -19,7 +19,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class DistributionInMarket extends BusinessObject {
+public class DistributionInMarket extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private Company company;
     @ManyToOne(optional = false)

@@ -18,7 +18,7 @@ import com.jore.epoc.bo.settings.EpocSettings;
 import com.jore.epoc.bo.step.CompanySimulationStep;
 import com.jore.epoc.bo.step.SimulationStep;
 import com.jore.epoc.bo.user.User;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
@@ -30,7 +30,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Entity
-public class Simulation extends BusinessObject {
+public class Simulation extends AbstractBusinessObject {
     private String name;
     @Type(com.jore.datatypes.hibernate.YearMonthUserType.class)
     private YearMonth startMonth;

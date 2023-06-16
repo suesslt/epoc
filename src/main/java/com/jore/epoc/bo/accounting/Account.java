@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class Account extends BusinessObject {
+public class Account extends AbstractBusinessObject {
     @ManyToOne(optional = false)
     private FinancialAccounting accounting;
     private String number;

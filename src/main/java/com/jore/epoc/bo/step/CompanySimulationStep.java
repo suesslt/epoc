@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jore.epoc.bo.Company;
-import com.jore.jpa.BusinessObject;
+import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class CompanySimulationStep extends BusinessObject {
+public class CompanySimulationStep extends AbstractBusinessObject {
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private SimulationStep simulationStep;
     @ManyToOne(optional = false)
