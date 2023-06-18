@@ -168,11 +168,6 @@ public class Simulation extends AbstractBusinessObject {
         return Collections.unmodifiableList(simulationSteps);
     }
 
-    public SimulationType getSimulationType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public Integer getSoldProducts() {
         return marketSimulations.stream().mapToInt(marketSimulation -> marketSimulation.getSoldProducts()).sum();
     }

@@ -35,6 +35,10 @@ public class EpocSetting extends AbstractBusinessObject {
         return Percent.of(valueText);
     }
 
+    public String asString() {
+        return valueText;
+    }
+
     public YearMonth asYearMonth() {
         return YearMonth.parse(valueText);
     }

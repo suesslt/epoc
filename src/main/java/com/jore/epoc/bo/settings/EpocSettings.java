@@ -7,6 +7,7 @@ import java.util.Map;
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
 import com.jore.datatypes.percent.Percent;
+import com.jore.epoc.bo.SimulationType;
 import com.jore.jpa.AbstractBusinessObject;
 
 import jakarta.persistence.CascadeType;
@@ -163,6 +164,10 @@ public class EpocSettings extends AbstractBusinessObject {
 
     public YearMonth getSimulationStartMonth() {
         return settings.get(DEFAULT_SIMULATION_START_MONTH).asYearMonth();
+    }
+
+    public SimulationType getSimulationType() {
+        return SimulationType.valueOf(settings.get(SIMULATION_TYPE).asString());
     }
 
     public Integer getStorageConstructionMonths() {

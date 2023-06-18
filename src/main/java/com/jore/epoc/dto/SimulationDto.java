@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.jore.datatypes.currency.Currency;
 import com.jore.datatypes.money.Money;
+import com.jore.epoc.bo.SimulationType;
 import com.jore.jpa.DataTransferObject;
 
 import jakarta.validation.constraints.Min;
@@ -34,6 +35,7 @@ public class SimulationDto implements DataTransferObject {
     private boolean isFinished;
     private Currency baseCurrency;
     private Money costToBuildFactory;
+    private SimulationType simulationType;
 
     public void addCompany(CompanyDto companyDto) {
         companies.add(companyDto);

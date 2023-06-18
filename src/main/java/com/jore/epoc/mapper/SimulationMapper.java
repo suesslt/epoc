@@ -34,7 +34,7 @@ public interface SimulationMapper {
             for (Company company : companies) {
                 companyDtos.add(CompanyMapper.INSTANCE.companyToCompanyDto(company));
             }
-            return SimulationDto.builder().id(simulation.getId()).isFinished(simulation.isFinished()).name(simulation.getName()).isStarted(simulation.isStarted()).nrOfMonths(simulation.getNrOfMonths()).startMonth(simulation.getStartMonth()).companies(CompanyMapper.INSTANCE.companyToCompanyDto(companies)).baseCurrency(simulation.getSettings().getBaseCurrency()).costToBuildFactory(simulation.getSettings().getFactoryConstructionCost()).build();
+            return SimulationDto.builder().id(simulation.getId()).isFinished(simulation.isFinished()).name(simulation.getName()).isStarted(simulation.isStarted()).nrOfMonths(simulation.getNrOfMonths()).startMonth(simulation.getStartMonth()).companies(CompanyMapper.INSTANCE.companyToCompanyDto(companies)).baseCurrency(simulation.getSettings().getBaseCurrency()).costToBuildFactory(simulation.getSettings().getFactoryConstructionCost()).simulationType(simulation.getSettings().getSimulationType()).build();
         }
 
         private void updateSimulation(SimulationDto simulationDto, Simulation result) {

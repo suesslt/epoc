@@ -437,7 +437,7 @@ public class SimulationServiceImpl implements SimulationService {
             company.setQualityFactor(1.0d);
             company.setSimulation(simulation);
             company.setName(getName(simulation.getCompanies().size()));
-            if (simulation.getSimulationType().equals(SimulationType.IN_MARKET)) {
+            if (simulation.getSettings().getSimulationType().equals(SimulationType.IN_MARKET)) {
                 MarketSimulation marketSimulation = marketSimulationRepository.findByMarketName(SWITZERLAND).get();
                 marketSimulation.setStartMonth(simulation.getStartMonth());
                 DistributionInMarket distributionInMarket = new DistributionInMarket();
