@@ -7,4 +7,5 @@ func routes(_ app: Application) throws {
     app.get("health") { req async in
         "OK"
     }
+    try app.register(collection: SimulationController())
 }

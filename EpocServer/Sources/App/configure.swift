@@ -14,5 +14,9 @@ func configure(_ app: Application) async throws {
         )),
         as: .psql
     )
+    // Migrations
+    app.migrations.add(CreateInitialSchema())
+    app.migrations.add(SeedMarketData())
+
     try routes(app)
 }
