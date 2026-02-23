@@ -1,0 +1,47 @@
+import Foundation
+
+/// Localized message formatting using string templates.
+/// Equivalent to `com.jore.epoc.bo.message.Messages`.
+public enum Messages {
+    private static var messages: [String: String] = {
+        loadMessages()
+    }()
+
+    public static func getMessage(_ key: String, _ params: [Any]) -> String {
+        guard let pattern = messages[key] else { return key }
+        return formatMessage(pattern, params)
+    }
+
+    private static func loadMessages() -> [String: String] {
+        [
+            "FactoryBuilt": "We have built a beautiful factory for you!",
+            "CreditLineDecreased": "Credit line was decreased by {0} in {1}.",
+            "InsufficientFundToDecrase": "Insufficient funds to decrease credit line. Required {0}, available {1}.",
+            "CreditLineIncreased": "Increased credit line for {0} in {1}.",
+            "NoFactoryDueToFunds": "Could not create factory due to insufficent funds in {0}. Required were {1}, available {2}.",
+            "FactoryCreated": "Factory created for total cost of {0} in {1}.",
+            "NoStorageDueToFunds": "Could not create storage due to insufficent funds in {0}. Required were {1}, available {2}.",
+            "StorageBuilt": "Build Storage for capacity of {0} units in {1}.",
+            "NoRawMaterialCapacity": "Could not buy raw material in {0} due to missing storage capacity. Required was {1}, available {2}.",
+            "NoRawMaterialFunds": "Could not buy raw material in {0} due to insufficent funds. Required were {1}, available {2}.",
+            "RawMaterialBought": "Bought {0} raw materials in {1}.",
+            "AmountAndPriceChangd": "Changed intended product sales and offered Price.",
+            "MarketEntrySuccess": "Successfully set up entry into market {0}.",
+            "NoMarketDueToFunding": "Could not enter market {0} due to insufficient funding.",
+            "IncreaseProductivity": "Increased productivity with measures worth {1} in {0}.",
+            "NoIncreaseInProductivityDueToFunding": "Could not increase productivity in {0} due to insufficient funding. Needed {1} but had only {2}.",
+            "IncreaseQuality": "Increased quality with measures worth {1} in {0}.",
+            "NoIncreaseInQualityDueToFunding": "Could not increase quality in {0} due to insufficient funding. Needed {1} but had only {2}.",
+            "MarketingCampaign": "Increased sales with marketing campaign worth {1} in {0}.",
+            "NoMarketingCampaignDueToFunding": "Could not run marketing campaign in {0} due to insufficient funding. Needed {1} but had only {2}.",
+        ]
+    }
+
+    private static func formatMessage(_ pattern: String, _ params: [Any]) -> String {
+        var result = pattern
+        for (index, param) in params.enumerated() {
+            result = result.replacingOccurrences(of: "{\(index)}", with: "\(param)")
+        }
+        return result
+    }
+}
