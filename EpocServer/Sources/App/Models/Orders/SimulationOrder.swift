@@ -18,11 +18,11 @@ extension SimulationOrder {
     static var firstOfMonth: Int { 1 }
 
     func addMessage(_ level: MessageLevel, _ key: String, _ params: Any...) {
-        let message = Message()
-        message.relevantMonth = executionMonth
-        message.level = level
-        message.messageText = "\(key): \(params.map { "\($0)" }.joined(separator: ", "))"
-        company.addMessage(message)
+        let msg = Message()
+        msg.relevantMonth = executionMonth
+        msg.level = level
+        msg.message = Messages.getMessage(key, params)
+        company.addMessage(msg)
     }
 
     func book(bookingDate: Date, bookingText: String, debitAccount: String, creditAccount: String, amount: Money) {

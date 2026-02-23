@@ -66,7 +66,7 @@ public final class Company {
             String(format: Messages.getMessage("Company.1", [nrOfBuildings])),
             bookingDate: simulationMonth.atDay(1),
             valueDate: simulationMonth.atDay(1),
-            DebitCreditAmount(debitAccount: FinancialAccounting.RAUMAUFWAND, creditAccount: FinancialAccounting.BANK, amount: buildingCosts)
+            DebitCreditAmount(debit: FinancialAccounting.RAUMAUFWAND, credit: FinancialAccounting.BANK, amount: buildingCosts)
         )
     }
 
@@ -77,7 +77,7 @@ public final class Company {
             String(format: Messages.getMessage("Company.2", [simulation.getDepreciationRate(), realEstateBalance])),
             bookingDate: simulationMonth.atDay(1),
             valueDate: simulationMonth.atDay(1),
-            DebitCreditAmount(debitAccount: FinancialAccounting.DEPRECIATION, creditAccount: FinancialAccounting.REAL_ESTATE, amount: depreciation)
+            DebitCreditAmount(debit: FinancialAccounting.DEPRECIATION, credit: FinancialAccounting.REAL_ESTATE, amount: depreciation)
         )
     }
 
@@ -87,7 +87,7 @@ public final class Company {
             String(format: Messages.getMessage("Company.3", [simulation.getInterestRate(), accounting.getLongTermDebt(simulationMonth.atDay(1))])),
             bookingDate: simulationMonth.atDay(1),
             valueDate: simulationMonth.atDay(1),
-            DebitCreditAmount(debitAccount: FinancialAccounting.INTEREST, creditAccount: FinancialAccounting.BANK, amount: interestAmount)
+            DebitCreditAmount(debit: FinancialAccounting.INTEREST, credit: FinancialAccounting.BANK, amount: interestAmount)
         )
     }
 
@@ -105,7 +105,7 @@ public final class Company {
             String(format: Messages.getMessage("Company.4", [headquarterCost, distributionCost as Any, inventoryManagementCost as Any, productionCost as Any])),
             bookingDate: simulationMonth.atDay(1),
             valueDate: simulationMonth.atDay(1),
-            DebitCreditAmount(debitAccount: FinancialAccounting.SALARIES, creditAccount: FinancialAccounting.BANK, amount: workforceCost)
+            DebitCreditAmount(debit: FinancialAccounting.SALARIES, credit: FinancialAccounting.BANK, amount: workforceCost)
         )
     }
 
@@ -147,13 +147,13 @@ public final class Company {
                 Messages.getMessage("Company.6", []),
                 bookingDate: productionMonth.atEndOfMonth(),
                 valueDate: productionMonth.atEndOfMonth(),
-                DebitCreditAmount(debitAccount: FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, creditAccount: FinancialAccounting.RAW_MATERIALS, amount: averageRawMaterialPrice.multiply(totalAmountProduced))
+                DebitCreditAmount(debit: FinancialAccounting.BESTANDESAENDERUNGEN_ROHWAREN, credit: FinancialAccounting.RAW_MATERIALS, amount: averageRawMaterialPrice.multiply(totalAmountProduced))
             )
             accounting.book(
                 Messages.getMessage("Company.7", []),
                 bookingDate: productionMonth.atEndOfMonth(),
                 valueDate: productionMonth.atEndOfMonth(),
-                DebitCreditAmount(debitAccount: FinancialAccounting.PRODUCTS, creditAccount: FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, amount: simulation.getProductionCost().multiply(totalAmountProduced))
+                DebitCreditAmount(debit: FinancialAccounting.PRODUCTS, credit: FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, amount: simulation.getProductionCost().multiply(totalAmountProduced))
             )
             Storage.removeRawMaterialFromStorages(storages, rawMaterialToRemove: totalAmountProduced)
             Storage.distributeProductAcrossStorages(storages, productsToStore: totalAmountProduced, month: productionMonth)
@@ -172,8 +172,8 @@ public final class Company {
                 String(format: Messages.getMessage("Company.8", [amountToSell])),
                 bookingDate: simulationMonth.atEndOfMonth(),
                 valueDate: simulationMonth.atEndOfMonth(),
-                DebitCreditAmount(debitAccount: FinancialAccounting.BANK, creditAccount: FinancialAccounting.PRODUCT_REVENUES, amount: offeredPrice.multiply(amountToSell)),
-                DebitCreditAmount(debitAccount: FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, creditAccount: FinancialAccounting.PRODUCTS, amount: simulation.getProductionCost().multiply(amountToSell))
+                DebitCreditAmount(debit: FinancialAccounting.BANK, credit: FinancialAccounting.PRODUCT_REVENUES, amount: offeredPrice.multiply(amountToSell)),
+                DebitCreditAmount(debit: FinancialAccounting.BESTANDESAENDERUNGEN_PRODUKTE, credit: FinancialAccounting.PRODUCTS, amount: simulation.getProductionCost().multiply(amountToSell))
             )
         }
     }
