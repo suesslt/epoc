@@ -213,15 +213,8 @@ struct SimulationService {
     // MARK: - Finish Move (triggers simulation)
 
     func finishMoveFor(companySimulationStepId: Int64) async throws {
-        // Load the full simulation into memory, run simulation, then persist
-        let companyStep = try await CompanySimulationStepModel.find(companySimulationStepId, on: db)!
-        let simStep = try await companyStep.$simulationStep.get(on: db)
-        let simulation = try await simStep.$simulation.get(on: db)
-        // TODO: Full simulation execution requires loading all domain objects,
-        // running the in-memory simulation, and persisting results back.
-        // This is a complex operation that would need a dedicated SimulationEngine service.
-        companyStep.isOpen = false
-        try await companyStep.save(on: db)
+        let engine = SimulationEngineService(db: db)
+        try await engine.finishMove(companySimulationStepId: companySimulationStepId)
     }
 
     // MARK: - Query Operations

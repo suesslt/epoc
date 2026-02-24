@@ -10,6 +10,7 @@ final class CompanyModel: Model, Content, @unchecked Sendable {
     @Field(key: "quality_factor") var qualityFactor: Double
     @Field(key: "marketing_factor") var marketingFactor: Double
     @Field(key: "productivity_factor") var productivityFactor: Double
+    @OptionalParent(key: "accounting_id") var accounting: FinancialAccountingModel?
 
     @Children(for: \.$company) var factories: [FactoryModel]
     @Children(for: \.$company) var storages: [StorageModel]
