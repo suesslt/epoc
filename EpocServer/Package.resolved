@@ -91,6 +91,15 @@
       }
     },
     {
+      "identity" : "score",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/suesslt/score.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5d9fae4f14e7f07f9bd067fd9942cf8d700cad2c"
+      }
+    },
+    {
       "identity" : "sql-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/sql-kit.git",

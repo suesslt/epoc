@@ -158,7 +158,7 @@ struct SimulationService {
     }
 
     func increaseQuality(_ dto: IncreaseQualityDTO) async throws {
-        try logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
+        try await logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
         let amount = Money.parse(dto.increaseQualityAmount)
         let order = SimulationOrderModel()
         order.$company.id = dto.companyId
@@ -171,7 +171,7 @@ struct SimulationService {
     }
 
     func increaseProductivity(_ dto: IncreaseProductivityDTO) async throws {
-        try logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
+        try await logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
         let amount = Money.parse(dto.increaseProductivityAmount)
         let order = SimulationOrderModel()
         order.$company.id = dto.companyId
@@ -184,7 +184,7 @@ struct SimulationService {
     }
 
     func runMarketingCampaign(_ dto: RunMarketingCampaignDTO) async throws {
-        try logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
+        try await logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
         let amount = Money.parse(dto.campaignAmount)
         let order = SimulationOrderModel()
         order.$company.id = dto.companyId
@@ -197,7 +197,7 @@ struct SimulationService {
     }
 
     func setIntendedSalesAndPrice(_ dto: IntendedSalesAndPriceDTO) async throws {
-        try logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
+        try await logicalValidationForCompany(dto.companyId, executionMonth: dto.executionMonth)
         let price = Money.parse(dto.price)
         let order = SimulationOrderModel()
         order.$company.id = dto.companyId
