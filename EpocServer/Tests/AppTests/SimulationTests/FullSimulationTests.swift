@@ -1,4 +1,5 @@
 import XCTest
+import Score
 
 /// Full end-to-end simulation tests ported from Java FullSimulationTests.
 /// These tests verify exact CHF amounts after running complete simulations.

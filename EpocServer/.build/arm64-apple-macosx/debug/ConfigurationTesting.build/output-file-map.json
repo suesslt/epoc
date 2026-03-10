@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ConfigurationTesting.build/master.swiftdeps"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-configuration/Sources/ConfigurationTesting/ProviderCompatTest.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ConfigurationTesting.build/ProviderCompatTest.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ConfigurationTesting.build/ProviderCompatTest.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ConfigurationTesting.build/ProviderCompatTest~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ConfigurationTesting.build/ProviderCompatTest.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ConfigurationTesting.build/ProviderCompatTest.dia"
+  }
+}

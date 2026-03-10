@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// A message generated during simulation execution.
 /// Equivalent to `com.jore.epoc.bo.message.Message`.

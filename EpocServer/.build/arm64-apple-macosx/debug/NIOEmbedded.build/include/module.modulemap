@@ -1,0 +1,3 @@
+module NIOEmbedded {
+    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOEmbedded.build/include/NIOEmbedded-Swift.h"
+}

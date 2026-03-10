@@ -1,4 +1,5 @@
 import XCTest
+import Score
 
 /// Unit tests for the double-entry accounting system.
 final class AccountingTests: XCTestCase {

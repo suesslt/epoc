@@ -1,3 +1,5 @@
+import Score
+
 /// A single debit-credit booking instruction. Equivalent to `com.jore.epoc.bo.accounting.DebitCreditAmount`.
 public struct DebitCreditAmount: Sendable {
     public let debitAccountNumber: String

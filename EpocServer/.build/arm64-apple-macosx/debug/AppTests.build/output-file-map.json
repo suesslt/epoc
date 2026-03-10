@@ -1,0 +1,47 @@
+{
+  "": {
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/master.swiftdeps"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/Tests/AppTests/FoundationTests/EpocCalendarTests.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/EpocCalendarTests.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/EpocCalendarTests.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/EpocCalendarTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/EpocCalendarTests.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/EpocCalendarTests.dia"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/Tests/AppTests/FoundationTests/NormalDistributionTests.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/NormalDistributionTests.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/NormalDistributionTests.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/NormalDistributionTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/NormalDistributionTests.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/NormalDistributionTests.dia"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/Tests/AppTests/SimulationTests/AccountingTests.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/AccountingTests.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/AccountingTests.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/AccountingTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/AccountingTests.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/AccountingTests.dia"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/Tests/AppTests/SimulationTests/DomainModelTests.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/DomainModelTests.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/DomainModelTests.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/DomainModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/DomainModelTests.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/DomainModelTests.dia"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/Tests/AppTests/SimulationTests/FullSimulationTests.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/FullSimulationTests.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/FullSimulationTests.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/FullSimulationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/FullSimulationTests.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/FullSimulationTests.dia"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/Tests/AppTests/SimulationTests/SimulationBuilder.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/SimulationBuilder.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/SimulationBuilder.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/SimulationBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/SimulationBuilder.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/AppTests.build/SimulationBuilder.dia"
+  }
+}

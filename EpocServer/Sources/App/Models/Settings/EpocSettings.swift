@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Container for all simulation configuration settings.
 /// Equivalent to `com.jore.epoc.bo.settings.EpocSettings`.

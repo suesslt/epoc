@@ -1,4 +1,5 @@
 import XCTest
+import Score
 
 /// Unit tests for DemandCurve, ProductLifecycle, and PercentDiscountFactor.
 final class DomainModelTests: XCTestCase {

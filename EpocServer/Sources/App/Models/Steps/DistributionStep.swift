@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Distribution results for a company in a market for one simulation step.
 /// Equivalent to `com.jore.epoc.bo.step.DistributionStep`.

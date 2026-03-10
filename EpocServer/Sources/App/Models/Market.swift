@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// A geographic market with demographic data.
 /// Equivalent to `com.jore.epoc.bo.Market`.
@@ -37,7 +38,7 @@ public final class Market {
     }
 
     public func calculateMarketPotential(startMonth: YearMonth, simulationMonth: YearMonth, productLifecycleDuration: Int) -> Int {
-        let productLifecycle = ProductLifecycle(productLifecycleDuration)
+        let productLifecycle = ProductLifecycle(Double(productLifecycleDuration))
         let percentageSold = productLifecycle.getPercentageSoldForMonths(YearMonth.monthDiff(end: simulationMonth, start: startMonth))
         let marketSizeForConsumption = getMarketSizeForConsumption()
         return Int(Double(marketSizeForConsumption) * percentageSold)

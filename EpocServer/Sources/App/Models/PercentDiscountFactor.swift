@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Applies monthly decay to quality/marketing/productivity factors.
 /// Equivalent to `com.jore.epoc.bo.PercentDiscountFactor`.

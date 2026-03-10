@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOCertificateHelpers.build/master.swiftdeps"
+  },
+  "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-nio-extras/Sources/NIOCertificateHelpers/CertificateValidation.swift": {
+    "dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOCertificateHelpers.build/CertificateValidation.d",
+    "object": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOCertificateHelpers.build/CertificateValidation.swift.o",
+    "swiftmodule": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOCertificateHelpers.build/CertificateValidation~partial.swiftmodule",
+    "swift-dependencies": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOCertificateHelpers.build/CertificateValidation.swiftdeps",
+    "diagnostics": "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOCertificateHelpers.build/CertificateValidation.dia"
+  }
+}

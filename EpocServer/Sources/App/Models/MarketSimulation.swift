@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Links a market to a simulation with demand curve configuration.
 /// Equivalent to `com.jore.epoc.bo.MarketSimulation`.
@@ -20,7 +21,7 @@ public final class MarketSimulation {
     }
 
     public func calculateMarketPotentialForProductPrice(marketSize: Int, offeredPrice: Money, qualityFactor: Double) -> Int {
-        let demandCurve = DemandCurve(higherPrice: higherPrice, higherPercent: higherPercent, lowerPrice: lowerPrice, lowerPercent: lowerPercent)
+        let demandCurve = DemandCurve(higherPrice: higherPrice, higherPricePercent: higherPercent, lowerPrice: lowerPrice, lowerPricePercent: lowerPercent)
         return demandCurve.getDemandForPrice(offeredPrice.divide(qualityFactor)).applyTo(marketSize)
     }
 
@@ -45,7 +46,8 @@ public final class MarketSimulation {
         for distributionInMarket in distributionInMarkets {
             let marketPotentialForProduct = distributionInMarket.getMarketPotentialForProduct(simulationMonth: simulationMonth)
             let availableMarketPotentialForProduct = Int((Double(marketPotentialForProduct) / Double(totalMarketPotential) * Double(availableMarketSize)).rounded())
-            let percentageSold = ProductLifecycle(Int(Double(productLifecycleDuration) / distributionInMarket.company.marketingFactor))
+            let adjustedDuration = Double(Int(Double(productLifecycleDuration) / distributionInMarket.company.marketingFactor))
+            let percentageSold = ProductLifecycle(adjustedDuration)
                 .getPercentageSoldForMonths(YearMonth.monthDiff(end: simulationMonth, start: startMonth))
             let maximumToSell = Int(Double(availableMarketPotentialForProduct) * percentageSold)
             distributionInMarket.company.sellMaximumOf(distributionInMarket, simulationMonth: simulationMonth, maximumToSell: maximumToSell, offeredPrice: distributionInMarket.getOfferedPrice(simulationMonth: simulationMonth)!)

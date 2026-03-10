@@ -1,0 +1,4 @@
+module CNIOAtomics {
+    umbrella header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-nio/Sources/CNIOAtomics/include/CNIOAtomics.h"
+    export *
+}

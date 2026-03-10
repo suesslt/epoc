@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Builder to construct complete simulation setups for testing.
 /// Equivalent to `com.jore.epoc.SimulationBuilder`.

@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// The top-level simulation entity that orchestrates the game.
 /// Equivalent to `com.jore.epoc.bo.Simulation`.

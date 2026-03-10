@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// A company in the simulation, managed by a team of players.
 /// Equivalent to `com.jore.epoc.bo.Company`.

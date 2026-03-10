@@ -1,0 +1,4 @@
+module CNIOLinux {
+    umbrella header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-nio/Sources/CNIOLinux/include/CNIOLinux.h"
+    export *
+}

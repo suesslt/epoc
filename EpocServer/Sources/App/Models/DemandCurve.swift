@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Linear demand curve between two price-demand points.
 /// Equivalent to `com.jore.epoc.bo.DemandCurve`.

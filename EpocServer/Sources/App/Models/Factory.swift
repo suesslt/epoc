@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Production facility with multiple production lines.
 /// Equivalent to `com.jore.epoc.bo.Factory`.

@@ -1,0 +1,3 @@
+module ServiceContextModule {
+    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/ServiceContextModule.build/include/ServiceContextModule-Swift.h"
+}

@@ -1,0 +1,4 @@
+module CNIOExtrasZlib {
+    umbrella header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-nio-extras/Sources/CNIOExtrasZlib/include/CNIOExtrasZlib.h"
+    export *
+}

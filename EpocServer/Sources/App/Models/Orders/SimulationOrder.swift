@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Protocol for all simulation orders (player actions).
 /// Equivalent to `com.jore.epoc.bo.orders.SimulationOrder` + `AbstractSimulationOrder`.

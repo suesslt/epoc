@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Inventory storage for raw materials and finished products.
 /// Equivalent to `com.jore.epoc.bo.Storage`.

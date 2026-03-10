@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// A company's presence and distribution in a specific market.
 /// Equivalent to `com.jore.epoc.bo.DistributionInMarket`.

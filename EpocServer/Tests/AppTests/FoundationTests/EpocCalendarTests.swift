@@ -1,4 +1,5 @@
 import XCTest
+import Score
 @testable import App
 
 final class EpocCalendarTests: XCTestCase {

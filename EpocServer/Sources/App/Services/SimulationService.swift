@@ -1,5 +1,6 @@
 import Vapor
 import Fluent
+import Score
 
 /// Service layer for simulation operations.
 /// Equivalent to `com.jore.epoc.services.impl.SimulationServiceImpl`.
@@ -304,12 +305,5 @@ struct SimulationService {
             settings.addSetting(setting)
         }
         return settings
-    }
-}
-
-// MARK: - YearMonth.isAfter extension
-extension YearMonth {
-    func isAfter(_ other: YearMonth) -> Bool {
-        !self.isBefore(other) && self != other
     }
 }

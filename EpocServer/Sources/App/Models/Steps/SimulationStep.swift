@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// A single month step in the simulation.
 /// Equivalent to `com.jore.epoc.bo.step.SimulationStep`.

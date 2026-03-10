@@ -1,0 +1,3 @@
+module NIOExtras {
+    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOExtras.build/include/NIOExtras-Swift.h"
+}

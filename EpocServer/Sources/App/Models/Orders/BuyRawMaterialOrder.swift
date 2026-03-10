@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 public final class BuyRawMaterialOrder: SimulationOrder {
     public var id: Int64?

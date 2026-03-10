@@ -1,0 +1,9 @@
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/AsyncCancelOnGracefulShutdownSequence.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/AsyncGracefulShutdownSequence.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/CancellationWaiter.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/ClosureService.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/GracefulShutdown.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/Service.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/ServiceGroup.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/ServiceGroupConfiguration.swift
+/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-service-lifecycle/Sources/ServiceLifecycle/ServiceRunnerError.swift

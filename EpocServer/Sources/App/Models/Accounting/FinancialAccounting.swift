@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Full double-entry accounting system per company.
 /// Equivalent to `com.jore.epoc.bo.accounting.FinancialAccounting`.

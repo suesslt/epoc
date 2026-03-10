@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// Utility for working day calculations. Equivalent to `com.jore.epoc.bo.EpocCalendar`.
 public struct EpocCalendar: Sendable {

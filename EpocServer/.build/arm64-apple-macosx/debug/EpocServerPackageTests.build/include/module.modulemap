@@ -1,0 +1,3 @@
+module EpocServerPackageTests {
+    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/EpocServerPackageTests.build/include/EpocServerPackageTests-Swift.h"
+}

@@ -1,4 +1,5 @@
 import Foundation
+import Score
 
 /// A single configuration setting with key, format, value and description.
 /// Equivalent to `com.jore.epoc.bo.settings.EpocSetting`.
