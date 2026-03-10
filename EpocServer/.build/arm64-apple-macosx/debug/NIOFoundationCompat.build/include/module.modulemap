@@ -1,3 +1,0 @@
-module NIOFoundationCompat {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOFoundationCompat.build/include/NIOFoundationCompat-Swift.h"
-}

@@ -1,3 +1,0 @@
-module XCTFluent {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/XCTFluent.build/include/XCTFluent-Swift.h"
-}

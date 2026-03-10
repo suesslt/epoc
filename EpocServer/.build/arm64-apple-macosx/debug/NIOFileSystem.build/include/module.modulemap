@@ -1,3 +1,0 @@
-module NIOFileSystem {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOFileSystem.build/include/NIOFileSystem-Swift.h"
-}

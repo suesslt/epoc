@@ -1,3 +1,0 @@
-module PostgresKit {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/PostgresKit.build/include/PostgresKit-Swift.h"
-}

@@ -1,3 +1,0 @@
-module InMemoryLogging {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/InMemoryLogging.build/include/InMemoryLogging-Swift.h"
-}

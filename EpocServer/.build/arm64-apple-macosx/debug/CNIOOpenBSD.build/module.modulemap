@@ -1,4 +1,0 @@
-module CNIOOpenBSD {
-    umbrella header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/checkouts/swift-nio/Sources/CNIOOpenBSD/include/CNIOOpenBSD.h"
-    export *
-}

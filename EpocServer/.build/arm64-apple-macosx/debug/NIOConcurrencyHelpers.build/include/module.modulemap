@@ -1,3 +1,0 @@
-module NIOConcurrencyHelpers {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOConcurrencyHelpers.build/include/NIOConcurrencyHelpers-Swift.h"
-}

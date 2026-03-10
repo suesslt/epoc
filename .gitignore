@@ -32,3 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 /bin/
+
+### Swift Package Manager ###
+.build/
+.swiftpm/
+Package.resolved

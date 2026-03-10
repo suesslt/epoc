@@ -1,3 +1,0 @@
-module FluentSQL {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/FluentSQL.build/include/FluentSQL-Swift.h"
-}

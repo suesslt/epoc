@@ -1,3 +1,0 @@
-module NIOTransportServices {
-    header "/Users/thomassussli/Documents/XCode/epoc/EpocServer/.build/arm64-apple-macosx/debug/NIOTransportServices.build/include/NIOTransportServices-Swift.h"
-}
